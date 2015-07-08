@@ -1,0 +1,51 @@
+﻿namespace Project
+class ProjectType
+{
+	attr string Name;
+	DirectoryType Directory;
+	QueryType Query;
+	RuleSetType RuleSet;
+}
+
+class QueryType
+{
+	attr string Name;
+	attr bool Included;
+	List<SparqlType> Sparqls;
+	List<QueryType> Queries;
+}
+
+class SparqlType
+{
+	attr string Name;
+	attr string Content;
+	attr bool Included;
+}
+
+class FileType
+{
+	attr string Name;
+	attr string FullName;
+	attr bool Included;
+}
+
+class RuleType
+{
+	attr string Name;
+	attr string Content;
+	attr bool Include
+}
+
+class RuleSetType
+{
+	attr string Name;
+	attr bool Included;
+	List<RuleType> Rules;
+	List<RuleSetType> RuleSets;
+}
+
+class DirectoryType
+{
+	List<FileType> Files;
+	List<DirectoryType> Directories;
+}
