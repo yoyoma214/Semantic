@@ -29,5 +29,10 @@ namespace CodeHelper.Core.Parse.ParseResults.Antlrs
         {
             this.Root.GenJava(builder);
         }
+
+        public void GenVisitJava(IndentStringBuilder builder)
+        {
+            this.Root.GenVisitJava(builder);
+        }
     }
 }

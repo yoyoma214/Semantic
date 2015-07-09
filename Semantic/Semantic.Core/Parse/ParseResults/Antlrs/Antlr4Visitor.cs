@@ -280,7 +280,48 @@ namespace CodeHelper.Core.Parse.ParseResults.Antlrs
 
         public override int VisitElementOptions([NotNull] ANTLRv4Parser.ElementOptionsContext context) { return VisitChildren(context); }
 
-        public override int VisitLexerElement([NotNull] ANTLRv4Parser.LexerElementContext context) { return VisitChildren(context); }
+        public override int VisitLexerElement([NotNull] ANTLRv4Parser.LexerElementContext context) {
+            var lexerElement = this.stack.PeekCtx<LexerElement>();
+            lexerElement.Parse(context);
+
+            var labeledLexerElementCtx = context.labeledLexerElement();
+            if (labeledLexerElementCtx != null)
+            {
+                lexerElement.LabeledLexerElement = new LabeledLexerElement();
+                this.stack.Push(lexerElement.LabeledLexerElement);
+                this.Visit(labeledLexerElementCtx);
+                this.stack.Pop();
+            }
+
+            var lexerAtomCtx = context.labeledLexerElement();
+            if (lexerAtomCtx != null)
+            {
+                lexerElement.LabeledLexerElement = new LabeledLexerElement();
+                this.stack.Push(lexerElement.LabeledLexerElement);
+                this.Visit(lexerAtomCtx);
+                this.stack.Pop();
+            }
+
+            var lexerBlockCtx = context.labeledLexerElement();
+            if (lexerBlockCtx != null)
+            {
+                lexerElement.LexerBlock = new LexerBlock();
+                this.stack.Push(lexerElement.LexerBlock);
+                this.Visit(lexerBlockCtx);
+                this.stack.Pop();
+            }
+
+            var ebnfSuffixCtx = context.ebnfSuffix();
+            if (ebnfSuffixCtx != null)
+            {
+                lexerElement.EbnfSuffix = new EbnfSuffix();
+                this.stack.Push(lexerElement.EbnfSuffix);
+                this.Visit(ebnfSuffixCtx);
+                this.stack.Pop();
+            }
+
+            return 0;
+        }
 
         public override int VisitParserRuleSpec([NotNull] ANTLRv4Parser.ParserRuleSpecContext context) {
             
@@ -557,7 +598,60 @@ namespace CodeHelper.Core.Parse.ParseResults.Antlrs
 
         }
 
-        public override int VisitLexerAtom([NotNull] ANTLRv4Parser.LexerAtomContext context) { return VisitChildren(context); }
+        public override int VisitLexerAtom([NotNull] ANTLRv4Parser.LexerAtomContext context) {
+
+            var lexerAtom = this.stack.PeekCtx<LexerAtom>();
+            lexerAtom.Parse(context);
+
+            var rangeCtx = context.range();
+            if (rangeCtx != null)
+            {
+                var range = new Range();
+                lexerAtom.Range = range;
+                this.stack.Push(range);
+                this.Visit(rangeCtx);
+                this.stack.Pop();
+            }
+
+            var terminalCtx = context.terminal();
+            if (terminalCtx != null)
+            {
+                var terminal = new Terminal();
+                lexerAtom.Terminal = terminal;
+                this.stack.Push(terminal);
+                this.Visit(terminalCtx);
+                this.stack.Pop();
+            }
+
+            var notSetCtx = context.terminal();
+            if (notSetCtx != null)
+            {
+                var notSet = new NotSet();
+                lexerAtom.NotSet = notSet;
+                this.stack.Push(notSet);
+                this.Visit(notSetCtx);
+                this.stack.Pop();
+            }
+
+            var elementOptionsCtx = context.terminal();
+            if (elementOptionsCtx != null)
+            {
+                var elementOptions = new ElementOptions();
+                lexerAtom.ElementOptions = elementOptions;
+                this.stack.Push(elementOptions);
+                this.Visit(elementOptionsCtx);
+                this.stack.Pop();
+            }
+
+            if (context.RULE_REF() != null)
+                lexerAtom.RULE_REF = context.RULE_REF().ToString();
+            if (context.LEXER_CHAR_SET() != null)
+                lexerAtom.LEXER_CHAR_SET = context.LEXER_CHAR_SET().ToString();
+            if (context.DOT() != null)
+                lexerAtom.DOT = context.DOT().ToString();
+
+            return 0;
+        }
 
         public override int VisitLabeledElement([NotNull] ANTLRv4Parser.LabeledElementContext context) { return VisitChildren(context); }
 
@@ -638,7 +732,22 @@ namespace CodeHelper.Core.Parse.ParseResults.Antlrs
             return 0;
         }
 
-        public override int VisitLexerElements([NotNull] ANTLRv4Parser.LexerElementsContext context) { return VisitChildren(context); }
+        public override int VisitLexerElements([NotNull] ANTLRv4Parser.LexerElementsContext context) {
+            var lexerElements = this.stack.PeekCtx<LexerElements>();
+            lexerElements.Parse(context);
+
+            var ss = context.lexerElement();
+            foreach (var ctx in ss)
+            {
+                var lexerElement = new LexerElement();
+                lexerElements.LexerElements0.Add(lexerElement);
+                this.stack.Push(lexerElement);
+                this.Visit(ctx);
+                this.stack.Pop();
+            }
+
+            return 0;
+        }
 
         public override int VisitRange([NotNull] ANTLRv4Parser.RangeContext context) {
 

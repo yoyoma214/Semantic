@@ -62,6 +62,15 @@ namespace CodeHelper.Core.Parse.ParseResults.Antlrs
             //}
             Rules.GenJava(builder);
         }
+
+        public void GenVisitJava(IndentStringBuilder builder)
+        {
+            //foreach (var rule in this.Rules)
+            //{
+            //    rule.g
+            //}
+            Rules.GenVisitJava(builder);
+        }
     }
 
     public class GrammarType : TokenPair
@@ -347,6 +356,14 @@ namespace CodeHelper.Core.Parse.ParseResults.Antlrs
                 rule.GenJava(builder);
             }
         }
+
+        public void GenVisitJava(IndentStringBuilder builder)
+        {
+            foreach (var rule in this.RuleSpecs)
+            {
+                rule.GenVisitJava(builder);
+            }
+        }
     }
 
     public class RuleSpec : TokenPair
@@ -369,6 +386,11 @@ namespace CodeHelper.Core.Parse.ParseResults.Antlrs
         public void GenJava(IndentStringBuilder builder)
         {
             this.ParserRuleSpec.GenJava(builder);
+        }
+
+        public void GenVisitJava(IndentStringBuilder builder)
+        {
+            this.ParserRuleSpec.GenVisitJava(builder);
         }
     }
 
@@ -445,6 +467,11 @@ namespace CodeHelper.Core.Parse.ParseResults.Antlrs
             builder.Decrease("}");
             builder.AppendLine();
             builder.AppendLine();
+        }
+
+        public void GenVisitJava(IndentStringBuilder builder)
+        {
+            //this.ParserRuleSpec.GenVisitJava(builder);
         }
     }
 
@@ -761,10 +788,22 @@ namespace CodeHelper.Core.Parse.ParseResults.Antlrs
 
     public class LexerElements : TokenPair
     {
+        public List<LexerElement> LexerElements0 { get; set; }
+
+        public LexerElements()
+        {
+            this.LexerElements0 = new List<LexerElement>();
+        }
     }
 
     public class LexerElement : TokenPair
     {
+        public LabeledLexerElement LabeledLexerElement { get; set; }
+        public LexerAtom LexerAtom { get; set; }
+        public LexerBlock LexerBlock { get; set; }
+
+        public EbnfSuffix EbnfSuffix { get; set; }
+
     }
 
     public class LabeledLexerElement : TokenPair
@@ -996,9 +1035,18 @@ namespace CodeHelper.Core.Parse.ParseResults.Antlrs
     }
 
 
-    public class lexerAtom : TokenPair
+    public class LexerAtom : TokenPair
     {
-        public string Text { get; set; }
+        public Range Range { get; set; }
+        public Terminal Terminal { get; set; }
+        public NotSet NotSet { get; set; }
+
+        public string RULE_REF { get; set; }
+        public string LEXER_CHAR_SET { get; set; }
+
+        public string DOT { get; set; }
+        public ElementOptions ElementOptions { get; set; }
+        //public string Text { get; set; }
 
         public void Parse()
         {
@@ -1007,6 +1055,7 @@ namespace CodeHelper.Core.Parse.ParseResults.Antlrs
 
         public void Wise()
         {
+
         }
 
         public void GenJava(IndentStringBuilder builder)

@@ -39,6 +39,7 @@ namespace CodeHelper.Items.Antlr4
             menus.MenuItems.Add("生成数据库代码", Mnu_GenerateDBCode);
             menus.MenuItems.Add("反向工程", Mnu_DBToCode);
             menus.MenuItems.Add("生成java类", Mnu_GenJava);
+            menus.MenuItems.Add("生成java visit类", Mnu_GenVisitJava);
             return menus;
         }
 
@@ -83,6 +84,38 @@ namespace CodeHelper.Items.Antlr4
                 var builder = new IndentStringBuilder();
                 //module.NameSpace = ns;
                 ((Antlr4Module)module).GenJava(builder);
+                codeFrm.SetText(builder.ToString());
+                codeFrm.Show();
+
+                //var gen = new UpdateDataModel(model, module);
+                //var builder = new StringBuilder();
+                //gen.Generate(builder);
+                //codeFrm.SetText(builder.ToString());
+                //codeFrm.Show();
+
+            }
+            catch (Exception ex)
+            {
+                System.Windows.Forms.MessageBox.Show(ex.Message);
+            }
+        }
+
+        private void Mnu_GenVisitJava(object sender, EventArgs args)
+        {
+            try
+            {
+                var codeFrm = new ShowCodeFrm();
+                var model = ModelManager.Instance().GetModel(this.FileId.Value);
+                var module = ModelManager.Instance().MakeSureParseModule(model.File);
+                if (module == null)
+                {
+                    System.Windows.Forms.MessageBox.Show("模块还没解析");
+                    return;
+                }
+
+                var builder = new IndentStringBuilder();
+                //module.NameSpace = ns;
+                ((Antlr4Module)module).GenVisitJava(builder);
                 codeFrm.SetText(builder.ToString());
                 codeFrm.Show();
 
