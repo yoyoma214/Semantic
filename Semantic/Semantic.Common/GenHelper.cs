@@ -14,6 +14,9 @@ namespace CodeHelper.Common
 
         public static string GetVarName(string name)
         {
+            if (name.Equals("object") || name.Equals("int") || name.Equals("string") || name.Equals("float") || name.Equals("decimial") || name.Equals("double"))
+                name += "_";
+
             return name[0].ToString().ToLower() + name.Substring(1);
         }
     }

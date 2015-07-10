@@ -5,12 +5,12 @@ using System.Text;
 
 namespace CodeHelper.Core.Parse.ParseResults.Sparqls
 {
-    public class QueryUnit
+    public class QueryUnit:TokenPair
     {
         public Query Query { get; set; }
     }
 
-    public class Query
+    public class Query : TokenPair
     {
         public Prologue Prologue { get; set; }
 
@@ -38,12 +38,12 @@ namespace CodeHelper.Core.Parse.ParseResults.Sparqls
 
     }
 
-    public class UpdateUnit
+    public class UpdateUnit : TokenPair
     {
         public Update Update { get; set; }
     }
 
-    public class Prologue
+    public class Prologue : TokenPair
     {
         public List<BaseDecl> BaseDecls { get; set; }
         public List<PrefixDecl> PrefixDecls { get; set; }
@@ -56,7 +56,7 @@ namespace CodeHelper.Core.Parse.ParseResults.Sparqls
     }
 
 
-    public class SelectQuery
+    public class SelectQuery : TokenPair
     {
         public SelectClause SelectClause { get; set; }
         public List<DatasetClause> DatasetClauses { get; set; }
@@ -64,7 +64,7 @@ namespace CodeHelper.Core.Parse.ParseResults.Sparqls
         public SolutionModifier SolutionModifier { get; set; }
     }
 
-    public class ConstructQuery
+    public class ConstructQuery : TokenPair
     {
         /// <summary>
         /// 与triplesTemplate互斥
@@ -85,7 +85,7 @@ namespace CodeHelper.Core.Parse.ParseResults.Sparqls
         public TriplesTemplate TriplesTemplate { get; set; }
     }
 
-    public class DescribeQuery
+    public class DescribeQuery : TokenPair
     {
         public List<VarOrIri> VarOrIris { get; set; }
         public List<DatasetClause> DatasetClauses { get; set; }
@@ -93,7 +93,7 @@ namespace CodeHelper.Core.Parse.ParseResults.Sparqls
         public SolutionModifier SolutionModifier { get; set; }
     }
 
-    public class AskQuery
+    public class AskQuery : TokenPair
     {
         public List<DatasetClause> DatasetClauses { get; set; }
         public WhereClause WhereClause { get; set; }
@@ -105,29 +105,29 @@ namespace CodeHelper.Core.Parse.ParseResults.Sparqls
         }
     }
 
-    public class ValuesClause
+    public class ValuesClause : TokenPair
     {
         public DataBlock DataBlock { get; set; }
     }
 
-    public class Update
+    public class Update : TokenPair
     {
         public Prologue Prologue { get; set; }
         public Update1 Update1 { get; set; }
         public Update Update0 { get; set; }
     }
-    public class BaseDecl
+    public class BaseDecl : TokenPair
     {
         public string IRIREF { get; set; }
     }
 
-    public class PrefixDecl
+    public class PrefixDecl : TokenPair
     {
         public string PNAME_NS { get; set; }
         public string IRIREF { get; set; }
     }
 
-    public class SelectClause
+    public class SelectClause : TokenPair
     {
         public bool IsDISTINCT { get; set; }
         public bool IsREDUCED { get; set; }
@@ -142,18 +142,18 @@ namespace CodeHelper.Core.Parse.ParseResults.Sparqls
         }
     }
 
-    public class DatasetClause
+    public class DatasetClause : TokenPair
     {
         public DefaultGraphClause DefaultGraphClause { get; set; }
         public NamedGraphClause NamedGraphClause { get; set; }
     }
 
-    public class WhereClause
+    public class WhereClause : TokenPair
     {
         public GroupGraphPattern GroupGraphPattern { get; set; }
     }
 
-    public class SolutionModifier
+    public class SolutionModifier : TokenPair
     {
         public GroupClause GroupClause { get; set; }
         public HavingClause HavingClause { get; set; }
@@ -161,7 +161,7 @@ namespace CodeHelper.Core.Parse.ParseResults.Sparqls
         public LimitOffsetClauses LimitOffsetClauses { get; set; }
     }
 
-    public class SubSelect
+    public class SubSelect : TokenPair
     {
         public SelectClause SelectClause { get; set; }
         public WhereClause WhereClause { get; set; }
@@ -169,13 +169,13 @@ namespace CodeHelper.Core.Parse.ParseResults.Sparqls
         public ValuesClause ValuesClause { get; set; }
     }
 
-    public class Verb
+    public class Verb : TokenPair
     {
         public VarOrIri VarOrIri { get; set; }
         public bool IsA { get; set; }
     }
 
-    public class Var
+    public class Var : TokenPair
     {
         /// <summary>
         /// '?' VARNAME ;
@@ -188,46 +188,46 @@ namespace CodeHelper.Core.Parse.ParseResults.Sparqls
         public string VAR2 { get; set; }
     }
 
-    public class Expression
+    public class Expression : TokenPair
     {
         public ConditionalOrExpression ConditionalOrExpression { get; set; }
     }
 
-    public class ConstructTemplate
+    public class ConstructTemplate : TokenPair
     {
         public ConstructTriples ConstructTriples { get; set; }
     }
 
-    public class TriplesTemplate
+    public class TriplesTemplate : TokenPair
     {
         public TriplesSameSubject TriplesSameSubject { get; set; }
 
         public TriplesTemplate TriplesTemplate0 { get; set; }
     }
 
-    public class DefaultGraphClause
+    public class DefaultGraphClause : TokenPair
     {
         public SourceSelector SourceSelector { get; set; }
     }
 
-    public class NamedGraphClause
+    public class NamedGraphClause : TokenPair
     {
         public SourceSelector SourceSelector { get; set; }
     }
 
-    public class SourceSelector
+    public class SourceSelector : TokenPair
     {
         public Iri Iri { get; set; }
     }
 
-    public class Iri
+    public class Iri : TokenPair
     {
         public string IRIREF { get; set; }
         public PrefixedName PprefixedName { get; set; }
 
     }
 
-    public class GroupGraphPattern
+    public class GroupGraphPattern : TokenPair
     {
         public SubSelect SubSelect { get; set; }
 
@@ -235,7 +235,7 @@ namespace CodeHelper.Core.Parse.ParseResults.Sparqls
 
     }
 
-    public class GroupClause
+    public class GroupClause : TokenPair
     {
         public List<GroupCondition> GroupConditions { get; set; }
         public GroupClause()
@@ -244,7 +244,7 @@ namespace CodeHelper.Core.Parse.ParseResults.Sparqls
         }
     }
 
-    public class HavingClause
+    public class HavingClause : TokenPair
     {
         public List<HavingCondition> HavingConditions { get; set; }
         public HavingClause()
@@ -253,7 +253,7 @@ namespace CodeHelper.Core.Parse.ParseResults.Sparqls
         }
     }
 
-    public class OrderClause
+    public class OrderClause : TokenPair
     {
         public List<OrderCondition> OrderConditions { get; set; }
 
@@ -263,21 +263,21 @@ namespace CodeHelper.Core.Parse.ParseResults.Sparqls
         }
     }
 
-    public class OrderCondition
+    public class OrderCondition : TokenPair
     {
     }
 
-    public class LimitOffsetClauses
+    public class LimitOffsetClauses : TokenPair
     {
         public LimitClause LimitClause { get; set; }
         public OffsetClause OffsetClause { get; set; }
 
     }
-    public class GroupCondition
+    public class GroupCondition : TokenPair
     {
         public Constraint Constraint { get; set; }
     }
-    public class BuiltInCall
+    public class BuiltInCall : TokenPair
     {
         public Aggregate Aggregate { get; set; }
         public SubstringExpression SubstringExpression { get; set; }
@@ -295,18 +295,18 @@ namespace CodeHelper.Core.Parse.ParseResults.Sparqls
         }
     }
 
-    public class FunctionCall
+    public class FunctionCall : TokenPair
     {
         public Iri Iri { get; set; }
         public ArgList ArgList { get; set; }
     }
 
-    public class HavingCondition
+    public class HavingCondition : TokenPair
     {
         public Constraint Constraint { get; set; }
     }
 
-    public class Constraint
+    public class Constraint : TokenPair
     {
         /// <summary>
         /// 排他存在
@@ -322,22 +322,22 @@ namespace CodeHelper.Core.Parse.ParseResults.Sparqls
         public FunctionCall FunctionCall { get; set; }
 
     }
-    public class BrackettedExpression
+    public class BrackettedExpression : TokenPair
     {
         public Expression Expression { get; set; }
     }
 
-    public class LimitClause
+    public class LimitClause : TokenPair
     {
         public int Limit { get; set; }
     }
 
-    public class OffsetClause
+    public class OffsetClause : TokenPair
     {
         public int Offset { get; set; }
     }
 
-    public class DataBlock
+    public class DataBlock : TokenPair
     {
         /// <summary>
         /// 排他存在
@@ -349,7 +349,7 @@ namespace CodeHelper.Core.Parse.ParseResults.Sparqls
         public InlineDataFull InlineDataFull { get; set; }
     }
 
-    public class Update1
+    public class Update1 : TokenPair
     {
         public Load Load { get; set; }
         public Clear Clear { get; set; }
@@ -364,30 +364,30 @@ namespace CodeHelper.Core.Parse.ParseResults.Sparqls
         public Modify Modify { get; set; }
     }
 
-    public class Load
+    public class Load : TokenPair
     {
         public bool HasSILENT { get; set; }
         public Iri Iri { get; set; }
         public GraphRef GraphRef { get; set; }
     }
-    public class Clear
+    public class Clear : TokenPair
     {
         public bool HasSILENT { get; set; }
         public GraphRefAll graphRefAll { get; set; }
 
     }
-    public class Drop
+    public class Drop : TokenPair
     {
         public bool HasSILENT { get; set; }
         public GraphRefAll GraphRefAll { get; set; }
     }
-    public class Create
+    public class Create : TokenPair
     {
         public bool HasSILENT { get; set; }
         public GraphRef GraphRef { get; set; }
     }
 
-    public class Add
+    public class Add : TokenPair
     {
         public bool HasSILENT { get; set; }
         public GraphOrDefault graphOrDefault_from { get; set; }
@@ -395,36 +395,36 @@ namespace CodeHelper.Core.Parse.ParseResults.Sparqls
 
     }
 
-    public class Move
+    public class Move : TokenPair
     {
         public bool HasSILENT { get; set; }
         public GraphOrDefault GraphOrDefault_From { get; set; }
         public GraphOrDefault GraphOrDefault_To { get; set; }
     }
 
-    public class Copy
+    public class Copy : TokenPair
     {
         public bool HasSILENT { get; set; }
         public GraphOrDefault GraphOrDefault_From { get; set; }
         public GraphOrDefault GraphOrDefault_To { get; set; }
     }
- 
-    public class InsertData
+
+    public class InsertData : TokenPair
     {
         public QuadData QuadData { get; set; }
     }
 
-    public class DeleteData
+    public class DeleteData : TokenPair
     {
         public QuadData QuadData { get; set; }
     }
 
-    public class DeleteWhere
+    public class DeleteWhere : TokenPair
     {
         public QuadPattern QuadPattern { get; set; }
     }
 
-    public class Modify
+    public class Modify : TokenPair
     {
         public Iri Iri_With;
 
@@ -433,11 +433,11 @@ namespace CodeHelper.Core.Parse.ParseResults.Sparqls
         public UsingClause UsingClause { get; set; }
         public GroupGraphPattern GroupGraphPattern { get; set; }
     }
-    public class GraphRef
+    public class GraphRef : TokenPair
     {
         public Iri Iri { get; set; }
     }
-    public class GraphRefAll
+    public class GraphRefAll : TokenPair
     {
         public GraphRef GraphRef { get; set; }
         public bool Is_DEFAULT { get; set; }
@@ -446,60 +446,60 @@ namespace CodeHelper.Core.Parse.ParseResults.Sparqls
 
     }
 
-    public class GraphOrDefault
+    public class GraphOrDefault : TokenPair
     {
         public bool Is_DEFAULT { get; set; }
         public Iri Iri { get; set; }
     }
 
-    public class QuadData
+    public class QuadData : TokenPair
     {
         public Quads Quads { get; set; }
     }
 
-    public class QuadPattern
+    public class QuadPattern : TokenPair
     {
         public Quads Quads { get; set; }
     }
-    public class DeleteClause
+    public class DeleteClause : TokenPair
     {
         public QuadPattern QuadPattern { get; set; }
     }
-    public class InsertClause
+    public class InsertClause : TokenPair
     {
         public QuadPattern QuadPattern { get; set; }
     }
 
-    public class UsingClause
+    public class UsingClause : TokenPair
     {
         public Iri Iri { get; set; }
     }
 
-    public class Quads
+    public class Quads : TokenPair
     {
         public List<TriplesTemplate> TriplesTemplates { get; set; }
         public List<QuadsNotTriples> QuadsNotTriples { get; set; }
 
     }
-    public class QuadsNotTriples
+    public class QuadsNotTriples : TokenPair
     {
         public VarOrIri VarOrIri { get; set; }
         public TriplesTemplate TriplesTemplate { get; set; }
     }
 
-    public class GroupGraphPatternSub
+    public class GroupGraphPatternSub : TokenPair
     {
         public List<TriplesBlock> TriplesBlocks { get; set; }
         public List<GraphPatternNotTriples> GraphPatternNotTriples { get; set; }
     }
 
-    public class TriplesBlock
+    public class TriplesBlock : TokenPair
     {
         public TriplesSameSubjectPath TriplesSameSubjectPath { get; set; }
         public TriplesBlock TriplesBlock0 { get; set; }
     }
 
-    public class GraphPatternNotTriples
+    public class GraphPatternNotTriples : TokenPair
     {
         /// <summary>
         /// 排他存在
@@ -541,43 +541,43 @@ namespace CodeHelper.Core.Parse.ParseResults.Sparqls
         /// </summary>
         public InlineData InlineData { get; set; }        
     }
-    public class OptionalGraphPattern
+    public class OptionalGraphPattern : TokenPair
     {
         public GroupGraphPattern GroupGraphPattern { get; set; }
     }
-    public class GraphGraphPattern
+    public class GraphGraphPattern : TokenPair
     {
         public VarOrIri VarOrIri { get; set; }
         public GroupGraphPattern GroupGraphPattern { get; set; }
     }
-    public class ServiceGraphPattern
+    public class ServiceGraphPattern : TokenPair
     {
         public bool HasSILENT { get; set; }
         public VarOrIri VarOrIri { get; set; }
         public GroupGraphPattern GroupGraphPattern { get; set; }
     }
-    public class Bind
+    public class Bind : TokenPair
     {
         public Expression Expression { get; set; }
         public string Var { get; set; }
     }
-    public class InlineData
+    public class InlineData : TokenPair
     {
         public DataBlock DataBlock { get; set; }
 
     }
-    public class InlineDataOneVar
+    public class InlineDataOneVar : TokenPair
     {
         public string Var { get; set; }
         public List<DataBlockValue> DataBlockValues { get; set; }
     }
-    public class InlineDataFull
+    public class InlineDataFull : TokenPair
     {
         public string NIL { get; set; }
         public List<string> Vars { get; set; }
         public List<DataBlockValue> DataBlockValues { get; set; }
     }
-    public class DataBlockValue
+    public class DataBlockValue : TokenPair
     {
         /// <summary>
         /// 排他存在
@@ -604,35 +604,35 @@ namespace CodeHelper.Core.Parse.ParseResults.Sparqls
         /// </summary>
         public bool Is_UNDEF { get; set; }
     }
-    public class MinusGraphPattern
+    public class MinusGraphPattern : TokenPair
     {
         public GroupGraphPattern GroupGraphPattern { get; set; }
     }
-    public class GroupOrUnionGraphPattern
+    public class GroupOrUnionGraphPattern : TokenPair
     {
         public List<GroupGraphPattern> GroupGraphPatterns { get; set; }
     }
-    public class Filter
+    public class Filter : TokenPair
     {
         public Constraint Constraint { get; set; }
     }
-    public class ArgList
+    public class ArgList : TokenPair
     {
         public bool Is_NIL { get; set; }
         public bool Is_DISTINCT { get; set; }
         public List<Expression> Expressions { get; set; }
     }
-    public class ExpressionList
+    public class ExpressionList : TokenPair
     {
         public bool Is_NIL { get; set; }        
         public List<Expression> Expressions { get; set; }
     }
-    public class ConstructTriples
+    public class ConstructTriples : TokenPair
     {
         public TriplesSameSubject TriplesSameSubject { get; set; }
         public ConstructTriples ConstructTriples0 { get; set; }
     }
-    public class TriplesSameSubject
+    public class TriplesSameSubject : TokenPair
     {
         public VarOrTerm VarOrTerm { get; set; }
         public PropertyListNotEmpty PropertyListNotEmpty { get; set; }
@@ -640,25 +640,25 @@ namespace CodeHelper.Core.Parse.ParseResults.Sparqls
         public TriplesNode TriplesNode { get; set; }
         public PropertyList PropertyList { get; set; }
     }
-    public class PropertyList
+    public class PropertyList : TokenPair
     {
         public PropertyListNotEmpty PropertyListNotEmpty { get; set; }
     }
-    public class PropertyListNotEmpty
+    public class PropertyListNotEmpty : TokenPair
     {
         public List<Verb> Verbs { get; set; }
         public List<ObjectList> ObjectLists { get; set; }
     }
-    public class ObjectList
+    public class ObjectList : TokenPair
     {
         public List<Object> Objects { get; set; }
 
     }
-    public class Object
+    public class Object : TokenPair
     {
         public GraphNode GraphNode { get; set; }
     }
-    public class TriplesSameSubjectPath
+    public class TriplesSameSubjectPath : TokenPair
     {
         public VarOrTerm VarOrTerm { get; set; }
         public PropertyListPathNotEmpty PropertyListPathNotEmpty { get; set; }
@@ -666,11 +666,11 @@ namespace CodeHelper.Core.Parse.ParseResults.Sparqls
         public TriplesNodePath TriplesNodePath { get; set; }
         public PropertyListPath PropertyListPath { get; set; }
     }
-    public class PropertyListPath
+    public class PropertyListPath : TokenPair
     {
         public PropertyListPathNotEmpty PropertyListPathNotEmpty { get; set; }
     }
-    public class PropertyListPathNotEmpty
+    public class PropertyListPathNotEmpty : TokenPair
     {
         public List<VerbPath> VerbPaths { get; set; }
         public List<VerbSimple> VerbSimples { get; set; }
@@ -684,15 +684,15 @@ namespace CodeHelper.Core.Parse.ParseResults.Sparqls
             this.ObjectLists = new List<ObjectList>();
         }
     }
-    public class VerbPath
+    public class VerbPath : TokenPair
     {
         public Path Path { get; set; }
     }
-    public class VerbSimple
+    public class VerbSimple : TokenPair
     {
         public Var Var { get; set; }
     }
-    public class ObjectListPath
+    public class ObjectListPath : TokenPair
     {
         public List<ObjectPath> ObjectPaths { get; set; }
         public ObjectListPath()
@@ -700,15 +700,15 @@ namespace CodeHelper.Core.Parse.ParseResults.Sparqls
             this.ObjectPaths = new List<ObjectPath>();
         }
     }
-    public class ObjectPath
+    public class ObjectPath : TokenPair
     {
         public GraphNodePath GraphNodePath { get; set; }
     }
-    public class Path
+    public class Path : TokenPair
     {
         public PathAlternative PathAlternative { get; set; }
     }
-    public class PathAlternative
+    public class PathAlternative : TokenPair
     {
         public List<PathSequence> PathSequences { get; set; }
         public PathAlternative()
@@ -716,7 +716,7 @@ namespace CodeHelper.Core.Parse.ParseResults.Sparqls
             this.PathSequences = new List<PathSequence>();
         }
     }
-    public class PathSequence
+    public class PathSequence : TokenPair
     {
         public List<PathEltOrInverse> PathEltOrInverses { get; set; }
         public PathSequence()
@@ -724,30 +724,30 @@ namespace CodeHelper.Core.Parse.ParseResults.Sparqls
             this.PathEltOrInverses = new List<PathEltOrInverse>();
         }
     }
-    public class PathElt
+    public class PathElt : TokenPair
     {
         public PathPrimary PathPrimary { get; set; }
         public PathMod PathMod { get; set; }
     }
-    public class PathEltOrInverse
+    public class PathEltOrInverse : TokenPair
     {
         public PathElt PathElt { get; set; }
     }
-    public class PathMod
+    public class PathMod : TokenPair
     {
         /// <summary>
         /// '?' | '*' | '+'
         /// </summary>
         public string Mod { get; set; }
     }
-    public class PathPrimary
+    public class PathPrimary : TokenPair
     {
         public Iri Iri { get; set; }
         public bool IsA { get; set; }
         public PathNegatedPropertySet PathNegatedPropertySet { get; set; }
         public Path Path { get; set; }
     }
-    public class PathNegatedPropertySet
+    public class PathNegatedPropertySet : TokenPair
     {
         public List<PathOneInPropertySet> PathOneInPropertySets { get; set; }
         public PathNegatedPropertySet()
@@ -755,7 +755,7 @@ namespace CodeHelper.Core.Parse.ParseResults.Sparqls
             this.PathOneInPropertySets = new List<PathOneInPropertySet>();
         }
     }
-    public class PathOneInPropertySet
+    public class PathOneInPropertySet : TokenPair
     {
         public Iri Iri { get; set; }
         public bool IsA { get; set; }
@@ -764,11 +764,11 @@ namespace CodeHelper.Core.Parse.ParseResults.Sparqls
         /// </summary>
         public bool HasNot { get; set; }
     }
-    public class Integer
+    public class Integer : TokenPair
     {
         public string INTEGER { get; set; }
     }
-    public class TriplesNode
+    public class TriplesNode : TokenPair
     {
         /// <summary>
         /// 排他存在
@@ -780,11 +780,11 @@ namespace CodeHelper.Core.Parse.ParseResults.Sparqls
         /// </summary>
         public BlankNodePropertyList BlankNodePropertyList { get; set; }
     }
-    public class BlankNodePropertyList
+    public class BlankNodePropertyList : TokenPair
     {
         public PropertyListNotEmpty PropertyListNotEmpty { get; set; }
     }
-    public class TriplesNodePath
+    public class TriplesNodePath : TokenPair
     {
         /// <summary>
         /// 排他存在
@@ -797,11 +797,11 @@ namespace CodeHelper.Core.Parse.ParseResults.Sparqls
         public BlankNodePropertyListPath BlankNodePropertyListPath { get; set; }
 
     }
-    public class BlankNodePropertyListPath
+    public class BlankNodePropertyListPath : TokenPair
     {
         public PropertyListPathNotEmpty PropertyListPathNotEmpty { get; set; }
     }
-    public class Collection
+    public class Collection : TokenPair
     {
         public List<GraphNode> GraphNodes { get; set; }
 
@@ -810,7 +810,7 @@ namespace CodeHelper.Core.Parse.ParseResults.Sparqls
             this.GraphNodes = new List<GraphNode>();
         }
     }
-    public class CollectionPath
+    public class CollectionPath : TokenPair
     {
         public List<GraphNodePath> GraphNodePaths { get; set; }
         public CollectionPath()
@@ -818,7 +818,7 @@ namespace CodeHelper.Core.Parse.ParseResults.Sparqls
             this.GraphNodePaths = new List<GraphNodePath>();
         }
     }
-    public class GraphNode
+    public class GraphNode : TokenPair
     {
 
         /// <summary>
@@ -831,7 +831,7 @@ namespace CodeHelper.Core.Parse.ParseResults.Sparqls
         /// </summary>
         public TriplesNode TriplesNode { get; set; }
     }
-    public class GraphNodePath
+    public class GraphNodePath : TokenPair
     {
 
         /// <summary>
@@ -844,7 +844,7 @@ namespace CodeHelper.Core.Parse.ParseResults.Sparqls
         /// </summary>
         public TriplesNodePath TriplesNodePath { get; set; }
     }
-    public class VarOrTerm
+    public class VarOrTerm : TokenPair
     {
         /// <summary>
         /// 排他存在
@@ -856,7 +856,7 @@ namespace CodeHelper.Core.Parse.ParseResults.Sparqls
         /// </summary>
         public GraphTerm GraphTerm { get; set; }
     }
-    public class VarOrIri
+    public class VarOrIri : TokenPair
     {
         /// <summary>
         /// 排他存在
@@ -869,7 +869,7 @@ namespace CodeHelper.Core.Parse.ParseResults.Sparqls
         public Iri Iri { get; set; }
     }
 
-    public class GraphTerm
+    public class GraphTerm : TokenPair
     {
         /// <summary>
         /// 排他存在
@@ -902,7 +902,7 @@ namespace CodeHelper.Core.Parse.ParseResults.Sparqls
         public string NIL { get; set; }
     }
 
-    public class ConditionalOrExpression
+    public class ConditionalOrExpression : TokenPair
     {
         public List<ConditionalAndExpression> ConditionalAndExpressions { get; set; }
 
@@ -912,7 +912,7 @@ namespace CodeHelper.Core.Parse.ParseResults.Sparqls
         }
     }
 
-    public class ConditionalAndExpression
+    public class ConditionalAndExpression : TokenPair
     {
         public List<ValueLogical> ValueLogicals { get; set; }
 
@@ -921,11 +921,11 @@ namespace CodeHelper.Core.Parse.ParseResults.Sparqls
             this.ValueLogicals = new List<ValueLogical>();
         }
     }
-    public class ValueLogical
+    public class ValueLogical : TokenPair
     {
         public RelationalExpression RelationalExpression { get; set; }
     }
-    public class RelationalExpression
+    public class RelationalExpression : TokenPair
     {
         public List<NumericExpression> NumericExpression { get; set; }
         public ExpressionList ExpressionList { get; set; }
@@ -940,11 +940,11 @@ namespace CodeHelper.Core.Parse.ParseResults.Sparqls
         public bool Is_NotIn { get; set; }
     }
 
-    public class NumericExpression
+    public class NumericExpression : TokenPair
     {
         public AdditiveExpression AdditiveExpression { get; set; }
     }
-    public class AdditiveExpression
+    public class AdditiveExpression : TokenPair
     {
         public List<MultiplicativeExpression> MultiplicativeExpressions { get; set; }
         public bool Is_Add { get; set; }
@@ -961,7 +961,7 @@ namespace CodeHelper.Core.Parse.ParseResults.Sparqls
         }
     }
 
-    public class AdditiveExpressionMulti
+    public class AdditiveExpressionMulti : TokenPair
     {
         public NumericLiteralPositive NnumericLiteralPositive { get; set; }
         public NumericLiteralNegative NumericLiteralNegative { get; set; }
@@ -973,13 +973,13 @@ namespace CodeHelper.Core.Parse.ParseResults.Sparqls
         }
     }
 
-    public class MultiplicativeExpressionItem
+    public class MultiplicativeExpressionItem : TokenPair
     {
         public bool Is_MULTIPLY { get; set; }
         public bool Is_DIVISION { get; set; }
     }
 
-    public class MultiplicativeExpression
+    public class MultiplicativeExpression : TokenPair
     {
         public UnaryExpression UnaryExpression { get; set; }
         public List<MultiplicativeExpressionItem> MultiplicativeExpressionItems { get; set; }
@@ -990,14 +990,14 @@ namespace CodeHelper.Core.Parse.ParseResults.Sparqls
         }
     }
 
-    public class UnaryExpression
+    public class UnaryExpression : TokenPair
     {
         public bool Is_Not { get; set; }
         public bool IS_Add { get; set; }
         public bool IS_Substraction { get; set; }
         public PrimaryExpression PrimaryExpression { get; set; }
     }
-    public class PrimaryExpression
+    public class PrimaryExpression : TokenPair
     {
         public BrackettedExpression BrackettedExpression { get; set; }
         public BuiltInCall BuiltInCall { get; set; }
@@ -1007,7 +1007,7 @@ namespace CodeHelper.Core.Parse.ParseResults.Sparqls
         public BooleanLiteral BooleanLiteral { get; set; }
         public Var Var { get; set; }
     }
-    public class RegexExpression
+    public class RegexExpression : TokenPair
     {
         public List<Expression> Expressions { get; set; }
         public RegexExpression()
@@ -1015,7 +1015,7 @@ namespace CodeHelper.Core.Parse.ParseResults.Sparqls
             this.Expressions = new List<Expression>();
         }
     }
-    public class SubstringExpression
+    public class SubstringExpression : TokenPair
     {
         public List<Expression> Expressions { get; set; }
         public SubstringExpression()
@@ -1024,7 +1024,7 @@ namespace CodeHelper.Core.Parse.ParseResults.Sparqls
         }
     }
 
-    public class StrReplaceExpression
+    public class StrReplaceExpression : TokenPair
     {
         public List<Expression> Expressions { get; set; }
         public StrReplaceExpression()
@@ -1033,16 +1033,16 @@ namespace CodeHelper.Core.Parse.ParseResults.Sparqls
         }
     }
 
-    public class ExistsFunc
+    public class ExistsFunc : TokenPair
     {
         public GroupGraphPattern GroupGraphPattern { get; set; }
 
     }
-    public class NotExistsFunc
+    public class NotExistsFunc : TokenPair
     {
         public GroupGraphPattern GroupGraphPattern { get; set; }
     }
-    public class Aggregate
+    public class Aggregate : TokenPair
     {
         public bool Is_COUNT { get; set; }
         public bool Is_DISTINCT { get; set; }
@@ -1057,24 +1057,24 @@ namespace CodeHelper.Core.Parse.ParseResults.Sparqls
         public Expression Expression { get; set; }
         public string String { get; set; }
     }
-    public class IriOrFunction
+    public class IriOrFunction : TokenPair
     {
         public Iri iri { get; set; }
         public ArgList argList { get; set; }
     }
-    public class RDFLiteral
+    public class RDFLiteral : TokenPair
     {
         public string String { get; set; }
         public string LANGTAG { get; set; }
         public Iri Iri { get; set; }
     }
-    public class NumericLiteral
+    public class NumericLiteral : TokenPair
     {
         public NumericLiteralUnsigned NumericLiteralUnsigned { get; set; }
         public NumericLiteralPositive NumericLiteralPositive { get; set; }
         public NumericLiteralNegative NumericLiteralNegative { get; set; }
     }
-    public class NumericLiteralUnsigned
+    public class NumericLiteralUnsigned : TokenPair
     {
         public bool Is_INTEGER { get; set; }
         public bool Is_DECIMAL { get; set; }
@@ -1082,7 +1082,7 @@ namespace CodeHelper.Core.Parse.ParseResults.Sparqls
 
         public string Value { get; set; }
     }
-    public class NumericLiteralPositive
+    public class NumericLiteralPositive : TokenPair
     {
         public bool Is_INTEGER_POSITIVE { get; set; }
         public bool Is_DECIMAL_POSITIVE { get; set; }
@@ -1090,7 +1090,7 @@ namespace CodeHelper.Core.Parse.ParseResults.Sparqls
 
         public string Value { get; set; }
     }
-    public class NumericLiteralNegative
+    public class NumericLiteralNegative : TokenPair
     {
         public bool Is_INTEGER_NEGATIVE { get; set; }
         public bool Is_DECIMAL_NEGATIVE { get; set; }
@@ -1098,11 +1098,11 @@ namespace CodeHelper.Core.Parse.ParseResults.Sparqls
 
         public string Value { get; set; }
     }
-    public class BooleanLiteral
+    public class BooleanLiteral : TokenPair
     {
         public bool Value { get; set; }
     }
-    public class String
+    public class String : TokenPair
     {
         public bool Is_STRING_LITERAL1{get;set;}
         public bool Is_STRING_LITERAL2 { get; set; }
@@ -1111,14 +1111,14 @@ namespace CodeHelper.Core.Parse.ParseResults.Sparqls
 
         public string Value { get; set; }
     }
-    public class PrefixedName
+    public class PrefixedName : TokenPair
     {
         public bool Is_PNAME_LN { get; set; }
         public bool Is_PNAME_NS { get; set; }
 
         public string Value { get; set; }
     }
-    public class BlankNode
+    public class BlankNode : TokenPair
     {
         public bool Is_BLANK_NODE_LABEL { get; set; }
         public bool Is_ANON { get; set; }

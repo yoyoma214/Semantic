@@ -37,15 +37,20 @@ namespace CodeHelper.Core.Parse.ParseResults.Antlrs
         public List<ModeSpec> ModeSpecs { get; set; }
         public List<ParseErrorInfo> Errors { get; set; }
 
+        public static String GrammarName { get; set; }
+
         public GrammarSpec()
         {
             this.ModeSpecs = new List<ModeSpec>();
             this.PrequelConstructs = new List<PrequelConstruct>();
             this.Errors = new List<ParseErrorInfo>();
+            
         }
 
         public void Parse()
         {
+            GrammarName = this.Id.TOKEN_REF;
+
             Rules.Parse();
         }
 
@@ -69,7 +74,20 @@ namespace CodeHelper.Core.Parse.ParseResults.Antlrs
             //{
             //    rule.g
             //}
+            builder.AppendFormatLine(@"using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using Antlr4.Runtime.Misc;
+
+namespace CodeHelper.Core.Parse.ParseResults.{0}s",GenHelper.GetClassName(this.Id.TOKEN_REF));
+            builder.IncreaseIndentLine("{");            
+            builder.AppendFormatLine("class {0}Visitor : {0}BaseVisitor<int>",GenHelper.GetClassName(this.Id.TOKEN_REF));
+            builder.IncreaseIndentLine("{");
+            builder.AppendFormatLine("StackUtil stack = new StackUtil();");
             Rules.GenVisitJava(builder);
+            builder.DecreaseIndentLine("}");
+            builder.DecreaseIndentLine("}");
         }
     }
 
@@ -390,7 +408,8 @@ namespace CodeHelper.Core.Parse.ParseResults.Antlrs
 
         public void GenVisitJava(IndentStringBuilder builder)
         {
-            this.ParserRuleSpec.GenVisitJava(builder);
+            if (ParserRuleSpec != null)
+                this.ParserRuleSpec.GenVisitJava(builder);
         }
     }
 
@@ -471,7 +490,51 @@ namespace CodeHelper.Core.Parse.ParseResults.Antlrs
 
         public void GenVisitJava(IndentStringBuilder builder)
         {
-            //this.ParserRuleSpec.GenVisitJava(builder);
+            //this.ParserRuleSpec.GenVisitJava(builder);          
+            var ruleVar = GenHelper.GetVarName(this.RULE_REF);
+            var ruleClazz =  GenHelper.GetClassName(this.RULE_REF);
+            builder.AppendFormatLine("public override int Visit{0}([NotNull] {1}Parser.{0}Context context)",
+                ruleClazz , GenHelper.GetClassName(GrammarSpec.GrammarName));
+            builder.IncreaseIndentLine("{");
+            builder.AppendFormatLine("var {0} = this.stack.PeekCtx<{1}>();", ruleVar, ruleClazz);
+            builder.AppendFormatLine("{0}.Parse(context);", GenHelper.GetVarName(this.RULE_REF));
+            builder.AppendLine();
+
+            foreach (var rule in this.RuleInfos)
+            {
+                var subRuleVar = GenHelper.GetVarName(rule.Rule);
+                var subRuleClazz = GenHelper.GetClassName(rule.Rule);
+
+                if (rule.IsList)
+                {
+                    builder.AppendFormatLine("var {0}Ctxs = context.{0}();", subRuleVar);
+                    builder.AppendFormatLine("foreach(var ctx in {0}Ctxs)", subRuleVar);
+                    builder.IncreaseIndentLine("{");
+                    builder.AppendFormatLine("var {0} = new {1}();",subRuleVar, subRuleClazz);
+                    builder.AppendFormatLine("{0}.{1}s.Add({2});", ruleVar,subRuleClazz, subRuleVar);
+                    builder.AppendFormatLine("this.stack.Push({0});", subRuleVar);
+                    builder.AppendFormatLine("this.Visit(ctx);", subRuleVar);
+                    builder.AppendFormatLine("this.stack.Pop();");
+                    builder.Decrease("}");
+                }
+                else
+                {
+                    builder.AppendFormatLine("var {0}Ctx = context.{0}();", subRuleVar);
+                    builder.AppendFormatLine("if ({0}Ctx != null)", subRuleVar);
+                    builder.IncreaseIndentLine("{");
+                    builder.AppendFormatLine("{0}.{1} = new {1}();", ruleVar, subRuleClazz);
+                    builder.AppendFormatLine("this.stack.Push({0}.{1});", ruleVar, subRuleClazz);
+                    builder.AppendFormatLine("this.Visit({0}Ctx);", subRuleVar);
+                    builder.AppendFormatLine("this.stack.Pop();");
+                    builder.Decrease("}");
+                }
+                builder.AppendLine();
+                builder.AppendLine();
+            }
+            builder.AppendLine("return 0;");
+            builder.Decrease("}");
+            builder.AppendLine();
+            builder.AppendLine();
         }
     }
 
@@ -756,6 +819,8 @@ namespace CodeHelper.Core.Parse.ParseResults.Antlrs
 
     public class LexerRule : TokenPair
     {
+        public LexerRuleBlock LexerRuleBlock { get; set; }
+
         public string Text { get; set; }
 
         public void Parse()
@@ -773,16 +838,26 @@ namespace CodeHelper.Core.Parse.ParseResults.Antlrs
         }
     }
 
-    public class lexerRuleBlock : TokenPair
+    public class LexerRuleBlock : TokenPair
     {
+        public LexerAltList LexerAltList { get; set; }
     }
 
     public class LexerAltList : TokenPair
     {
+        public List<LexerAlt> LexerAlts { get; set; }
+
+        public LexerAltList()
+        {
+            this.LexerAlts = new List<LexerAlt>();
+        }
+
     }
 
     public class LexerAlt : TokenPair
     {
+        public LexerElements LexerElements { get; set; }
+        public LexerCommands LexerCommands { get; set; }
     }
 
 
@@ -808,27 +883,46 @@ namespace CodeHelper.Core.Parse.ParseResults.Antlrs
 
     public class LabeledLexerElement : TokenPair
     {
+        public Id Id { get; set; }
+
+        public LexerAtom LexerAtom { get; set; }
+
+        public Block Block { get; set; }
+
     }
 
 
     public class LexerBlock : TokenPair
     {
+        public LexerAltList LexerAltList { get; set; }
     }
 
     public class LexerCommands : TokenPair
     {
+        public List<LexerCommand> LexerCommands0 { get; set; }
+        
+        public LexerCommands()
+        {
+            this.LexerCommands0 = new List<LexerCommand>();
+        }
     }
 
     public class LexerCommand : TokenPair
     {
+        public LexerCommandName LexerCommandName { get; set; }
+        public LexerCommandExpr LexerCommandExpr { get; set; }
     }
 
     public class LexerCommandName : TokenPair
     {
+        public Id Id { get; set; }
+        public string Mode { get; set; }
     }
 
     public class LexerCommandExpr : TokenPair
     {
+        public Id Id { get; set; }
+        public string INT { get; set; }
     }
 
     public class AltList : TokenPair
