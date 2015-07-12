@@ -19,7 +19,8 @@ namespace CodeHelper.Core.Services
             Turtle,
             File,
             SourceDirectory,
-            Antlr4
+            Antlr4,
+            Sparql
         }
 
         public static class Extenstions
@@ -31,6 +32,7 @@ namespace CodeHelper.Core.Services
             public const string WorkFlow_Extension = ".wf";
             public const string Turtle_Extension = ".turtle";
             public const string Antlr4_Extension = ".g4";
+            public const string Sparql_Extension = ".sparql";
         }
 
         public static class Commands
@@ -72,6 +74,9 @@ namespace CodeHelper.Core.Services
 
             public const string OpenAntlr4Model = "OpenAntlr4Model";
             public const string NewAntlr4Model = "NewAntlr4Model";
+
+            public const string OpenSparqlModel = "OpenSparqlModel";
+            public const string NewSparqlModel = "NewSparqlModel";
         }
     }
 }

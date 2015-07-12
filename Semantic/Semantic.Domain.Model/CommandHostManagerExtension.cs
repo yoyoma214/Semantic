@@ -9,6 +9,7 @@ using CodeHelper.Commands.XmlModel;
 using CodeHelper.Commands.ViewModel;
 using CodeHelper.Commands.WorkFlow;
 using CodeHelper.Commands.TurtleModel;
+using CodeHelper.Commands.SparqlModel;
 
 namespace CodeHelper.Domain.Model
 {
@@ -86,6 +87,19 @@ namespace CodeHelper.Domain.Model
                 return;
             }
 
+            if (extension == Dict.Extenstions.Sparql_Extension)
+            {
+                var host = CommandHostManager.Instance().Get(CommandHostManager.HostType.OWL);
+
+                var cmd = host.GetCommand(Dict.Commands.OpenSparqlModel)
+                     as OpenSparqlModelCommand;
+
+                cmd.File = file;
+
+                cmd.Execute();
+
+                return;
+            }
             throw new Exception("在打开不支持的文件");
         }
     }

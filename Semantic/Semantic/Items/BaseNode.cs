@@ -236,6 +236,7 @@ namespace CodeHelper.Items
             BaseNode parent = this.Parent;
             this.Parent = null;
             parent.OnRefresh(sender, args);
+           
         }
 
         protected virtual void OnRefresh(object sender, EventArgs args)

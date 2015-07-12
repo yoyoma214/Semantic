@@ -80,6 +80,12 @@ namespace CodeHelper.AssembleLayer
                 model.File = file;
                 controller = new Antlr4ModelEditorController();
             }
+            if (extension == Dict.Extenstions.Sparql_Extension)
+            {
+                editor = new SparqlModelEditor();
+                model.File = file;
+                controller = new SparqlModelEditorController();
+            }
             var context = new EditorContext();
             context.EditorContainer = editor;
             context.Model = model;

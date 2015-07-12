@@ -2,12 +2,20 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using CodeHelper.Core.Error;
 
 namespace CodeHelper.Core.Parse.ParseResults.Sparqls
 {
     public class QueryUnit:TokenPair
     {
         public Query Query { get; set; }
+
+        public List<ParseErrorInfo> Errors { get; set; }
+
+        public QueryUnit()
+        {
+            this.Errors = new List<ParseErrorInfo>();
+        }
     }
 
     public class Query : TokenPair
@@ -223,7 +231,7 @@ namespace CodeHelper.Core.Parse.ParseResults.Sparqls
     public class Iri : TokenPair
     {
         public string IRIREF { get; set; }
-        public PrefixedName PprefixedName { get; set; }
+        public PrefixedName PrefixedName { get; set; }
 
     }
 
@@ -265,6 +273,9 @@ namespace CodeHelper.Core.Parse.ParseResults.Sparqls
 
     public class OrderCondition : TokenPair
     {
+        public BrackettedExpression BrackettedExpression { get; set; }
+        public Constraint Constraint { get; set; }
+        public Var Var { get; set; }
     }
 
     public class LimitOffsetClauses : TokenPair
@@ -276,6 +287,10 @@ namespace CodeHelper.Core.Parse.ParseResults.Sparqls
     public class GroupCondition : TokenPair
     {
         public Constraint Constraint { get; set; }
+        public BuiltInCall BuiltInCall { get; set; }
+        public FunctionCall FunctionCall { get; set; }
+        public Expression Expression { get; set; }
+        public Var Var { get; set; }        
     }
     public class BuiltInCall : TokenPair
     {
@@ -285,6 +300,7 @@ namespace CodeHelper.Core.Parse.ParseResults.Sparqls
         public RegexExpression RegexExpression { get; set; }
         public ExistsFunc ExistsFunc { get; set; }
         public NotExistsFunc NotExistsFunc { get; set; }
+        public Var Var { get; set; }
 
         public List<Expression> Expressions { get; set; }
         public ExpressionList ExpressionList { get; set; }
@@ -373,7 +389,7 @@ namespace CodeHelper.Core.Parse.ParseResults.Sparqls
     public class Clear : TokenPair
     {
         public bool HasSILENT { get; set; }
-        public GraphRefAll graphRefAll { get; set; }
+        public GraphRefAll GraphRefAll { get; set; }
 
     }
     public class Drop : TokenPair
@@ -390,23 +406,32 @@ namespace CodeHelper.Core.Parse.ParseResults.Sparqls
     public class Add : TokenPair
     {
         public bool HasSILENT { get; set; }
-        public GraphOrDefault graphOrDefault_from { get; set; }
-        public GraphOrDefault graphOrDefault_to { get; set; }
-
+        public List<GraphOrDefault> GraphOrDefaults { get; set; }
+        public Add()
+        {
+            this.GraphOrDefaults = new List<GraphOrDefault>();
+        }
     }
 
     public class Move : TokenPair
     {
         public bool HasSILENT { get; set; }
-        public GraphOrDefault GraphOrDefault_From { get; set; }
-        public GraphOrDefault GraphOrDefault_To { get; set; }
+        public List<GraphOrDefault> GraphOrDefaults { get; set; }
+        //public GraphOrDefault GraphOrDefault_To { get; set; }
+        public Move()
+        {
+            this.GraphOrDefaults = new List<GraphOrDefault>();
+        }
     }
 
     public class Copy : TokenPair
     {
         public bool HasSILENT { get; set; }
-        public GraphOrDefault GraphOrDefault_From { get; set; }
-        public GraphOrDefault GraphOrDefault_To { get; set; }
+        public List<GraphOrDefault> GraphOrDefaults { get; set; }
+        public Copy()
+        {
+            this.GraphOrDefaults = new List<GraphOrDefault>();
+        }
     }
 
     public class InsertData : TokenPair
@@ -426,12 +451,17 @@ namespace CodeHelper.Core.Parse.ParseResults.Sparqls
 
     public class Modify : TokenPair
     {
-        public Iri Iri_With;
+        public Iri Iri;
 
         public DeleteClause DeleteClause { get; set; }
         public InsertClause InsertClause { get; set; }
-        public UsingClause UsingClause { get; set; }
+        public List<UsingClause> UsingClauses { get; set; }
         public GroupGraphPattern GroupGraphPattern { get; set; }
+
+        public Modify()
+        {
+            this.UsingClauses = new List<UsingClause>();
+        }
     }
     public class GraphRef : TokenPair
     {
@@ -478,7 +508,13 @@ namespace CodeHelper.Core.Parse.ParseResults.Sparqls
     public class Quads : TokenPair
     {
         public List<TriplesTemplate> TriplesTemplates { get; set; }
-        public List<QuadsNotTriples> QuadsNotTriples { get; set; }
+        public List<QuadsNotTriples> QuadsNotTripleses { get; set; }
+
+        public Quads()
+        {
+            this.TriplesTemplates = new List<TriplesTemplate>();
+            this.QuadsNotTripleses = new List<QuadsNotTriples>();
+        }
 
     }
     public class QuadsNotTriples : TokenPair
@@ -490,7 +526,12 @@ namespace CodeHelper.Core.Parse.ParseResults.Sparqls
     public class GroupGraphPatternSub : TokenPair
     {
         public List<TriplesBlock> TriplesBlocks { get; set; }
-        public List<GraphPatternNotTriples> GraphPatternNotTriples { get; set; }
+        public List<GraphPatternNotTriples> GraphPatternNotTripleses { get; set; }
+        public GroupGraphPatternSub()
+        {
+            this.GraphPatternNotTripleses = new List<GraphPatternNotTriples>();
+            this.TriplesBlocks = new List<TriplesBlock>();
+        }
     }
 
     public class TriplesBlock : TokenPair
@@ -927,7 +968,7 @@ namespace CodeHelper.Core.Parse.ParseResults.Sparqls
     }
     public class RelationalExpression : TokenPair
     {
-        public List<NumericExpression> NumericExpression { get; set; }
+        public List<NumericExpression> NumericExpressions { get; set; }
         public ExpressionList ExpressionList { get; set; }
 
         public bool Is_Equal { get; set; }
@@ -947,10 +988,10 @@ namespace CodeHelper.Core.Parse.ParseResults.Sparqls
     public class AdditiveExpression : TokenPair
     {
         public List<MultiplicativeExpression> MultiplicativeExpressions { get; set; }
-        public bool Is_Add { get; set; }
-        public bool Is_Subtraction { get; set; }
-        public NumericLiteralPositive NumericLiteralPositive { get; set; }
-        public NumericLiteralNegative NumericLiteralNegative { get; set; }
+        //public bool is_add { get; set; }
+        //public bool is_subtraction { get; set; }
+        //public NumericLiteralPositive NumericLiteralPositive { get; set; }
+        //public NumericLiteralNegative NumericLiteralNegative { get; set; }
 
         public List<AdditiveExpressionMulti> AdditiveExpressionMultis { get; set; }
 
@@ -1059,8 +1100,8 @@ namespace CodeHelper.Core.Parse.ParseResults.Sparqls
     }
     public class IriOrFunction : TokenPair
     {
-        public Iri iri { get; set; }
-        public ArgList argList { get; set; }
+        public Iri Iri { get; set; }
+        public ArgList ArgList { get; set; }
     }
     public class RDFLiteral : TokenPair
     {
@@ -1102,7 +1143,7 @@ namespace CodeHelper.Core.Parse.ParseResults.Sparqls
     {
         public bool Value { get; set; }
     }
-    public class String : TokenPair
+    public class NString : TokenPair
     {
         public bool Is_STRING_LITERAL1{get;set;}
         public bool Is_STRING_LITERAL2 { get; set; }

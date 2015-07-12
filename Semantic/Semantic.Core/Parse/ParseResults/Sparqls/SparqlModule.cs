@@ -22,7 +22,7 @@ namespace CodeHelper.Core.Parse.ParseResults.Sparqls
         {
             //this.Root.Parse();
             //this.Root.Wise();
-            //this.Errors.AddRange(Root.Errors);
+            this.Errors.AddRange(Root.Errors);
         }
 
         public void GenJava(IndentStringBuilder builder)

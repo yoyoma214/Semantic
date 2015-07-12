@@ -438,9 +438,12 @@ namespace CodeHelper.Core.Parse.ParseResults.{0}s",GenHelper.GetClassName(this.I
 
         public void Wise()
         {
+            if (this.RULE_REF == "selectClause")
+            {
+            }
             for(var i = 0 ; i < RuleInfos.Count ; i ++)
             {
-                if (RuleInfos[i].ENBF != null && "*+".Contains(RuleInfos[i].ENBF))
+                if (!string.IsNullOrWhiteSpace(RuleInfos[i].ENBF) && "*+".Contains(RuleInfos[i].ENBF))
                     RuleInfos[i].IsList = true;
 
                 for (var j = i + 1; j < RuleInfos.Count; j++)
@@ -494,7 +497,7 @@ namespace CodeHelper.Core.Parse.ParseResults.{0}s",GenHelper.GetClassName(this.I
             var ruleVar = GenHelper.GetVarName(this.RULE_REF);
             var ruleClazz =  GenHelper.GetClassName(this.RULE_REF);
             builder.AppendFormatLine("public override int Visit{0}([NotNull] {1}Parser.{0}Context context)",
-                ruleClazz , GenHelper.GetClassName(GrammarSpec.GrammarName));
+                ruleClazz.Replace("@", ""), GenHelper.GetClassName(GrammarSpec.GrammarName));
             builder.IncreaseIndentLine("{");
             builder.AppendFormatLine("var {0} = this.stack.PeekCtx<{1}>();", ruleVar, ruleClazz);
             builder.AppendFormatLine("{0}.Parse(context);", GenHelper.GetVarName(this.RULE_REF));
@@ -1001,9 +1004,17 @@ namespace CodeHelper.Core.Parse.ParseResults.{0}s",GenHelper.GetClassName(this.I
             {
                 LabeledElement.Parse(ruleInfos);
             }
+            RuleInfo r = null;
             if (Atom != null)
             {
-                Atom.Parse(ruleInfos);
+                r = Atom.Parse();
+                if ( r != null )
+                    ruleInfos.Add(r);
+            }
+            
+            if (EbnfSuffix != null)
+            {
+                EbnfSuffix.Parse(r);
             }
         }
 
@@ -1028,8 +1039,12 @@ namespace CodeHelper.Core.Parse.ParseResults.{0}s",GenHelper.GetClassName(this.I
 
         public void Parse(List<RuleInfo> ruleInfos)
         {
+            RuleInfo r = null;
             if (Atom != null)
-                Atom.Parse(ruleInfos);
+            {
+                r = Atom.Parse();
+                ruleInfos.Add(r);
+            }
             if (Block != null)
                 Block.Parse(ruleInfos);
         }
@@ -1113,9 +1128,18 @@ namespace CodeHelper.Core.Parse.ParseResults.{0}s",GenHelper.GetClassName(this.I
             this.QUESTIONS = new List<string>();
         }
 
-        public void Parse()
-        {
+        public void Parse(RuleInfo rule)
+        {        
+            if (rule != null)
+            {
+                if (rule.Rule == "whereClause")
+                {
+                }
 
+                rule.ENBF = this.STAR + this.PLUS;
+                if (!string.IsNullOrWhiteSpace(rule.ENBF) && "*+".Contains(rule.ENBF))
+                    rule.IsList = true;
+            }
         }
 
         public void Wise()
@@ -1171,15 +1195,17 @@ namespace CodeHelper.Core.Parse.ParseResults.{0}s",GenHelper.GetClassName(this.I
         //public string DOT { get; set; }
         public ElementOptions ElementOptions { get; set; }
 
-        public void Parse(List<RuleInfo> ruleInfos)
+        public RuleInfo Parse()
         {
             if (Ruleref != null)
             {
                 var ruleInfo = new RuleInfo();
                 ruleInfo.Rule = this.Ruleref.RULE_REF;
                 ruleInfo.ENBF = "1";
-                ruleInfos.Add(ruleInfo);
+                //ruleInfos.Add(ruleInfo);
+                return ruleInfo;
             }
+            return null;
         }
 
         public void Wise()

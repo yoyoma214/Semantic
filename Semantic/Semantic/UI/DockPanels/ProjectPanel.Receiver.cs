@@ -297,6 +297,7 @@ namespace CodeHelper.UI.DockPanels
 
             NodeFactory.Create(Dict.NodeType.SourceDirectory).Parent = root;
             NodeFactory.Create(Dict.NodeType.Antlr4).Parent = root;
+            NodeFactory.Create(Dict.NodeType.Sparql).Parent = root;
             //NodeFactory.Create(Dict.NodeType.XmlModelSet).Parent = root;
             //NodeFactory.Create(Dict.NodeType.DataModelSet).Parent = root;
             //NodeFactory.Create(Dict.NodeType.DataViewSet).Parent = root;

@@ -69,6 +69,8 @@
     <Compile Include="ExitProcessCommand.cs" />
     <Compile Include="Antlr4Model\NewTurtleModelCommand.cs" />
     <Compile Include="Antlr4Model\OpenTurtleModelCommand.cs" />
+    <Compile Include="SparqlModel\NewSparqlModelCommand.cs" />
+    <Compile Include="SparqlModel\OpenSparqlModelCommand.cs" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="NewProjectCommand.cs" />

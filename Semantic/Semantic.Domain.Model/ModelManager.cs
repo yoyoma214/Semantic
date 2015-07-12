@@ -185,7 +185,10 @@ namespace CodeHelper.Domain.Model
             {
                 model = new Domain.Model.Antlr4Models.Antlr4Model();
             }
-
+            else if (extension == Dict.Extenstions.Sparql_Extension)
+            {
+                model = new Domain.Model.SparqlModels.SparqlModel();
+            }
             model.FileId = Guid.NewGuid();
 
             model.File = file;

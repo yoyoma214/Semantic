@@ -10,9 +10,9 @@ valuesClause ;
    prefixDecl   :   'PREFIX' PNAME_NS IRIREF ;
    selectQuery   :   selectClause datasetClause* whereClause solutionModifier ;
    subSelect   :   selectClause whereClause solutionModifier valuesClause ;
-   selectClause   :   'SELECT' ( 'DISTINCT' | 'REDUCED' )? ( ( var | ( '(' expression 'AS' var ')' ) )+ | '*' ) ;
+   selectClause   :   'SELECT' ( 'DISTINCT' | 'REDUCED' )? ( ( var | ( '(' expression 'AS' var ')' ) )+ | ALL ) ;
    constructQuery   :   'CONSTRUCT' ( constructTemplate datasetClause* whereClause solutionModifier | datasetClause* 'WHERE' '{' triplesTemplate? '}' solutionModifier ) ;
-   describeQuery   :   'DESCRIBE' ( varOrIri+ | '*' ) datasetClause* whereClause? solutionModifier ;
+   describeQuery   :   'DESCRIBE' ( varOrIri+ | ALL ) datasetClause* whereClause? solutionModifier ;
    askQuery   :   'ASK' datasetClause* whereClause solutionModifier ;
    datasetClause   :   'FROM' ( defaultGraphClause | namedGraphClause ) ;
    defaultGraphClause   :   sourceSelector ;
@@ -95,7 +95,7 @@ valuesClause ;
    pathSequence   :   pathEltOrInverse ( '/' pathEltOrInverse )* ;
    pathElt   :   pathPrimary pathMod? ;
    pathEltOrInverse   :   pathElt | '^' pathElt ;
-   pathMod   :   '?' | '*' | '+' ;
+   pathMod   :   '?' | ALL | '+' ;
    pathPrimary   :   iri | 'a' | '!' pathNegatedPropertySet | '(' path ')'  ;
    pathNegatedPropertySet   :   pathOneInPropertySet | '(' ( pathOneInPropertySet ( '|' pathOneInPropertySet )* )? ')' ; 
    pathOneInPropertySet   :   iri | 'a' | '^' ( iri | 'a' )  ;
@@ -116,13 +116,35 @@ valuesClause ;
    conditionalOrExpression   :   conditionalAndExpression ( '||' conditionalAndExpression )* ;
    conditionalAndExpression   :   valueLogical ( '&&' valueLogical )* ;
    valueLogical   :   relationalExpression ;
-   relationalExpression   :   numericExpression ( '=' numericExpression | '!=' numericExpression | '<' numericExpression | '>' numericExpression | '<=' numericExpression | '>=' numericExpression | 'IN' expressionList | 'NOT' 'IN' expressionList )? ;
+   EQUAL:'=';
+   NOT_EQUAL:'!=';
+   LT:'<';
+   GT:'>';
+   LT_EQUAL:'<=';
+   GT_EQUAL:'>=';
+   IN:'IN';
+   NOT_IN:'NOT' 'IN';
+   
+   relationalExpression   :   numericExpression ( EQUAL numericExpression | NOT_EQUAL numericExpression | LT numericExpression | GT numericExpression | LT_EQUAL numericExpression | GT_EQUAL numericExpression | IN expressionList | NOT_IN expressionList )? ;
    numericExpression   :   additiveExpression ;
-   additiveExpression   :   multiplicativeExpression ( '+' multiplicativeExpression | '-' multiplicativeExpression | ( numericLiteralPositive | numericLiteralNegative ) ( ( '*' unaryExpression ) | ( '/' unaryExpression ) )* )* ;
-   multiplicativeExpression   :   unaryExpression ( '*' unaryExpression | '/' unaryExpression )* ;
-   unaryExpression   :     '!' primaryExpression 
-| '+' primaryExpression 
-| '-' primaryExpression 
+   ADD :'+';
+   SUBTRACTION:'-';
+   MULTIPLY:'*';
+   DIVISION:'/';
+   NOT:'!';
+   additiveExpression   :   multiplicativeExpression ( ADD multiplicativeExpression | SUBTRACTION multiplicativeExpression | additiveExpressionMulti )* ;
+   
+   multiplicativeExpression   :   unaryExpression ( multiplicativeExpressionItem )* ;
+   
+   additiveExpressionMulti:
+                             ( numericLiteralPositive | numericLiteralNegative ) ( multiplicativeExpressionItem )*
+                         ;
+   multiplicativeExpressionItem:
+                                    MULTIPLY unaryExpression | DIVISION unaryExpression
+                                ;
+   unaryExpression   :     NOT primaryExpression 
+| ADD primaryExpression 
+| SUBTRACTION primaryExpression 
 | primaryExpression ;
    primaryExpression   :   brackettedExpression | builtInCall | iriOrFunction | rDFLiteral | numericLiteral | booleanLiteral | var ;
    brackettedExpression   :   '(' expression ')' ;
@@ -186,13 +208,24 @@ valuesClause ;
    strReplaceExpression   :   'REPLACE' '(' expression ',' expression ',' expression ( ',' expression )? ')' ;
    existsFunc   :   'EXISTS' groupGraphPattern ;
    notExistsFunc   :   'NOT' 'EXISTS' groupGraphPattern ;
-   aggregate   :     'COUNT' '(' 'DISTINCT'? ( '*' | expression ) ')' 
-| 'SUM' '(' 'DISTINCT'? expression ')' 
-| 'MIN' '(' 'DISTINCT'? expression ')' 
-| 'MAX' '(' 'DISTINCT'? expression ')' 
-| 'AVG' '(' 'DISTINCT'? expression ')' 
-| 'SAMPLE' '(' 'DISTINCT'? expression ')' 
-| 'GROUP_CONCAT' '(' 'DISTINCT'? expression ( ';' 'SEPARATOR' '=' string )? ')'  ;
+   COUNT : 'COUNT';
+   DISTINCT : 'DISTINCT';
+   SUM : 'SUM';
+   MIN : 'MIN';
+   MAX : 'MAX';
+   AVG : 'AVG';
+   SAMPLE : 'SAMPLE';
+   GROUP_CONCAT : 'GROUP_CONCAT';
+   SEPARATOR : 'SEPARATOR';   
+   ALL:'*';
+   
+   aggregate   :     COUNT '(' DISTINCT? (ALL | expression ) ')' 
+| SUM '(' DISTINCT? expression ')' 
+| MIN '(' DISTINCT? expression ')' 
+| MAX '(' DISTINCT? expression ')' 
+| AVG '(' DISTINCT? expression ')' 
+| SAMPLE '(' DISTINCT? expression ')' 
+| GROUP_CONCAT '(' DISTINCT? expression ( ';' SEPARATOR '=' string )? ')'  ;
    iriOrFunction   :   iri argList? ;
    rDFLiteral   :   string ( LANGTAG | ( '^^' iri ) )? ;
    numericLiteral   :   numericLiteralUnsigned | numericLiteralPositive | numericLiteralNegative ;

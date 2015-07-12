@@ -21,6 +21,7 @@ using CodeHelper.Commands.ViewModel;
 using CodeHelper.Commands.WorkFlow;
 using CodeHelper.Commands.TurtleModel;
 using CodeHelper.Commands.Antlr4Model;
+using CodeHelper.Commands.SparqlModel;
 
 namespace CodeHelper
 {
@@ -115,6 +116,8 @@ namespace CodeHelper
             cmdHost_owl.AddCommand(new NewTurtleModelCommand(this.Receiver));
             cmdHost_owl.AddCommand(new OpenAntlr4ModelCommand(this.Receiver));
             cmdHost_owl.AddCommand(new NewAntlr4ModelCommand(this.Receiver));
+            cmdHost_owl.AddCommand(new OpenSparqlModelCommand(this.Receiver));
+            cmdHost_owl.AddCommand(new NewSparqlModelCommand(this.Receiver));
 
             CommandHostManager.Instance().AddCommand(CommandHostManager.HostType.ViewModel,
                 new NewViewModelCommand(this.receiver));

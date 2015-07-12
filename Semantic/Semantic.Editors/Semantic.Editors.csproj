@@ -57,6 +57,7 @@
     <Compile Include="XM_ParserFoldingStrategy.cs" />
     <Compile Include="TurtleModelEditor.cs" />
     <Compile Include="Antlr4ModelEditor.cs" />
+    <Compile Include="SparqlModelEditor.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

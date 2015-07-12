@@ -111,13 +111,11 @@
     <Compile Include="Items\Antlr4\DirectoryNode.cs" />
     <Compile Include="Items\Antlr4\FileNode.cs" />
     <Compile Include="Items\ProjectNode.cs" />
-    <Compile Include="Items\Semantic\DirectoryNode.cs" />
-    <Compile Include="Items\Semantic\FileNode.cs" />
-    <Compile Include="Items\Semantic\QueryNode.cs" />
-    <Compile Include="Items\Semantic\RuleNode.cs" />
-    <Compile Include="Items\Semantic\RuleSetNode.cs" />
-    <Compile Include="Items\Semantic\SparqlNode.cs" />
-    <Compile Include="Items\Semantic\TurtleFileNode.cs" />
+    <Compile Include="Items\Turtle\DirectoryNode.cs" />
+    <Compile Include="Items\Turtle\FileNode.cs" />
+    <Compile Include="Items\Sparql\SparqlDirectoryNode.cs" />
+    <Compile Include="Items\Sparql\SparqlFileNode.cs" />
+    <Compile Include="Items\Turtle\TurtleFileNode.cs" />
     <Compile Include="MainFrm.Receiveier.cs">
       <SubType>Form</SubType>
     </Compile>

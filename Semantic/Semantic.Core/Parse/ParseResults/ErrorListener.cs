@@ -148,6 +148,11 @@ namespace CodeHelper.Core.Parse.ParseResults
             //    Line = ctx.Start.Line, CharPositionInLine = ctx.Start.StartIndex,
             //     ErrorType = ErrorType.Error
             //});
+
+            if (ctx.exception != null)
+            {
+
+            }
         }
 
         public void ExitEveryRule(ParserRuleContext ctx)

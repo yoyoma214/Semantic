@@ -111,6 +111,10 @@
     <Compile Include="obj\Debug\ANTLRv4Parser.cs" />
     <Compile Include="obj\Debug\ANTLRv4ParserBaseVisitor.cs" />
     <Compile Include="obj\Debug\ANTLRv4ParserVisitor.cs" />
+    <Compile Include="obj\Debug\SparqlBaseVisitor.cs" />
+    <Compile Include="obj\Debug\SparqlLexer.cs" />
+    <Compile Include="obj\Debug\SparqlParser.cs" />
+    <Compile Include="obj\Debug\SparqlVisitor.cs" />
     <Compile Include="obj\Debug\TurtleBaseVisitor.cs" />
     <Compile Include="obj\Debug\TurtleLexer.cs" />
     <Compile Include="obj\Debug\TurtleParser.cs" />
@@ -134,6 +138,12 @@
       <DependentUpon>ANTLRv4Parser.g4</DependentUpon>
     </Compile>
     <Compile Include="Parse\ParseResults\Antlrs\GrammarModel.cs" />
+    <Compile Include="Parse\ParseResults\Sparqls\NSparqlParser.cs" />
+    <Compile Include="Parse\ParseResults\Sparqls\SparqlComplier.cs" />
+    <Compile Include="Parse\ParseResults\Sparqls\SparqlModule.cs" />
+    <Compile Include="Parse\ParseResults\Sparqls\SparqlVisitor.cs">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="Parse\ParseResults\Turtles\TurtleModule.cs" />
     <Compile Include="Parse\ParseResults\AtomTokenPair.cs" />
     <Compile Include="Parse\ParseResults\AttributeInfo.cs" />
@@ -198,6 +208,14 @@
       <Generator>MSBuild:Compile</Generator>
       <CustomToolNamespace>CodeHelper.Core.Parse.ParseResults.Sparqls</CustomToolNamespace>
     </Antlr4>
+    <AntlrTokens Include="obj\Debug\Sparql.tokens">
+      <Generator>MSBuild:Compile</Generator>
+      <CustomToolNamespace>CodeHelper.Core.obj.Debug</CustomToolNamespace>
+    </AntlrTokens>
+    <AntlrTokens Include="obj\Debug\SparqlLexer.tokens">
+      <Generator>MSBuild:Compile</Generator>
+      <CustomToolNamespace>CodeHelper.Core.obj.Debug</CustomToolNamespace>
+    </AntlrTokens>
     <None Include="packages.config" />
     <Antlr4 Include="Parse\ParseResults\Antlrs\ANTLRv4Parser.g4">
       <Generator>MSBuild:Compile</Generator>

@@ -18,6 +18,7 @@ using CodeHelper.Core.Services;
 using CodeHelper.Core.Parse.ModuleRelations;
 using CodeHelper.Core.Parse.ParseResults.Turtles;
 using CodeHelper.Core.Parse.ParseResults.Antlrs;
+using CodeHelper.Core.Parse.ParseResults.Sparqls;
 //using CodeHelper.Core.Parse.ParseResults.DataViews;
 //using CodeHelper.Core.Parse.ParseResults.ViewModels;
 //using CodeHelper.Core.Parse.ParseResults.Workflows;
@@ -246,6 +247,14 @@ namespace CodeHelper.Domain.Model
 
                                     module = new Antlr4Module();
                                     ((Antlr4Module)module).Root = complier.Parse(model.Content);
+                                    module.Name = System.IO.Path.GetFileNameWithoutExtension(model.File);
+                                }
+                                else if (model.ParseType == Core.Parser.ParseType.SparqlModel)
+                                {
+                                    var complier = new SparqlComplier();
+
+                                    module = new SparqlModule();
+                                    ((SparqlModule)module).Root = complier.Parse(model.Content);
                                     module.Name = System.IO.Path.GetFileNameWithoutExtension(model.File);
                                 }
                             }

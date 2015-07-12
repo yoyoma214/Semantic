@@ -56,6 +56,7 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="TurtleModels\TurtleModel.cs" />
     <Compile Include="Antlr4Models\Antlr4Model.cs" />
+    <Compile Include="SparqlModels\SparqlModel.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

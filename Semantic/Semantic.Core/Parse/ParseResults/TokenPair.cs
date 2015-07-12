@@ -59,8 +59,10 @@ namespace CodeHelper.Core.Parse.ParseResults
 
         public void Parse(ParserRuleContext ctx)
         {
-            this.BeginToken = new Token(ctx.Start.Line, ctx.Start.StartIndex);
-            this.EndToken = new Token(ctx.Stop.Line, ctx.stop.StopIndex);      
+            if ( ctx.Start != null )
+                this.BeginToken = new Token(ctx.Start.Line, ctx.Start.StartIndex);
+            if ( ctx.Stop != null )
+                this.EndToken = new Token(ctx.Stop.Line, ctx.stop.StopIndex);      
         }
     }
 }

@@ -142,6 +142,8 @@ namespace CodeHelper.Items
         protected override void OnDelete(object sender, EventArgs args)
         {
             base.OnDelete(sender, args);
+
+            System.IO.File.Delete(this.fullName);
         }
 
         internal override void OnDeleteSelf()
