@@ -19,8 +19,8 @@ namespace CodeHelper.Core.Parse.ParseResults.Sparqls
 
             var listener_symbol = new ErrorListenerSymbol();
             lexer.ErrorListeners.Clear();
-            lexer.AddErrorListener(listener_symbol);
-            lexer.AddErrorListener(new AntlrErrorListener<int>());
+            //lexer.AddErrorListener(listener_symbol);
+            //lexer.AddErrorListener(new AntlrErrorListener<int>());
             
 
             var tokens = new CommonTokenStream(lexer);
@@ -29,10 +29,10 @@ namespace CodeHelper.Core.Parse.ParseResults.Sparqls
             
             parser.BuildParseTree = true;
 
-            parser.AddErrorListener(new ErrorListener());
+            //parser.AddErrorListener(new ErrorListener());
 
             var listener = new ParseTreeListener();
-            parser.AddParseListener(listener);
+            //parser.AddParseListener(listener);
             //var aa = parser.GetExpectedTokens();
             //parser.AddErrorListener(new ErrorListener());
 
@@ -42,8 +42,8 @@ namespace CodeHelper.Core.Parse.ParseResults.Sparqls
 
             vis.Visit(tree);
 
-            vis.Root.Errors.AddRange(listener_symbol.Errors);
-            vis.Root.Errors.AddRange(listener.Errors);
+            //vis.Root.Errors.AddRange(listener_symbol.Errors);
+            //vis.Root.Errors.AddRange(listener.Errors);
 
             var oo  = parser.GetMsg();
             return vis.Root;

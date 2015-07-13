@@ -17,7 +17,7 @@ namespace CodeHelper.Core.Parse.ParseResults.Antlrs
             var lexer = new ANTLRv4Lexer(stream);
 
             var listener_symbol = new ErrorListenerSymbol();
-            lexer.AddErrorListener(listener_symbol);
+            //lexer.AddErrorListener(listener_symbol);
 
             var tokens = new CommonTokenStream(lexer);
 
@@ -28,7 +28,7 @@ namespace CodeHelper.Core.Parse.ParseResults.Antlrs
             //parser.AddErrorListener(new AntlrErrorListener<IToken>());
 
             var listener = new ParseTreeListener();
-            parser.AddParseListener(listener);
+            //parser.AddParseListener(listener);
 
             var tree = parser.grammarSpec();
 
@@ -36,8 +36,8 @@ namespace CodeHelper.Core.Parse.ParseResults.Antlrs
 
             vis.Visit(tree);
 
-            vis.Root.Errors.AddRange(listener_symbol.Errors);
-            vis.Root.Errors.AddRange(listener.Errors);
+            //vis.Root.Errors.AddRange(listener_symbol.Errors);
+            //vis.Root.Errors.AddRange(listener.Errors);
             return vis.Root;
         }
 

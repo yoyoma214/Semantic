@@ -173,7 +173,7 @@ namespace CodeHelper.Core.Parse.ParseResults
                 CharPositionInLine = node.Symbol.StartIndex,
                 ErrorType = ErrorType.Error,
                  Message = "无法识别:" + node.GetText()
-            });
+            });            
         }
 
         public void VisitTerminal(ITerminalNode node)
