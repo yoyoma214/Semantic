@@ -81,11 +81,11 @@ namespace CodeHelper.Items.Sparql
                     return;
                 }
 
-                var builder = new IndentStringBuilder();
-                //module.NameSpace = ns;
-                ((Antlr4Module)module).GenJava(builder);
-                codeFrm.SetText(builder.ToString());
-                codeFrm.Show();
+                //var builder = new IndentStringBuilder();
+                ////module.NameSpace = ns;
+                //((Antlr4Module)module).GenJava(builder);
+                //codeFrm.SetText(builder.ToString());
+                //codeFrm.Show();
 
                 //var gen = new UpdateDataModel(model, module);
                 //var builder = new StringBuilder();

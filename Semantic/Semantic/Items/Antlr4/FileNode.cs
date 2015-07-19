@@ -11,6 +11,7 @@ using CodeHelper.UI;
 using CodeHelper.Domain.Model;
 using CodeHelper.Common;
 using CodeHelper.Core.Parse.ParseResults.Antlrs;
+using System.Windows.Forms;
 
 namespace CodeHelper.Items.Antlr4
 {
@@ -38,7 +39,9 @@ namespace CodeHelper.Items.Antlr4
             var menus = base.GetPopMenu();
             menus.MenuItems.Add("生成数据库代码", Mnu_GenerateDBCode);
             menus.MenuItems.Add("反向工程", Mnu_DBToCode);
+            menus.MenuItems.Add("生成c#类", Mnu_GenCSharp);
             menus.MenuItems.Add("生成java类", Mnu_GenJava);
+            menus.MenuItems.Add("生成c# visit类", Mnu_GenVisitCSharp);
             menus.MenuItems.Add("生成java visit类", Mnu_GenVisitJava);
             return menus;
         }
@@ -68,7 +71,70 @@ namespace CodeHelper.Items.Antlr4
             }
         }
 
+        private void Mnu_GenCSharp(object sender, EventArgs args)
+        {
+            try
+            {
+                var codeFrm = new ShowCodeFrm();
+                var model = ModelManager.Instance().GetModel(this.FileId.Value);
+                var module = ModelManager.Instance().MakeSureParseModule(model.File);
+                if (module == null)
+                {
+                    System.Windows.Forms.MessageBox.Show("模块还没解析");
+                    return;
+                }
+
+                var builder = new IndentStringBuilder();
+                ((Antlr4Module)module).GenCSharp(builder);
+                codeFrm.SetText(builder.ToString());
+                codeFrm.Show();
+
+                //var gen = new UpdateDataModel(model, module);
+                //var builder = new StringBuilder();
+                //gen.Generate(builder);
+                //codeFrm.SetText(builder.ToString());
+                //codeFrm.Show();
+
+            }
+            catch (Exception ex)
+            {
+                System.Windows.Forms.MessageBox.Show(ex.Message);
+            }
+        }
+
         private void Mnu_GenJava(object sender, EventArgs args)
+        {
+            try
+            {
+                var codeFrm = new ShowCodeFrm();
+                var model = ModelManager.Instance().GetModel(this.FileId.Value);
+                var module = ModelManager.Instance().MakeSureParseModule(model.File);
+                if (module == null)
+                {
+                    System.Windows.Forms.MessageBox.Show("模块还没解析");
+                    return;
+                }
+
+                var dlg = new FolderBrowserDialog();
+                if (dlg.ShowDialog() == DialogResult.OK)
+                {
+                    var path = dlg.SelectedPath;
+                    var builder = new IndentStringBuilder();
+                    //module.NameSpace = ns;
+
+                    ((Antlr4Module)module).GenJava(builder,path);
+                    //codeFrm.SetText(builder.ToString());
+                    //codeFrm.Show();
+                }      
+
+            }
+            catch (Exception ex)
+            {
+                System.Windows.Forms.MessageBox.Show(ex.Message);
+            }
+        }
+
+        private void Mnu_GenVisitCSharp(object sender, EventArgs args)
         {
             try
             {
@@ -83,7 +149,7 @@ namespace CodeHelper.Items.Antlr4
 
                 var builder = new IndentStringBuilder();
                 //module.NameSpace = ns;
-                ((Antlr4Module)module).GenJava(builder);
+                ((Antlr4Module)module).GenVisitCSharp(builder);
                 codeFrm.SetText(builder.ToString());
                 codeFrm.Show();
 

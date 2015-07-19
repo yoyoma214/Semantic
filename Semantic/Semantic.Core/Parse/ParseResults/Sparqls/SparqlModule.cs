@@ -25,14 +25,14 @@ namespace CodeHelper.Core.Parse.ParseResults.Sparqls
             this.Errors.AddRange(Root.Errors);
         }
 
-        public void GenJava(IndentStringBuilder builder)
+        public void GenCSharp(IndentStringBuilder builder)
         {
-            //this.Root.GenJava(builder);
+            //this.Root.GenCSharp(builder);
         }
 
-        public void GenVisitJava(IndentStringBuilder builder)
+        public void GenVisitCSharp(IndentStringBuilder builder)
         {
-            //this.Root.GenVisitJava(builder);
+            //this.Root.GenVisitCSharp(builder);
         }
     }
 }

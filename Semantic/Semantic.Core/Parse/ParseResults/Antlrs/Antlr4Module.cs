@@ -25,14 +25,24 @@ namespace CodeHelper.Core.Parse.ParseResults.Antlrs
             this.Errors.AddRange(Root.Errors);
         }
 
-        public void GenJava(IndentStringBuilder builder)
+        public void GenCSharp(IndentStringBuilder builder)
         {
-            this.Root.GenJava(builder);
+            this.Root.GenCSharp(builder);
+        }
+
+        public void GenVisitCSharp(IndentStringBuilder builder)
+        {
+            this.Root.GenVisitCSharp(builder);
         }
 
         public void GenVisitJava(IndentStringBuilder builder)
         {
             this.Root.GenVisitJava(builder);
+        }
+
+        public void GenJava(IndentStringBuilder builder,string path)
+        {
+            this.Root.GenJava(builder, path);
         }
     }
 }

@@ -4,6 +4,9 @@ using System.Linq;
 using System.Text;
 using CodeHelper.Core.Error;
 using CodeHelper.Common;
+using System.IO;
+using CodeHelper.Core.Parse.ParseResults;
+using CodeHelper.Core.Parse.ParseResults.Antlrs;
 
 namespace CodeHelper.Core.Parse.ParseResults.Antlrs
 {
@@ -59,16 +62,16 @@ namespace CodeHelper.Core.Parse.ParseResults.Antlrs
             Rules.Wise();
         }
 
-        public void GenJava(IndentStringBuilder builder)
+        public void GenCSharp(IndentStringBuilder builder)
         {
             //foreach (var rule in this.Rules)
             //{
             //    rule.g
             //}
-            Rules.GenJava(builder);
+            Rules.GenCSharp(builder);
         }
 
-        public void GenVisitJava(IndentStringBuilder builder)
+        public void GenVisitCSharp(IndentStringBuilder builder)
         {
             //foreach (var rule in this.Rules)
             //{
@@ -85,9 +88,34 @@ namespace CodeHelper.Core.Parse.ParseResults.{0}s",GenHelper.GetClassName(this.I
             builder.AppendFormatLine("class {0}Visitor : {0}BaseVisitor<int>",GenHelper.GetClassName(this.Id.TOKEN_REF));
             builder.IncreaseIndentLine("{");
             builder.AppendFormatLine("StackUtil stack = new StackUtil();");
+            Rules.GenVisitCSharp(builder);
+            builder.DecreaseIndentLine("}");
+            builder.DecreaseIndentLine("}");
+        }
+
+        internal void GenVisitJava(IndentStringBuilder builder)
+        {
+            builder.AppendFormatLine(@"package com.sixstar.kbase.knowledgeql;
+import java.util.List;
+import org.antlr.v4.runtime.misc.NotNull;
+import org.antlr.v4.runtime.tree.ParseTree;
+import org.antlr.v4.runtime.tree.TerminalNodeImpl;
+
+import com.sixstar.kbase.knowledgeql.model;
+
+");
+            //builder.IncreaseIndentLine("{");
+            builder.AppendFormatLine("public class {0}Visitor extends {0}BaseVisitor<Void>", GenHelper.GetClassName(this.Id.TOKEN_REF));
+            builder.IncreaseIndentLine("{");
+            builder.AppendFormatLine("StackUtil stack = new StackUtil();");
             Rules.GenVisitJava(builder);
             builder.DecreaseIndentLine("}");
-            builder.DecreaseIndentLine("}");
+            //builder.DecreaseIndentLine("}");
+        }
+
+        internal void GenJava(IndentStringBuilder builder, string path)
+        {
+            Rules.GenJava(builder, path);
         }
     }
 
@@ -104,7 +132,7 @@ namespace CodeHelper.Core.Parse.ParseResults.{0}s",GenHelper.GetClassName(this.I
         {
         }
 
-        public void GenJava(IndentStringBuilder builder)
+        public void GenCSharp(IndentStringBuilder builder)
         {
 
         }
@@ -126,7 +154,7 @@ namespace CodeHelper.Core.Parse.ParseResults.{0}s",GenHelper.GetClassName(this.I
         {
         }
 
-        public void GenJava(IndentStringBuilder builder)
+        public void GenCSharp(IndentStringBuilder builder)
         {
 
         }
@@ -150,7 +178,7 @@ namespace CodeHelper.Core.Parse.ParseResults.{0}s",GenHelper.GetClassName(this.I
         {
         }
 
-        public void GenJava(IndentStringBuilder builder)
+        public void GenCSharp(IndentStringBuilder builder)
         {
 
         }
@@ -170,7 +198,7 @@ namespace CodeHelper.Core.Parse.ParseResults.{0}s",GenHelper.GetClassName(this.I
         {
         }
 
-        public void GenJava(IndentStringBuilder builder)
+        public void GenCSharp(IndentStringBuilder builder)
         {
 
         }
@@ -197,7 +225,7 @@ namespace CodeHelper.Core.Parse.ParseResults.{0}s",GenHelper.GetClassName(this.I
         {
         }
 
-        public void GenJava(IndentStringBuilder builder)
+        public void GenCSharp(IndentStringBuilder builder)
         {
 
         }
@@ -220,7 +248,7 @@ namespace CodeHelper.Core.Parse.ParseResults.{0}s",GenHelper.GetClassName(this.I
         {
         }
 
-        public void GenJava(IndentStringBuilder builder)
+        public void GenCSharp(IndentStringBuilder builder)
         {
 
         }
@@ -243,7 +271,7 @@ namespace CodeHelper.Core.Parse.ParseResults.{0}s",GenHelper.GetClassName(this.I
         {
         }
 
-        public void GenJava(IndentStringBuilder builder)
+        public void GenCSharp(IndentStringBuilder builder)
         {
 
         }
@@ -266,7 +294,7 @@ namespace CodeHelper.Core.Parse.ParseResults.{0}s",GenHelper.GetClassName(this.I
         {
         }
 
-        public void GenJava(IndentStringBuilder builder)
+        public void GenCSharp(IndentStringBuilder builder)
         {
 
         }
@@ -290,7 +318,7 @@ namespace CodeHelper.Core.Parse.ParseResults.{0}s",GenHelper.GetClassName(this.I
         {
         }
 
-        public void GenJava(IndentStringBuilder builder)
+        public void GenCSharp(IndentStringBuilder builder)
         {
 
         }
@@ -311,7 +339,7 @@ namespace CodeHelper.Core.Parse.ParseResults.{0}s",GenHelper.GetClassName(this.I
         {
         }
 
-        public void GenJava(IndentStringBuilder builder)
+        public void GenCSharp(IndentStringBuilder builder)
         {
 
         }
@@ -336,7 +364,7 @@ namespace CodeHelper.Core.Parse.ParseResults.{0}s",GenHelper.GetClassName(this.I
         {
         }
 
-        public void GenJava(IndentStringBuilder builder)
+        public void GenCSharp(IndentStringBuilder builder)
         {
 
         }
@@ -367,19 +395,35 @@ namespace CodeHelper.Core.Parse.ParseResults.{0}s",GenHelper.GetClassName(this.I
             }
         }
 
-        public void GenJava(IndentStringBuilder builder)
+        public void GenCSharp(IndentStringBuilder builder)
         {
             foreach (var rule in this.RuleSpecs)
             {
-                rule.GenJava(builder);
+                rule.GenCSharp(builder);
             }
         }
 
-        public void GenVisitJava(IndentStringBuilder builder)
+        public void GenVisitCSharp(IndentStringBuilder builder)
+        {
+            foreach (var rule in this.RuleSpecs)
+            {
+                rule.GenVisitCSharp(builder);
+            }
+        }
+
+        internal void GenVisitJava(IndentStringBuilder builder)
         {
             foreach (var rule in this.RuleSpecs)
             {
                 rule.GenVisitJava(builder);
+            }
+        }
+
+        internal void GenJava(IndentStringBuilder builder, string path)
+        {
+            foreach (var rule in this.RuleSpecs)
+            {
+                rule.GenJava(builder, path);
             }
         }
     }
@@ -401,15 +445,28 @@ namespace CodeHelper.Core.Parse.ParseResults.{0}s",GenHelper.GetClassName(this.I
                 ParserRuleSpec.Wise();
         }
 
-        public void GenJava(IndentStringBuilder builder)
+        public void GenCSharp(IndentStringBuilder builder)
         {
-            this.ParserRuleSpec.GenJava(builder);
+            if (ParserRuleSpec != null)
+                this.ParserRuleSpec.GenCSharp(builder);
         }
 
-        public void GenVisitJava(IndentStringBuilder builder)
+        public void GenVisitCSharp(IndentStringBuilder builder)
+        {
+            if (ParserRuleSpec != null)
+                this.ParserRuleSpec.GenVisitCSharp(builder);
+        }
+
+        internal void GenVisitJava(IndentStringBuilder builder)
         {
             if (ParserRuleSpec != null)
                 this.ParserRuleSpec.GenVisitJava(builder);
+        }
+
+        internal void GenJava(IndentStringBuilder builder, string path)
+        {
+            if (ParserRuleSpec != null)
+                this.ParserRuleSpec.GenJava(builder, path);
         }
     }
 
@@ -438,10 +495,10 @@ namespace CodeHelper.Core.Parse.ParseResults.{0}s",GenHelper.GetClassName(this.I
 
         public void Wise()
         {
-            if (this.RULE_REF == "selectClause")
+            if (this.RULE_REF == "sort_addition")
             {
             }
-            for(var i = 0 ; i < RuleInfos.Count ; i ++)
+            for (var i = 0; i < RuleInfos.Count; i++)
             {
                 if (!string.IsNullOrWhiteSpace(RuleInfos[i].ENBF) && "*+".Contains(RuleInfos[i].ENBF))
                     RuleInfos[i].IsList = true;
@@ -467,9 +524,9 @@ namespace CodeHelper.Core.Parse.ParseResults.{0}s",GenHelper.GetClassName(this.I
             }
         }
 
-        public void GenJava(IndentStringBuilder builder)
+        public void GenCSharp(IndentStringBuilder builder)
         {
-            //RuleBlock.GenJava(builder);
+            //RuleBlock.GenCSharp(builder);
 
             builder.AppendFormatLine("public class {0} : TokenPair", GenHelper.GetClassName(this.RULE_REF));
             builder.IncreaseIndentLine("{");
@@ -491,11 +548,11 @@ namespace CodeHelper.Core.Parse.ParseResults.{0}s",GenHelper.GetClassName(this.I
             builder.AppendLine();
         }
 
-        public void GenVisitJava(IndentStringBuilder builder)
+        public void GenVisitCSharp(IndentStringBuilder builder)
         {
-            //this.ParserRuleSpec.GenVisitJava(builder);          
+            //this.ParserRuleSpec.GenVisitCSharp(builder);          
             var ruleVar = GenHelper.GetVarName(this.RULE_REF);
-            var ruleClazz =  GenHelper.GetClassName(this.RULE_REF);
+            var ruleClazz = GenHelper.GetClassName(this.RULE_REF);
             builder.AppendFormatLine("public override int Visit{0}([NotNull] {1}Parser.{0}Context context)",
                 ruleClazz.Replace("@", ""), GenHelper.GetClassName(GrammarSpec.GrammarName));
             builder.IncreaseIndentLine("{");
@@ -513,8 +570,8 @@ namespace CodeHelper.Core.Parse.ParseResults.{0}s",GenHelper.GetClassName(this.I
                     builder.AppendFormatLine("var {0}Ctxs = context.{0}();", subRuleVar);
                     builder.AppendFormatLine("foreach(var ctx in {0}Ctxs)", subRuleVar);
                     builder.IncreaseIndentLine("{");
-                    builder.AppendFormatLine("var {0} = new {1}();",subRuleVar, subRuleClazz);
-                    builder.AppendFormatLine("{0}.{1}s.Add({2});", ruleVar,subRuleClazz, subRuleVar);
+                    builder.AppendFormatLine("var {0} = new {1}();", subRuleVar, subRuleClazz);
+                    builder.AppendFormatLine("{0}.{1}s.Add({2});", ruleVar, subRuleClazz, subRuleVar);
                     builder.AppendFormatLine("this.stack.Push({0});", subRuleVar);
                     builder.AppendFormatLine("this.Visit(ctx);", subRuleVar);
                     builder.AppendFormatLine("this.stack.Pop();");
@@ -539,7 +596,154 @@ namespace CodeHelper.Core.Parse.ParseResults.{0}s",GenHelper.GetClassName(this.I
             builder.AppendLine();
             builder.AppendLine();
         }
+
+        internal void GenVisitJava(IndentStringBuilder builder)
+        {
+            var varRule = GenHelper.GetVarName(this.RULE_REF);
+            var clzRule = GenHelper.GetClassName(this.RULE_REF);
+            var clzGrammer = GenHelper.GetClassName(GrammarSpec.GrammarName);
+
+            builder.AppendFormatLine("public Void visit{0}(@NotNull {1}Parser.{0}Context context)",
+              GenHelper.GetClassName(this.RULE_REF, true).Replace("@", ""), clzGrammer);
+            builder.IncreaseIndentLine("{");
+            builder.AppendFormatLine("{1} {0} = this.stack.peekCtx({1}.class);", varRule, clzRule);
+            builder.AppendFormatLine("{0}.parse(context);", GenHelper.GetVarName(this.RULE_REF));
+            builder.AppendLine();
+
+            if (this.RULE_REF == "sort_addition")
+            {
+            }
+
+            foreach (var rule in this.RuleInfos)
+            {
+                var subRuleVar = GenHelper.GetVarName(rule.Rule);
+                var subRuleClazz = GenHelper.GetClassName(rule.Rule);
+
+                if (rule.IsList)
+                {
+                    builder.AppendFormatLine("List<{0}Parser.{1}Context> {2}Ctxs = context.{2}();", clzGrammer, GenHelper.GetClassName(rule.Rule, true), GenHelper.GetVarName(rule.Rule, true));
+                    builder.AppendFormatLine("for(int index = 0 ; index < {0}Ctxs.size() ; index ++)", GenHelper.GetVarName(rule.Rule, true));
+                    builder.IncreaseIndentLine("{");
+                    builder.AppendFormatLine("{1} {0} = new {1}();", subRuleVar, subRuleClazz);
+                    builder.AppendFormatLine("{0}.get{1}s().add({2});", varRule, subRuleClazz, subRuleVar);
+                    builder.AppendFormatLine("this.stack.push({0});", subRuleVar);
+                    builder.AppendFormatLine("this.visit({0}Ctxs.get(index));", GenHelper.GetVarName(rule.Rule, true));
+                    builder.AppendFormatLine("this.stack.pop();");
+                    builder.Decrease("}");
+                }
+                else
+                {
+                    builder.AppendFormatLine("{0}Parser.{1}Context {2}Ctx = context.{2}();", clzGrammer, GenHelper.GetClassName(rule.Rule, true), GenHelper.GetVarName(rule.Rule, true));
+                    builder.AppendFormatLine("if ({0}Ctx != null)", GenHelper.GetVarName(rule.Rule, true));
+                    builder.IncreaseIndentLine("{");
+                    builder.AppendFormatLine("{0}.set{1}( new {1}());", varRule, subRuleClazz);
+                    builder.AppendFormatLine("this.stack.push({0}.get{1}());", varRule, subRuleClazz);
+                    builder.AppendFormatLine("this.visit({0}Ctx);", GenHelper.GetVarName(rule.Rule, true));
+                    builder.AppendFormatLine("this.stack.pop();");
+                    builder.Decrease("}");
+                }
+                builder.AppendLine();
+                builder.AppendLine();
+            }
+            builder.AppendLine("return null;");
+            builder.Decrease("}");
+            builder.AppendLine();
+            builder.AppendLine();
+        }
+
+        internal void GenJava(IndentStringBuilder builder, string path)
+        {
+
+            var clzName = GenHelper.GetClassName(this.RULE_REF);
+            var file = Path.Combine(path, clzName + ".java");
+            if (File.Exists(file))
+                File.Delete(file);
+
+
+            if (this.RULE_REF == "sort_addition")
+            {
+            }
+
+            builder.AppendLine(@"package com.sixstar.kbase.knowledgeql.model;
+
+import java.util.ArrayList;
+import java.util.List;
+import com.sixstar.kbase.knowledgeql.common.TokenPair;");
+
+            builder.AppendFormatLine("public class {0} extends TokenPair", clzName);
+            builder.IncreaseIndentLine("{");
+            builder.AppendLine();
+
+            builder.AppendLine("// <editor-fold desc=\"field\">");
+            foreach (var rule in this.RuleInfos)
+            {
+                var varRule = GenHelper.GetVarName(rule.Rule);
+                var clzRule = GenHelper.GetClassName(rule.Rule);
+                builder.AppendLine();
+                if (rule.IsList)
+                {
+                    builder.AppendFormatLine("private List<{0}> {1}s = new ArrayList<{0}>();", clzRule, varRule);
+                    builder.AppendLine();
+                    builder.AppendFormatLine("public List<{0}> get{0}s()", clzRule);
+                    builder.IncreaseIndentLine("{");
+                    builder.AppendFormatLine("return {0}s;", varRule);
+                    builder.DecreaseIndentLine("}");
+                    builder.AppendLine();
+                    builder.AppendFormatLine("public void set{0}s(List<{0}> {1}s)", clzRule, varRule);
+                    builder.IncreaseIndentLine("{");
+                    builder.AppendFormatLine("this.{0}s = {0}s;", varRule);
+                    builder.DecreaseIndentLine("}");
+                }
+                else
+                {
+                    builder.AppendFormatLine("private {0} {1};", clzRule, varRule);
+                    builder.AppendLine();
+                    builder.AppendFormatLine("public {0} get{0}()", clzRule);
+                    builder.IncreaseIndentLine("{");
+                    builder.AppendFormatLine("return {0};", varRule);
+                    builder.DecreaseIndentLine("}");
+                    builder.AppendLine();
+                    builder.AppendFormatLine("public void set{0}({0} {1})", clzRule, varRule);
+                    builder.IncreaseIndentLine("{");
+                    builder.AppendFormatLine("this.{0} = {0};", varRule);
+                    builder.DecreaseIndentLine("}");
+                }
+            }
+            builder.AppendLine("// </editor-fold>");
+
+            builder.AppendLine();
+            builder.AppendLine("public void parse(){");
+            builder.AppendLine();
+            builder.AppendLine("}");
+
+            builder.AppendLine();
+            builder.AppendLine("public void wise(){");
+            builder.AppendLine();
+            builder.AppendLine("}");
+
+            builder.AppendLine();
+            builder.AppendLine("public void format(StringBuilder builder){");
+            builder.AppendLine();
+            builder.AppendLine("}");
+
+            builder.AppendLine();
+            builder.AppendLine("public void buildSql(StringBuilder builder){");
+            builder.AppendLine();
+            builder.AppendLine("}");
+
+            builder.Decrease("}");
+            builder.AppendLine();
+
+            var writer = System.IO.File.CreateText(file);
+            writer.Write(builder.ToString());
+            writer.Flush();
+            writer.Close();
+            builder.Clear();
+            builder.AppendLine();
+        }
+
     }
+    
 
     public class ExceptionGroup : TokenPair
     {
@@ -560,7 +764,7 @@ namespace CodeHelper.Core.Parse.ParseResults.{0}s",GenHelper.GetClassName(this.I
         {
         }
 
-        public void GenJava(IndentStringBuilder builder)
+        public void GenCSharp(IndentStringBuilder builder)
         {
 
         }
@@ -580,7 +784,7 @@ namespace CodeHelper.Core.Parse.ParseResults.{0}s",GenHelper.GetClassName(this.I
         {
         }
 
-        public void GenJava(IndentStringBuilder builder)
+        public void GenCSharp(IndentStringBuilder builder)
         {
 
         }
@@ -599,7 +803,7 @@ namespace CodeHelper.Core.Parse.ParseResults.{0}s",GenHelper.GetClassName(this.I
         {
         }
 
-        public void GenJava(IndentStringBuilder builder)
+        public void GenCSharp(IndentStringBuilder builder)
         {
 
         }
@@ -619,7 +823,7 @@ namespace CodeHelper.Core.Parse.ParseResults.{0}s",GenHelper.GetClassName(this.I
         {
         }
 
-        public void GenJava(IndentStringBuilder builder)
+        public void GenCSharp(IndentStringBuilder builder)
         {
 
         }
@@ -638,7 +842,7 @@ namespace CodeHelper.Core.Parse.ParseResults.{0}s",GenHelper.GetClassName(this.I
         {
         }
 
-        public void GenJava(IndentStringBuilder builder)
+        public void GenCSharp(IndentStringBuilder builder)
         {
 
         }
@@ -661,7 +865,7 @@ namespace CodeHelper.Core.Parse.ParseResults.{0}s",GenHelper.GetClassName(this.I
         {
         }
 
-        public void GenJava(IndentStringBuilder builder)
+        public void GenCSharp(IndentStringBuilder builder)
         {
 
         }
@@ -680,7 +884,7 @@ namespace CodeHelper.Core.Parse.ParseResults.{0}s",GenHelper.GetClassName(this.I
         {
         }
 
-        public void GenJava(IndentStringBuilder builder)
+        public void GenCSharp(IndentStringBuilder builder)
         {
 
         }
@@ -700,7 +904,7 @@ namespace CodeHelper.Core.Parse.ParseResults.{0}s",GenHelper.GetClassName(this.I
         {
         }
 
-        public void GenJava(IndentStringBuilder builder)
+        public void GenCSharp(IndentStringBuilder builder)
         {
 
         }
@@ -723,7 +927,7 @@ namespace CodeHelper.Core.Parse.ParseResults.{0}s",GenHelper.GetClassName(this.I
         {
         }
 
-        public void GenJava(IndentStringBuilder builder)
+        public void GenCSharp(IndentStringBuilder builder)
         {
 
         }
@@ -743,7 +947,7 @@ namespace CodeHelper.Core.Parse.ParseResults.{0}s",GenHelper.GetClassName(this.I
 
         }
 
-        public void GenJava(IndentStringBuilder builder)
+        public void GenCSharp(IndentStringBuilder builder)
         {
 
         }
@@ -762,9 +966,9 @@ namespace CodeHelper.Core.Parse.ParseResults.{0}s",GenHelper.GetClassName(this.I
         {
         }
 
-        public void GenJava(IndentStringBuilder builder)
+        public void GenCSharp(IndentStringBuilder builder)
         {
-            this.RuleAltList.GenJava(builder);
+            this.RuleAltList.GenCSharp(builder);
         }
     }
 
@@ -790,11 +994,11 @@ namespace CodeHelper.Core.Parse.ParseResults.{0}s",GenHelper.GetClassName(this.I
 
         }
 
-        public void GenJava(IndentStringBuilder builder)
+        public void GenCSharp(IndentStringBuilder builder)
         {
             foreach (var alt in this.LabeledAlts)
             {
-                alt.GenJava(builder);
+                alt.GenCSharp(builder);
             }
         }
     }
@@ -814,9 +1018,9 @@ namespace CodeHelper.Core.Parse.ParseResults.{0}s",GenHelper.GetClassName(this.I
         {
         }
 
-        public void GenJava(IndentStringBuilder builder)
+        public void GenCSharp(IndentStringBuilder builder)
         {
-            this.Alternative.GenJava(builder);
+            this.Alternative.GenCSharp(builder);
         }
     }
 
@@ -835,7 +1039,7 @@ namespace CodeHelper.Core.Parse.ParseResults.{0}s",GenHelper.GetClassName(this.I
         {
         }
 
-        public void GenJava(IndentStringBuilder builder)
+        public void GenCSharp(IndentStringBuilder builder)
         {
 
         }
@@ -947,7 +1151,7 @@ namespace CodeHelper.Core.Parse.ParseResults.{0}s",GenHelper.GetClassName(this.I
         {
         }
 
-        public void GenJava(IndentStringBuilder builder)
+        public void GenCSharp(IndentStringBuilder builder)
         {
 
         }
@@ -977,11 +1181,11 @@ namespace CodeHelper.Core.Parse.ParseResults.{0}s",GenHelper.GetClassName(this.I
         {
         }
 
-        public void GenJava(IndentStringBuilder builder)
+        public void GenCSharp(IndentStringBuilder builder)
         {
             foreach (var element in this.Elements)
             {
-                element.GenJava(builder);
+                element.GenCSharp(builder);
             }
         }
     }
@@ -1022,7 +1226,7 @@ namespace CodeHelper.Core.Parse.ParseResults.{0}s",GenHelper.GetClassName(this.I
         {
         }
 
-        public void GenJava(IndentStringBuilder builder)
+        public void GenCSharp(IndentStringBuilder builder)
         {
 
         }
@@ -1053,7 +1257,7 @@ namespace CodeHelper.Core.Parse.ParseResults.{0}s",GenHelper.GetClassName(this.I
         {
         }
 
-        public void GenJava(IndentStringBuilder builder)
+        public void GenCSharp(IndentStringBuilder builder)
         {
 
         }
@@ -1088,7 +1292,7 @@ namespace CodeHelper.Core.Parse.ParseResults.{0}s",GenHelper.GetClassName(this.I
         {
         }
 
-        public void GenJava(IndentStringBuilder builder)
+        public void GenCSharp(IndentStringBuilder builder)
         {
 
         }
@@ -1111,7 +1315,7 @@ namespace CodeHelper.Core.Parse.ParseResults.{0}s",GenHelper.GetClassName(this.I
         {
         }
 
-        public void GenJava(IndentStringBuilder builder)
+        public void GenCSharp(IndentStringBuilder builder)
         {
 
         }
@@ -1146,7 +1350,7 @@ namespace CodeHelper.Core.Parse.ParseResults.{0}s",GenHelper.GetClassName(this.I
         {
         }
 
-        public void GenJava(IndentStringBuilder builder)
+        public void GenCSharp(IndentStringBuilder builder)
         {
 
         }
@@ -1176,7 +1380,7 @@ namespace CodeHelper.Core.Parse.ParseResults.{0}s",GenHelper.GetClassName(this.I
 
         }
 
-        public void GenJava(IndentStringBuilder builder)
+        public void GenCSharp(IndentStringBuilder builder)
         {
 
         }
@@ -1212,7 +1416,7 @@ namespace CodeHelper.Core.Parse.ParseResults.{0}s",GenHelper.GetClassName(this.I
         {
         }
 
-        public void GenJava(IndentStringBuilder builder)
+        public void GenCSharp(IndentStringBuilder builder)
         {
 
         }
@@ -1233,7 +1437,7 @@ namespace CodeHelper.Core.Parse.ParseResults.{0}s",GenHelper.GetClassName(this.I
         {
         }
 
-        public void GenJava(IndentStringBuilder builder)
+        public void GenCSharp(IndentStringBuilder builder)
         {
 
         }
@@ -1258,7 +1462,7 @@ namespace CodeHelper.Core.Parse.ParseResults.{0}s",GenHelper.GetClassName(this.I
         {
         }
 
-        public void GenJava(IndentStringBuilder builder)
+        public void GenCSharp(IndentStringBuilder builder)
         {
 
         }
@@ -1280,7 +1484,7 @@ namespace CodeHelper.Core.Parse.ParseResults.{0}s",GenHelper.GetClassName(this.I
         {
         }
 
-        public void GenJava(IndentStringBuilder builder)
+        public void GenCSharp(IndentStringBuilder builder)
         {
 
         }
@@ -1307,7 +1511,7 @@ namespace CodeHelper.Core.Parse.ParseResults.{0}s",GenHelper.GetClassName(this.I
         {
         }
 
-        public void GenJava(IndentStringBuilder builder)
+        public void GenCSharp(IndentStringBuilder builder)
         {
 
         }
@@ -1327,7 +1531,7 @@ namespace CodeHelper.Core.Parse.ParseResults.{0}s",GenHelper.GetClassName(this.I
         {
         }
 
-        public void GenJava(IndentStringBuilder builder)
+        public void GenCSharp(IndentStringBuilder builder)
         {
 
         }
@@ -1347,7 +1551,7 @@ namespace CodeHelper.Core.Parse.ParseResults.{0}s",GenHelper.GetClassName(this.I
         {
         }
 
-        public void GenJava(IndentStringBuilder builder)
+        public void GenCSharp(IndentStringBuilder builder)
         {
 
         }
@@ -1368,7 +1572,7 @@ namespace CodeHelper.Core.Parse.ParseResults.{0}s",GenHelper.GetClassName(this.I
         {
         }
 
-        public void GenJava(IndentStringBuilder builder)
+        public void GenCSharp(IndentStringBuilder builder)
         {
 
         }
@@ -1391,7 +1595,7 @@ namespace CodeHelper.Core.Parse.ParseResults.{0}s",GenHelper.GetClassName(this.I
         {
         }
 
-        public void GenJava(IndentStringBuilder builder)
+        public void GenCSharp(IndentStringBuilder builder)
         {
 
         }
@@ -1416,7 +1620,7 @@ namespace CodeHelper.Core.Parse.ParseResults.{0}s",GenHelper.GetClassName(this.I
         {
         }
 
-        public void GenJava(IndentStringBuilder builder)
+        public void GenCSharp(IndentStringBuilder builder)
         {
 
         }
@@ -1436,9 +1640,10 @@ namespace CodeHelper.Core.Parse.ParseResults.{0}s",GenHelper.GetClassName(this.I
         {
         }
 
-        public void GenJava(IndentStringBuilder builder)
+        public void GenCSharp(IndentStringBuilder builder)
         {
 
         }
     }
 }
+

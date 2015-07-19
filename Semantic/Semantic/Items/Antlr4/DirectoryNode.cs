@@ -63,7 +63,7 @@ namespace CodeHelper.Items.Antlr4
 
             dataModel.Parent = this;
             dataModel.Text = dataModel.Name = newName;
-            //dataModel.FullName = fileName;
+            dataModel.FullName = fileName;
 
             this.TreeNode.Expand();
 
