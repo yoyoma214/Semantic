@@ -17,12 +17,28 @@ namespace CodeHelper.Core.Parse.ParseResults.Turtles
         public List<Statement> Statements { get; set; }
 
         public List<ParseErrorInfo> Errors { get; set; }
+
+        internal void Parse(TurtleContext context)
+        {
+            foreach (var s in Statements)
+            {
+                s.Parse(context);
+            }
+        }
     }
 
     public class Statement : TokenPair
     {
         public Directive Directive { get; set; }
         public Triples Triples { get; set; }
+
+        internal void Parse(TurtleContext context)
+        {
+            if (this.Directive != null)
+                this.Directive.Parse(context);
+            if (this.Triples != null)
+                this.Triples.Parse(context);
+        }
     }
 
     public class Directive : TokenPair
@@ -31,6 +47,18 @@ namespace CodeHelper.Core.Parse.ParseResults.Turtles
         public Base Base { get; set; }
         public SparqlPrefix SparqlPrefix { get; set; }
         public SparqlBase SparqlBase { get; set; }
+
+        internal void Parse(TurtleContext context)
+        {
+            if (this.PrefixID != null)
+                this.PrefixID.Parse(context);
+            if (this.Base != null)
+                this.Base.Parse(context);
+            if (this.SparqlBase != null)
+                this.SparqlBase.Parse(context);
+            if (this.SparqlPrefix != null)
+                this.SparqlPrefix.Parse(context);
+        }
     }
 
     public class Triples : TokenPair
@@ -46,28 +74,58 @@ namespace CodeHelper.Core.Parse.ParseResults.Turtles
         public BlankNodePropertyList BlankNodePropertyList { get; set; }
 
         public PredicateObjectList PredicateObjectList { get; set; }
+
+        internal void Parse(TurtleContext context)
+        {
+            if (this.Subject != null)
+                this.Subject.Parse(context);
+            if (this.BlankNodePropertyList != null)
+                this.BlankNodePropertyList.Parse(context);
+            if (this.PredicateObjectList != null)
+                this.PredicateObjectList.Parse(context);
+        }
     }
 
     public class PrefixID : TokenPair
     {
         public string PNAME_NS { get; set; }
         public string IRIREF { get; set; }
+
+        internal void Parse(TurtleContext context)
+        {
+            
+        }
     }
 
     public class Base : TokenPair
     {
         public string IRIREF { get; set; }
+
+        internal void Parse(TurtleContext context)
+        {
+            
+        }
     }
 
     public class SparqlPrefix : TokenPair
     {
         public string PNAME_NS { get; set; }
         public string IRIREF { get; set; }
+
+        internal void Parse(TurtleContext context)
+        {
+            
+        }
     }
 
     public class SparqlBase : TokenPair
     {
         public string IRIREF { get; set; }
+
+        internal void Parse(TurtleContext context)
+        {
+            
+        }
     }
 
     public class Subject : TokenPair
@@ -86,6 +144,26 @@ namespace CodeHelper.Core.Parse.ParseResults.Turtles
         /// 与其他互斥
         /// </summary>
         public Collection Collection { get; set; }
+
+        internal void Parse(TurtleContext context)
+        {
+            context.FlushTriple();
+
+            context.Visit = TurtleContext.VisitType.Subject;
+
+            if (this.IRI != null)
+            {
+                 this.IRI.Parse(context);
+            }
+            else if (this.BlankNode != null)
+            {
+                this.BlankNode.Parse(context);
+            }
+            else if (this.Collection != null)
+            {
+                this.Collection.Parse(context);
+            }
+        }
     }
 
     public class PredicateObjectList : TokenPair
@@ -98,11 +176,29 @@ namespace CodeHelper.Core.Parse.ParseResults.Turtles
 
         public List<Verb> Verbs { get; set; }
         public List<ObjectList> ObjectLists { get; set; }
+
+        internal void Parse(TurtleContext context)
+        {                        
+            for (var i = 0; i < this.Verbs.Count; i++)
+            {
+                context.Visit = TurtleContext.VisitType.Verb;
+                this.Verbs[i].Parse(context);
+
+                context.Visit = TurtleContext.VisitType.Object;
+                this.ObjectLists[i].Parse(context);
+            }
+        }
     }
 
     public class BlankNodePropertyList : TokenPair
     {
         public PredicateObjectList PredicateObjectList { get; set; }
+
+        internal void Parse(TurtleContext context)
+        {
+            if (this.PredicateObjectList != null)
+                this.PredicateObjectList.Parse(context);
+        }
     }
 
     public class Verb : TokenPair
@@ -116,6 +212,17 @@ namespace CodeHelper.Core.Parse.ParseResults.Turtles
         /// 二者互斥存在
         /// </summary>
         public bool IsA { get; set; }
+
+        internal void Parse(TurtleContext context)
+        {
+            context.Visit = TurtleContext.VisitType.Verb;
+
+            if (this.Predicate != null)
+                this.Predicate.Parse(context);
+
+            if (this.IsA)
+                context.AddTriple("a");
+        }
     }
 
     public class ObjectList : TokenPair
@@ -126,11 +233,27 @@ namespace CodeHelper.Core.Parse.ParseResults.Turtles
         }
 
         public List<Object> Objects { get; set; }
+
+        internal void Parse(TurtleContext context)
+        {
+            context.Visit = TurtleContext.VisitType.Object;
+
+            foreach (var obj in this.Objects)
+                obj.Parse(context);
+        }
     }
 
     public class Predicate : TokenPair
     {
         public IRI IRI { get; set; }
+
+        internal void Parse(TurtleContext context)
+        {
+            context.Visit = TurtleContext.VisitType.Verb;
+
+            if (this.IRI != null)
+                this.IRI.Parse(context);
+        }
     }
 
     public class IRI : TokenPair
@@ -144,6 +267,18 @@ namespace CodeHelper.Core.Parse.ParseResults.Turtles
         /// 二者互斥存在
         /// </summary>
         public PrefixedName PrefixedName { get; set; }
+
+        internal void Parse(TurtleContext context)
+        {
+            if (this.PrefixedName != null)
+                this.PrefixedName.Parse(context);
+            else
+            {
+
+                context.AddTriple(this.IRIREF);
+            }
+
+        }
     }
 
     public class Collection : TokenPair
@@ -154,6 +289,12 @@ namespace CodeHelper.Core.Parse.ParseResults.Turtles
         }
 
         public List<Object> Objects { get; set; }
+
+        internal void Parse(TurtleContext context)
+        {
+            foreach (var obj in this.Objects)
+                obj.Parse(context);
+        }
     }
 
     public class Object : TokenPair
@@ -167,6 +308,20 @@ namespace CodeHelper.Core.Parse.ParseResults.Turtles
         public BlankNodePropertyList BlankNodePropertyList { get; set; }
 
         public Literal Literal { get; set; }
+
+        internal void Parse(TurtleContext context)
+        {
+            if (this.IRI != null)
+                 this.IRI.Parse(context);
+            if (this.BlankNode != null)
+                 this.BlankNode.Parse(context);
+            if (this.Collection != null)
+                 this.Collection.Parse(context);
+            if (this.BlankNodePropertyList != null)
+                 this.BlankNodePropertyList.Parse(context);
+            if (this.Literal != null)
+                this.Literal.Parse(context);
+        }
     }
 
     public class PrefixedName : TokenPair
@@ -180,6 +335,18 @@ namespace CodeHelper.Core.Parse.ParseResults.Turtles
         /// 排他存在
         /// </summary>
         public string PNAME_NS { get; set; }
+
+        internal void Parse(TurtleContext context)
+        {
+            if (this.PNAME_LN != null)
+            {
+                context.AddTriple(this.PNAME_LN);
+            }
+            if( this.PNAME_NS != null)
+            {
+                context.AddTriple(this.PNAME_NS);
+            }
+        }
     }
 
     public class BlankNode : TokenPair
@@ -187,6 +354,18 @@ namespace CodeHelper.Core.Parse.ParseResults.Turtles
         public string BLANK_NODE_LABEL { get; set; }
 
         public string ANON { get; set; }
+
+        internal void Parse(TurtleContext context)
+        {
+            if (BLANK_NODE_LABEL != null)
+            {
+                context.AddTriple(this.BLANK_NODE_LABEL);
+            }
+            if (ANON != null)
+            {
+                context.AddTriple(this.ANON);
+            }
+        }
     }
 
     public class Literal : TokenPair
@@ -206,5 +385,15 @@ namespace CodeHelper.Core.Parse.ParseResults.Turtles
         /// </summary>
         public string BooleanLiteral{get;set;}
 
+
+        internal void Parse(TurtleContext context)
+        {
+            if (this.RDFLiteral != null)
+                context.AddTriple(this.RDFLiteral);
+            if (this.NumericLiteral != null)
+                context.AddTriple(this.NumericLiteral);
+            if (this.BooleanLiteral != null)
+                context.AddTriple(this.BooleanLiteral);
+        }
     }
 }

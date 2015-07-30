@@ -887,9 +887,9 @@ namespace CodeHelper.Domain.Model
                         {
                             FileId = module.FileId,
                             File = module.File,
-                            CharPositionInLine = p.TokenPair.BeginToken.CharPositionInLine,
+                            CharPositionInLine = p.Position.BeginToken.CharPositionInLine,
                             ErrorType = ErrorType.Error,
-                            Line = p.TokenPair.BeginToken.Line,
+                            Line = p.Position.BeginToken.Line,
                             Message = error
                         });
                     }
@@ -899,9 +899,9 @@ namespace CodeHelper.Domain.Model
                         {
                             FileId = module.FileId,
                             File = module.File,
-                            CharPositionInLine = p.TokenPair.BeginToken.CharPositionInLine,
+                            CharPositionInLine = p.Position.BeginToken.CharPositionInLine,
                             ErrorType = ErrorType.Error,
-                            Line = p.TokenPair.BeginToken.Line,
+                            Line = p.Position.BeginToken.Line,
                             Message = string.Format("当前上下文无此类型{0}", p.Type)
                         });
                     }
@@ -911,9 +911,9 @@ namespace CodeHelper.Domain.Model
                         {
                             FileId = module.FileId,
                             File = module.File,
-                            CharPositionInLine = p.TokenPair.BeginToken.CharPositionInLine,
+                            CharPositionInLine = p.Position.BeginToken.CharPositionInLine,
                             ErrorType = ErrorType.Error,
-                            Line = p.TokenPair.BeginToken.Line,
+                            Line = p.Position.BeginToken.Line,
                             Message = string.Format("当前上下文有多个此类型{0}:{1}"
                             , p.Type
                             , String.Join(",", types.Select(x => x.FullName).ToArray()))

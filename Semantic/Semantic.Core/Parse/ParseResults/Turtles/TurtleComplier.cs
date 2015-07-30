@@ -27,8 +27,8 @@ namespace CodeHelper.Core.Parse.ParseResults.Turtles
 
             //parser.AddErrorListener(new AntlrErrorListener<IToken>());
 
-            var listener = new ParseTreeListener();
-            parser.AddParseListener(listener);
+            var listener = new ErrorListener();
+            parser.AddErrorListener(listener);
 
             var tree = parser.turtleDoc();
 
@@ -36,7 +36,7 @@ namespace CodeHelper.Core.Parse.ParseResults.Turtles
 
             vis.Visit(tree);
 
-            vis.Root.Errors.AddRange(listener_symbol.Errors);
+            //vis.Root.Errors.AddRange(listener_symbol.Errors);
             vis.Root.Errors.AddRange(listener.Errors);
             return vis.Root;
         }

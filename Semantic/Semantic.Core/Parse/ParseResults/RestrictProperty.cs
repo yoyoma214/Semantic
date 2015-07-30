@@ -8,14 +8,14 @@ using CodeHelper.Core.Services;
 
 namespace CodeHelper.Core.Parse.ParseResults
 {
-    public class PropertyInfoBase :TokenPair, IPropertyInfo, IGeneratorUtil
+    public class RestrictProperty :TokenPair, IRestrictPropertyInfo, IGeneratorUtil
     {
         public List<AttributeInfo> Attributes { get; set; }
 
-        public PropertyInfoBase()
+        public RestrictProperty()
             : base()
         {
-            this.Attributes = new List<AttributeInfo>();            
+            this.Attributes = new List<AttributeInfo>();
         }
 
         public string Name
@@ -76,13 +76,12 @@ namespace CodeHelper.Core.Parse.ParseResults
             set;
         }
 
-
         public virtual void Init()
         {
             
         }
 
-        public TokenPair TokenPair
+        public TokenPair Position
         {
             get;
             set;

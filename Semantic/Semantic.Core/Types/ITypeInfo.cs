@@ -19,7 +19,7 @@ namespace CodeHelper.Core.Types
 
         //List<ITypeInfo> TypeInfos { get; set; }
 
-        List<IPropertyInfo> PropertyInfos { get; set; }
+        List<IRestrictPropertyInfo> PropertyInfos { get; set; }
 
         void Init();
 
@@ -35,7 +35,9 @@ namespace CodeHelper.Core.Types
 
         TokenPair TokenPair { get; set; }
 
-        IPropertyInfo FindProperty(string name);
+        IRestrictPropertyInfo FindProperty(string name);
+
+        ITypeInfo Super { get; set; }
 
     }
 }
