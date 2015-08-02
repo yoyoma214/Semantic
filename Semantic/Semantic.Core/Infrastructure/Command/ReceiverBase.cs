@@ -45,6 +45,8 @@ namespace CodeHelper.Core.Infrastructure.Command
         public delegate bool NewNullProjectHandler();
         public delegate bool NewNullProjectCompletedHandler();
 
+        public delegate bool ModuleParsedHandler(Guid fileId);
+
         public delegate void PropertySelectedHandler(object obj);
 
         public event ExitProcessHandler OnExitProcess;
@@ -84,6 +86,8 @@ namespace CodeHelper.Core.Infrastructure.Command
         public event NewNullProjectCompletedHandler OnNewNullProjectCompleted;
 
         public event PropertySelectedHandler OnPropertySelected;
+
+        public event ModuleParsedHandler OnModuleParsed;
 
         private List<IReceiver> _Listeners = new List<IReceiver>();
 
@@ -247,6 +251,14 @@ namespace CodeHelper.Core.Infrastructure.Command
                 OnPropertySelected(obj);
 
             Listeners.ForEach(x => x.PropertySelect(obj));
+        }
+
+        public void ParseModule(Guid fileId)
+        {
+            if (this.OnModuleParsed != null)
+                this.OnModuleParsed(fileId);
+
+            Listeners.ForEach(x => x.ParseModule(fileId));
         }
     }
 }

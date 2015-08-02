@@ -20,7 +20,13 @@ namespace CodeHelper.Core.Parse.ParseResults.Turtles
         public override void Initialize()
         {
             var context = new TurtleContext();
+            
             this.Root.Parse(context);
+
+            this.Types.AddRange(context.Types.Values);
+            this.Properties.AddRange(context.Properties.Values);
+            this.Instances.AddRange(context.Instances.Values);
+
             this.Errors.AddRange(Root.Errors);
         }
     }

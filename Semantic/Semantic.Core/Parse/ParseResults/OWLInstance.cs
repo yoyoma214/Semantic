@@ -16,6 +16,8 @@ namespace CodeHelper.Core.Parse.ParseResults
 
     public class OWLInstance
     {
+        public string Name { get; set; }
+
         public TypeInfoBase Type { get; set; }
 
         public List<PropertyValue> PropertyValues { get; set; }

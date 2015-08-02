@@ -19,6 +19,7 @@ using CodeHelper.Core.Parse.ModuleRelations;
 using CodeHelper.Core.Parse.ParseResults.Turtles;
 using CodeHelper.Core.Parse.ParseResults.Antlrs;
 using CodeHelper.Core.Parse.ParseResults.Sparqls;
+using CodeHelper.Core.Infrastructure.Command;
 //using CodeHelper.Core.Parse.ParseResults.DataViews;
 //using CodeHelper.Core.Parse.ParseResults.ViewModels;
 //using CodeHelper.Core.Parse.ParseResults.Workflows;
@@ -30,6 +31,16 @@ namespace CodeHelper.Domain.Model
         public delegate void OnWiseCompleted(List<ParseErrorInfo> errors);
         public delegate void OnContinue();
 
+        //ReceiverBase receiver = new ReceiverBase();
+
+        //public ReceiverBase Receiver
+        //{
+        //    get
+        //    {
+        //        return receiver;
+        //    }
+        //}
+
         public struct ParseFlag
         {
             public IModel Model { get; set; }
@@ -39,7 +50,7 @@ namespace CodeHelper.Domain.Model
 
         public class WorkEngine
         {
-
+            
             private object syncObj = new object();
 
             private ConcurrentDictionary<string, object> status = new ConcurrentDictionary<string, object>();
@@ -302,6 +313,8 @@ namespace CodeHelper.Domain.Model
                         {
                             ModelManager.Instance().ParseModules.Add(module.FileId, module);
                         }
+
+                        GlobalService.ModelManager.Receiver.ParseModule(model.FileId);
                     }
                     catch (Exception e)
                     {

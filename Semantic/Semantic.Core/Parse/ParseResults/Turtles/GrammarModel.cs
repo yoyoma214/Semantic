@@ -23,6 +23,8 @@ namespace CodeHelper.Core.Parse.ParseResults.Turtles
             foreach (var s in Statements)
             {
                 s.Parse(context);
+
+                context.FlushTriple();
             }
         }
     }
@@ -147,7 +149,7 @@ namespace CodeHelper.Core.Parse.ParseResults.Turtles
 
         internal void Parse(TurtleContext context)
         {
-            context.FlushTriple();
+            //context.FlushTriple();
 
             context.Visit = TurtleContext.VisitType.Subject;
 
@@ -162,7 +164,7 @@ namespace CodeHelper.Core.Parse.ParseResults.Turtles
             else if (this.Collection != null)
             {
                 this.Collection.Parse(context);
-            }
+            }            
         }
     }
 

@@ -146,14 +146,8 @@ namespace CodeHelper.Core.Parse.ParseResults
 
         public string NameSpace
         {
-            get
-            {
-                throw new NotImplementedException();
-            }
-            set
-            {
-                throw new NotImplementedException();
-            }
+            get;
+            set;
         }
 
 

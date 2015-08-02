@@ -13,6 +13,7 @@ namespace CodeHelper.Core.Parse.ParseResults
         public List<TypeInfoBase> Range { get; set; }
         public OWLProperty Parent { get; set; }
         public TokenPair Position { get; set; }
+        public bool IsObject { get; set; }
 
         public OWLProperty()
         {

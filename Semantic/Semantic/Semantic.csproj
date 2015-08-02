@@ -169,6 +169,12 @@
     <Compile Include="UI\DockPanels\PropertyPanel.Receiver.cs">
       <SubType>Form</SubType>
     </Compile>
+    <Compile Include="UI\DockPanels\NavigatePanel.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="UI\DockPanels\NavigatePanel.Receiver.cs">
+      <SubType>Form</SubType>
+    </Compile>
     <Compile Include="UI\GenerateOutputFrm.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -227,6 +233,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="UI\DockPanels\PropertyPanel.resx">
       <DependentUpon>PropertyPanel.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="UI\DockPanels\NavigatePanel.resx">
+      <DependentUpon>NavigatePanel.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="UI\GenerateOutputFrm.resx">
       <DependentUpon>GenerateOutputFrm.cs</DependentUpon>

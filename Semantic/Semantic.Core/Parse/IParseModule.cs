@@ -5,6 +5,7 @@ using System.Text;
 using CodeHelper.Core.Error;
 using CodeHelper.Core.Types;
 using CodeHelper.Core.Parse;
+using CodeHelper.Core.Parse.ParseResults;
 
 namespace CodeHelper.Core.Parser
 {
@@ -34,6 +35,10 @@ namespace CodeHelper.Core.Parser
         string File { get; set; }
         
         List<ITypeInfo> Types { get; set; }
+
+        List<OWLProperty> Properties { get; set; }
+
+        List<OWLInstance> Instances { get; set; }   
 
         void Initialize();
 
