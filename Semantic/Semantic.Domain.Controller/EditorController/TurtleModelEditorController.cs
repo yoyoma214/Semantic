@@ -13,6 +13,8 @@ using System.Threading;
 using CodeHelper.Core.EditorController;
 using CodeHelper.Domain.Model;
 using CodeHelper.Editors;
+using CodeHelper.Domain.Controller.UI;
+using ICSharpCode.TextEditor;
 
 namespace CodeHelper.Domain.EditorController
 {
@@ -22,32 +24,59 @@ namespace CodeHelper.Domain.EditorController
 
         protected override void OnInputChar(char c, int offset, System.Drawing.Point location)
         {
-            if( c == '.' || c ==';' || c == '}')
+            if( c ==':' || c == '[')
             {
+
                 //call to parse file     
                 location.X += (int)this.editorContainer.Editor.Font.Size;
                 location.Y += (int)this.editorContainer.Editor.Font.Height;
                 var text = this.editorContainer.Text;
                 //var index = this.editorContainer.Editor.Document
-                
-                this.model.Parse(offset);
 
-                this.model.Parsed += new OnParsed((o,a) => { });
+                var module = ModelManager.Instance().GetParseModule(this.model.FileId);
+                if (module != null)
+                {
+                    //ContextMenu m = new ContextMenu();
+                    var data = new List<string>();
 
-                //ThreadPool.QueueUserWorkItem(o =>
-                //{
-                //    var parseInfo = new ParseInfo();
-                //    parseInfo.Content = text;
-                //    parseInfo.Index = offset;
-                //    parseInfo.Type = ParseType.XmlModel;
-                //    var parseInfo_json = Newtonsoft.Json.JsonConvert.SerializeObject(parseInfo);
-                //    var result_json = DataModelParser.Instance().Parse(parseInfo_json);
-                //    var menu = new ContextMenu();
-                //    menu.MenuItems.Add(new MenuItem("as"));
-                //    this.editorContainer.Editor.Invoke(new ShowMenuDelegate(ShowMenu), menu, location);
-                //});                                       
+                    foreach (var t in module.Types)
+                    {
+                        data.Add(t.Name);
+                    }
+                    foreach (var t in module.Properties)
+                    {
+                        data.Add(t.Name);
+                    }
+                    foreach (var t in module.Instances)
+                    {
+                        data.Add(t.Name);
+                    }
+
+                    SenseMenu m = new SenseMenu();
+
+                    m.SetData(data);
+                    var l = this.editorContainer.Editor.PointToScreen(new Point(0, 0));
+
+                    m.Location = new Point(location.X + l.X, location.Y + l.Y);
+                    m.Show();
+                    
+                    m.OnCompleteInput += new SenseMenu.CompleteInput((s) => {
+                        DoInput(offset, s);     
+                    });                    
+                }                                      
             }            
         }
+
+        void DoInput(int offset, string text)
+        {
+            this.editorContainer.Editor.Document.Remove(offset, 1);
+            this.editorContainer.Editor.Document.Insert(offset, text);
+            TextLocation tl =
+                this.editorContainer.Editor.ActiveTextAreaControl.TextArea.Caret.Position;
+            tl.Column += text.Length;
+            this.editorContainer.Editor.ActiveTextAreaControl.TextArea.Caret.Position = tl;   
+        }
+     
 
         void ShowMenu(ContextMenu menu, Point location)
         {
