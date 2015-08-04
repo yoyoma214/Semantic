@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using CodeHelper.Core.Error;
+using ICSharpCode.TextEditor;
 
 namespace CodeHelper.Core.Parse.ParseResults.Turtles
 {
@@ -35,9 +36,28 @@ namespace CodeHelper.Core.Parse.ParseResults.Turtles
         private string CurrentVerb { get; set; }
 
         /// <summary>
+        /// 用户输入所在主语
+        /// </summary>        
+        public string Subject { get; set; }
+
+        /// <summary>
+        /// 用户输入所在谓语
+        /// </summary>
+        public string Verb { get; set; }
+
+        /// <summary>
+        /// 用户输入所在宾语
+        /// </summary>
+        public string Object { get; set; }
+
+        public TurtleDoc Root { get; set; }
+
+        /// <summary>
         /// 是否在访问主语，否则在访问谓语和宾语
         /// </summary>
         public VisitType Visit { get; set; }
+
+        public Caret Caret { get; set; }
 
         public TurtleContext()
         {
@@ -56,24 +76,50 @@ namespace CodeHelper.Core.Parse.ParseResults.Turtles
             this.CurrentVerbObjects = new Dictionary<string, List<string>>();
         }
 
-        public void AddTriple(string part)
+        public void AddTriple(string part , TokenPair tokenPair)
         {
-            if (part == null)
+            if (part == "owl:equivalentClass")
             {
+            }
+
+            bool match = false;
+
+            if (this.Caret != null)
+            {
+                if (tokenPair.BeginToken != null)
+                {
+                    if (tokenPair.BeginToken.Line == this.Caret.Line + 1)
+                    {                        
+                        if (tokenPair.EndToken.EndCharPositionInLine  == this.Caret.Column)
+                        {
+                            match = true;                            
+                            Console.WriteLine("matched");
+                        }
+                    }
+                }
             }
 
             if (this.Visit == VisitType.Subject)
             {
                 CurrentSubjects.Add(part);
+
+                if (match)
+                    this.Subject = part;
             }
             else if ( this.Visit == VisitType.Verb)
             {
                 CurrentVerbObjects.Add(part, new List<string>());
                 CurrentVerb = part;
+
+                if (match)
+                    this.Verb = part;
             }
             else if (this.Visit == VisitType.Object)
             {
                 this.CurrentVerbObjects[this.CurrentVerb].Add(part);
+
+                if (match)
+                    this.Object = part;
             }
         }
 
@@ -91,7 +137,6 @@ namespace CodeHelper.Core.Parse.ParseResults.Turtles
                             {
                                 if (!this.Types.ContainsKey(subject))
                                 {
-
                                     var t = new TypeInfoBase();
                                     t.Name = subject;
                                     t.NameSpace = null;

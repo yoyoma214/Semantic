@@ -15,6 +15,8 @@ using CodeHelper.Domain.Model;
 using CodeHelper.Editors;
 using CodeHelper.Domain.Controller.UI;
 using ICSharpCode.TextEditor;
+using CodeHelper.Core.Parser;
+using CodeHelper.Core.Services;
 
 namespace CodeHelper.Domain.EditorController
 {
@@ -24,7 +26,7 @@ namespace CodeHelper.Domain.EditorController
 
         protected override void OnInputChar(char c, int offset, System.Drawing.Point location)
         {
-            if( c ==':' || c == '[')
+            if (c == ':' || c == '[')
             {
 
                 //call to parse file     
@@ -33,48 +35,86 @@ namespace CodeHelper.Domain.EditorController
                 var text = this.editorContainer.Text;
                 //var index = this.editorContainer.Editor.Document
 
-                var module = ModelManager.Instance().GetParseModule(this.model.FileId);
-                if (module != null)
+                var prevText = "";
+                int count = 0;
+                while (count < 100)
                 {
-                    //ContextMenu m = new ContextMenu();
-                    var data = new List<string>();
-
-                    foreach (var t in module.Types)
+                    var ch = text[offset - count];
+                    if (ch == '\r' || ch == '\n' || ch == ' ')
                     {
-                        data.Add(t.Name);
+                        break;
                     }
-                    foreach (var t in module.Properties)
+                    prevText = ch + prevText;
+                    count++;
+                }
+
+                GlobalService.ModelManager.OnParsed += (m, sucess) =>
+                {
+                    if (m.FileId != this.model.FileId)
+                        return;
+
+                    var module = ModelManager.Instance().GetParseModule(this.model.FileId);
+
+                    if (this.editorContainer.Editor.InvokeRequired)
                     {
-                        data.Add(t.Name);
-                    }
-                    foreach (var t in module.Instances)
-                    {
-                        data.Add(t.Name);
+                        this.editorContainer.Editor.Invoke(new DoSenseDelegate(this.DoSense), location, offset, prevText, module);
                     }
 
-                    SenseMenu m = new SenseMenu();
+                    //var module = ModelManager.Instance().GetParseModule(this.model.FileId);
 
-                    m.SetData(data);
-                    var l = this.editorContainer.Editor.PointToScreen(new Point(0, 0));
-
-                    m.Location = new Point(location.X + l.X, location.Y + l.Y);
-                    m.Show();
-                    
-                    m.OnCompleteInput += new SenseMenu.CompleteInput((s) => {
-                        DoInput(offset, s);     
-                    });                    
-                }                                      
-            }            
+                    //if (module != null)
+                    //{
+                    //    DoSense(location, offset, prevText, module);
+                    //}
+                };
+            }
         }
 
-        void DoInput(int offset, string text)
+        private delegate void DoSenseDelegate(Point location, int offset, string prevText, IParseModule module );
+
+        void ModelManager_OnParsed(IModel model, bool success)
         {
-            this.editorContainer.Editor.Document.Remove(offset, 1);
-            this.editorContainer.Editor.Document.Insert(offset, text);
+            
+        }
+
+        void DoSense(Point location, int offset, string prevText, IParseModule module )
+        {
+            SenseMenu m = new SenseMenu();
+
+            m.SetData(prevText, module);
+            var l = this.editorContainer.Editor.PointToScreen(new Point(0, 0));
+
+            m.Location = new Point(location.X + l.X, location.Y + l.Y);
+            m.Show();
+
+            m.OnCompleteInput += new SenseMenu.CompleteInput((s) =>
+            {
+                DoInput(prevText,offset, s);
+            });
+
+            //m.OnCompleteInput -= new SenseMenu.CompleteInput((s) =>
+            //{
+            //    DoInput(offset, s);
+            //});
+        }
+
+        void DoInput(string prevText ,int offset, string text)
+        {
+            Console.WriteLine("offset" + offset + ":" + text);
+            if (!text.EndsWith(" "))
+            {
+                text += " ";
+            }
             TextLocation tl =
                 this.editorContainer.Editor.ActiveTextAreaControl.TextArea.Caret.Position;
-            tl.Column += text.Length;
-            this.editorContainer.Editor.ActiveTextAreaControl.TextArea.Caret.Position = tl;   
+
+            this.editorContainer.Editor.Document.Remove(offset - prevText.Length + 1, prevText.Length);
+            this.editorContainer.Editor.Document.Insert(offset - prevText.Length + 1, text);
+            
+            tl.Column += text.Length - prevText.Length;
+            this.editorContainer.Editor.ActiveTextAreaControl.TextArea.Caret.Position = tl;
+
+            this.editorContainer.Editor.ActiveTextAreaControl.Invalidate();
         }
      
 

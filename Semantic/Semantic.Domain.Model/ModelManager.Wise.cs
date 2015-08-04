@@ -249,6 +249,7 @@ namespace CodeHelper.Domain.Model
                                     var complier = new TurtleComplier();
                                    
                                     module = new TurtleModule();
+                                    ((TurtleModule)module).Caret = model.Caret;
                                     ((TurtleModule)module).Root =  complier.Parse(model.Content);
                                     module.Name = System.IO.Path.GetFileNameWithoutExtension(model.File);
                                 }
@@ -315,6 +316,8 @@ namespace CodeHelper.Domain.Model
                         }
 
                         GlobalService.ModelManager.Receiver.ParseModule(model.FileId);
+
+                        GlobalService.ModelManager.FireParsed(model,true);
                     }
                     catch (Exception e)
                     {

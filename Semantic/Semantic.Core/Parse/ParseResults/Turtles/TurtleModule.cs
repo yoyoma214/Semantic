@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using ICSharpCode.TextEditor;
 
 namespace CodeHelper.Core.Parse.ParseResults.Turtles
 {
@@ -13,15 +14,21 @@ namespace CodeHelper.Core.Parse.ParseResults.Turtles
             //this.Mapings = new List<MappingInfo>();
             this.UsingNameSpaces = new List<string>();
             //this.Models = new Dictionary<string, ModelInfo>();
-        }
+        }        
 
         public TurtleDoc Root { get; set; }
+
+        public Caret Caret { get; set; }
 
         public override void Initialize()
         {
             var context = new TurtleContext();
-            
+            context.Caret = Caret;
             this.Root.Parse(context);
+
+            this.Subject = context.Subject;
+            this.Verb = context.Verb;
+            this.Object = context.Object;
 
             this.Types.AddRange(context.Types.Values);
             this.Properties.AddRange(context.Properties.Values);

@@ -28,6 +28,8 @@ namespace CodeHelper.Core.Infrastructure.Model
 
         event OnParseError ParseError;
 
+        event OnParsed OnParsed;
+
         List<ITypeInfo> ParseType(string type, IParseModule ctx , out string error);
 
         IModel MakeSureModel(string file);
@@ -40,5 +42,7 @@ namespace CodeHelper.Core.Infrastructure.Model
         IParseModule MakeSureParseModule(string p);
 
         IParseModule GetParseModule(Guid fileId);
+
+        void FireParsed(IModel model, bool sucess);
     }
 }

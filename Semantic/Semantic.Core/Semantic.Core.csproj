@@ -175,6 +175,7 @@
     <Compile Include="Services\GlobalService.cs" />
     <Compile Include="Types\INameSpace.cs" />
     <Compile Include="Types\ITypeInfo.cs" />
+    <Compile Include="Types\OWLTypes.cs" />
     <Compile Include="UI\FindFrm.cs">
       <SubType>Form</SubType>
     </Compile>

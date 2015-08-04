@@ -7,8 +7,9 @@ namespace CodeHelper.Core.Parse
 {
     public interface IToken
     {
-        int Line { get; set; }
+        int Line { get;}
         int CharPositionInLine { get; set; }
-        int Length { get; set; }
+        int EndCharPositionInLine { get; }
+        int Length { get; }
     }
 }

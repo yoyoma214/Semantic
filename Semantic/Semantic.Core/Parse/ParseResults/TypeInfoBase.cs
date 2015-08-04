@@ -156,5 +156,14 @@ namespace CodeHelper.Core.Parse.ParseResults
             get;
             set;
         }
+
+
+        public int EndCharPositionInLine
+        {
+            get
+            {
+                return this.CharPositionInLine + this.Length;
+            }
+        }
     }
 }

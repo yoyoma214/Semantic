@@ -30,10 +30,20 @@ namespace CodeHelper.Core.Parse.ParseResults
             set;
         }
 
+        public int EndCharPositionInLine
+        {
+            get
+            {
+                return this.CharPositionInLine + this.Length;
+            }
+        }
+
         public int Length
         {
-            get;
-            set;
+            get
+            {
+                return this.Text.Length;
+            }
         }
 
         public string Text { get; set; }
@@ -59,10 +69,16 @@ namespace CodeHelper.Core.Parse.ParseResults
 
         public void Parse(ParserRuleContext ctx)
         {
-            if ( ctx.Start != null )
-                this.BeginToken = new Token(ctx.Start.Line, ctx.Start.StartIndex);
-            if ( ctx.Stop != null )
-                this.EndToken = new Token(ctx.Stop.Line, ctx.stop.StopIndex);      
+            if (ctx.Start != null)
+            {
+                this.BeginToken = new Token(ctx.Start.Line, ctx.Start.Column);
+                this.BeginToken.Text = ctx.Start.Text;
+            }
+            if (ctx.Stop != null)
+            {
+                this.EndToken = new Token(ctx.Stop.Line, ctx.stop.Column);
+                this.EndToken.Text = ctx.Stop.Text;
+            }
         }
     }
 }

@@ -109,5 +109,23 @@ namespace CodeHelper.Core.Parse
             get;
             set;
         }
+
+        public string Subject
+        {
+            get;
+            set;
+        }
+
+        public string Verb
+        {
+            get;
+            set;
+        }
+
+        public new string Object
+        {
+            get;
+            set;
+        }
     }
 }

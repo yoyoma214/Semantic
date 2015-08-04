@@ -57,5 +57,7 @@ namespace CodeHelper.Core.Infrastructure.Model
         //int InputChar
         //char InputChar { get; set; }
 
+
+        ICSharpCode.TextEditor.Caret Caret { get; set; }
     }
 }

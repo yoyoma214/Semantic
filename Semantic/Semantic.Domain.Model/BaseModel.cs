@@ -191,5 +191,12 @@ namespace CodeHelper.Domain.Model
             get;
             set;
         }
+
+
+        public ICSharpCode.TextEditor.Caret Caret
+        {
+            get;
+            set;
+        }
     }
 }

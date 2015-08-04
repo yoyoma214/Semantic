@@ -223,7 +223,7 @@ namespace CodeHelper.Core.Parse.ParseResults.Turtles
                 this.Predicate.Parse(context);
 
             if (this.IsA)
-                context.AddTriple("a");
+                context.AddTriple("a",this);
         }
     }
 
@@ -277,7 +277,7 @@ namespace CodeHelper.Core.Parse.ParseResults.Turtles
             else
             {
 
-                context.AddTriple(this.IRIREF);
+                context.AddTriple(this.IRIREF, this);
             }
 
         }
@@ -342,11 +342,11 @@ namespace CodeHelper.Core.Parse.ParseResults.Turtles
         {
             if (this.PNAME_LN != null)
             {
-                context.AddTriple(this.PNAME_LN);
+                context.AddTriple(this.PNAME_LN, this);
             }
             if( this.PNAME_NS != null)
             {
-                context.AddTriple(this.PNAME_NS);
+                context.AddTriple(this.PNAME_NS, this);
             }
         }
     }
@@ -361,11 +361,11 @@ namespace CodeHelper.Core.Parse.ParseResults.Turtles
         {
             if (BLANK_NODE_LABEL != null)
             {
-                context.AddTriple(this.BLANK_NODE_LABEL);
+                context.AddTriple(this.BLANK_NODE_LABEL, this);
             }
             if (ANON != null)
             {
-                context.AddTriple(this.ANON);
+                context.AddTriple(this.ANON, this);
             }
         }
     }
@@ -391,11 +391,11 @@ namespace CodeHelper.Core.Parse.ParseResults.Turtles
         internal void Parse(TurtleContext context)
         {
             if (this.RDFLiteral != null)
-                context.AddTriple(this.RDFLiteral);
+                context.AddTriple(this.RDFLiteral, this);
             if (this.NumericLiteral != null)
-                context.AddTriple(this.NumericLiteral);
+                context.AddTriple(this.NumericLiteral, this);
             if (this.BooleanLiteral != null)
-                context.AddTriple(this.BooleanLiteral);
+                context.AddTriple(this.BooleanLiteral, this);
         }
     }
 }

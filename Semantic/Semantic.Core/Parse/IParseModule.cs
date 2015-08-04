@@ -18,6 +18,12 @@ namespace CodeHelper.Core.Parser
 
     public interface IParseModule : IWiseble
     {
+        string Subject { get; set; }
+
+        string Verb { get; set; }
+
+        string Object { get; set; }
+
         string Name { get; set; }
 
         InputCharInfo InputChar { get; set; }

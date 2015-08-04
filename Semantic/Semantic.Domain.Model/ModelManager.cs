@@ -50,6 +50,8 @@ namespace CodeHelper.Domain.Model
 
         public event OnParseError ParseError;
 
+        public event OnParsed OnParsed;
+
         public List<ParseErrorInfo> Errors
         {
             get;
@@ -458,6 +460,13 @@ namespace CodeHelper.Domain.Model
         public IParseModule GetParseModule(Guid fileId)
         {
             return this.workEngine.GetParseModule(fileId);
+        }
+
+
+        public void FireParsed(IModel model ,bool sucess)
+        {
+            if (this.OnParsed != null)
+                this.OnParsed(model, sucess);
         }
     }
 }
