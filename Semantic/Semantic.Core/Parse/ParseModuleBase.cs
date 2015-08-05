@@ -122,7 +122,7 @@ namespace CodeHelper.Core.Parse
             set;
         }
 
-        public new string Object
+        public string Object
         {
             get;
             set;

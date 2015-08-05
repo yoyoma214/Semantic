@@ -258,19 +258,29 @@ namespace CodeHelper.Domain.Controller.UI
                 data.Add(t.Name);
             }
 
-            if (!string.IsNullOrWhiteSpace(module.Subject))
+            if ( prevText.EndsWith("^^"))
             {
-                
+                this.data.Clear();
+
+                this.data.AddRange(OWLTypes.Instance().XSD_Typtes.Keys);
+            }
+            else if (!string.IsNullOrWhiteSpace(module.Object))
+            {
+                this.data.AddRange(OWLTypes.Instance().Object_Types.Keys);
             }
             else if ( !string.IsNullOrWhiteSpace(module.Verb))
             {
+                this.data.Clear();
+
                 this.data.AddRange(OWLTypes.Instance().Ver_Types.Keys);
             }
-            else if ( !string.IsNullOrWhiteSpace(module.Object))
+            else if (!string.IsNullOrWhiteSpace(module.Subject))
             {
-                this.data.AddRange(OWLTypes.Instance().Object_Types.Keys);
-            }            
 
+            }          
+            if ( prevText.EndsWith("^^"))
+                this.textBox1.Text = ":";
+            else            
             this.textBox1.Text = prevText;
             //textBox1_TextChanged(null, null);
         }

@@ -22,12 +22,23 @@ namespace CodeHelper.Domain.EditorController
 {
     public class TurtleModelEditorController : BaseEditorController
     {
+        public TurtleModelEditorController()
+            : base()
+        {            
+        }
+
         public string Text { get; set; }
 
         protected override void OnInputChar(char c, int offset, System.Drawing.Point location)
         {
-            if (c == ':' || c == '[')
+            if (c == ':' || c=='@' || c=='^')
             {
+                if (c == '^')
+                {
+                    if (offset > 1 && this.editorContainer.Text[offset - 1] != '^')
+                        return;
+
+                }
 
                 //call to parse file     
                 location.X += (int)this.editorContainer.Editor.Font.Size;
@@ -48,8 +59,12 @@ namespace CodeHelper.Domain.EditorController
                     count++;
                 }
 
-                GlobalService.ModelManager.OnParsed += (m, sucess) =>
+                OnParsed d = null;
+
+                d = new OnParsed((m, sucess) =>
                 {
+                    GlobalService.ModelManager.OnParsed -= d;
+
                     if (m.FileId != this.model.FileId)
                         return;
 
@@ -59,18 +74,13 @@ namespace CodeHelper.Domain.EditorController
                     {
                         this.editorContainer.Editor.Invoke(new DoSenseDelegate(this.DoSense), location, offset, prevText, module);
                     }
-
-                    //var module = ModelManager.Instance().GetParseModule(this.model.FileId);
-
-                    //if (module != null)
-                    //{
-                    //    DoSense(location, offset, prevText, module);
-                    //}
-                };
+                });
+                
+                GlobalService.ModelManager.OnParsed += d;
             }
-        }
+        }        
 
-        private delegate void DoSenseDelegate(Point location, int offset, string prevText, IParseModule module );
+        private delegate void DoSenseDelegate(Point location, int offset, string prevText, IParseModule module);
 
         void ModelManager_OnParsed(IModel model, bool success)
         {
@@ -105,14 +115,24 @@ namespace CodeHelper.Domain.EditorController
             {
                 text += " ";
             }
-            TextLocation tl =
-                this.editorContainer.Editor.ActiveTextAreaControl.TextArea.Caret.Position;
 
-            this.editorContainer.Editor.Document.Remove(offset - prevText.Length + 1, prevText.Length);
-            this.editorContainer.Editor.Document.Insert(offset - prevText.Length + 1, text);
-            
-            tl.Column += text.Length - prevText.Length;
-            this.editorContainer.Editor.ActiveTextAreaControl.TextArea.Caret.Position = tl;
+            TextLocation tl =
+                    this.editorContainer.Editor.ActiveTextAreaControl.TextArea.Caret.Position;
+
+            if (prevText.EndsWith("^^"))
+            {
+                this.editorContainer.Editor.Document.Insert(offset + 1, text);
+                tl.Column += text.Length;
+                this.editorContainer.Editor.ActiveTextAreaControl.TextArea.Caret.Position = tl;
+            }
+            else
+            {                
+                this.editorContainer.Editor.Document.Remove(offset - prevText.Length + 1, prevText.Length);
+                this.editorContainer.Editor.Document.Insert(offset - prevText.Length + 1, text);
+
+                tl.Column += text.Length - prevText.Length;
+                this.editorContainer.Editor.ActiveTextAreaControl.TextArea.Caret.Position = tl;
+            }
 
             this.editorContainer.Editor.ActiveTextAreaControl.Invalidate();
         }

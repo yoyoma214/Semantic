@@ -459,7 +459,12 @@ namespace CodeHelper.Domain.Model
 
         public IParseModule GetParseModule(Guid fileId)
         {
-            return this.workEngine.GetParseModule(fileId);
+            if (this.ParseModules.ContainsKey(fileId))
+                return this.ParseModules[fileId];
+
+            return null;
+
+            //return this.workEngine.GetParseModule(fileId);
         }
 
 

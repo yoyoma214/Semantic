@@ -990,7 +990,7 @@ namespace CodeHelper.Domain.Model
             {
                 if (this.ParsedModules.ContainsKey(fileId))
                     return this.ParsedModules[fileId];
-
+                                
                 return null;
             }
         }

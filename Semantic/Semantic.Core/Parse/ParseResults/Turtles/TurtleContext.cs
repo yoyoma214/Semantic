@@ -76,23 +76,19 @@ namespace CodeHelper.Core.Parse.ParseResults.Turtles
             this.CurrentVerbObjects = new Dictionary<string, List<string>>();
         }
 
-        public void AddTriple(string part , TokenPair tokenPair)
+        bool? m_matchCaret = false;
+
+        public void AddTriple(string part, TokenPair tokenPair)
         {
-            if (part == "owl:equivalentClass")
-            {
-            }
-
-            bool match = false;
-
             if (this.Caret != null)
             {
                 if (tokenPair.BeginToken != null)
                 {
                     if (tokenPair.BeginToken.Line == this.Caret.Line + 1)
-                    {                        
-                        if (tokenPair.EndToken.EndCharPositionInLine  == this.Caret.Column)
+                    {
+                        if (tokenPair.EndToken.EndCharPositionInLine == this.Caret.Column)
                         {
-                            match = true;                            
+                            m_matchCaret = true;
                             Console.WriteLine("matched");
                         }
                     }
@@ -102,25 +98,31 @@ namespace CodeHelper.Core.Parse.ParseResults.Turtles
             if (this.Visit == VisitType.Subject)
             {
                 CurrentSubjects.Add(part);
+                this.Verb = this.Object = null;
 
-                if (match)
+                if (m_matchCaret != null)
                     this.Subject = part;
             }
-            else if ( this.Visit == VisitType.Verb)
+            else if (this.Visit == VisitType.Verb)
             {
                 CurrentVerbObjects.Add(part, new List<string>());
                 CurrentVerb = part;
 
-                if (match)
+                this.Object = null;
+
+                if (m_matchCaret != null)
                     this.Verb = part;
             }
             else if (this.Visit == VisitType.Object)
             {
                 this.CurrentVerbObjects[this.CurrentVerb].Add(part);
 
-                if (match)
+                if (m_matchCaret != null)
                     this.Object = part;
             }
+
+            if (m_matchCaret == true)
+               m_matchCaret = null;
         }
 
         public void FlushTriple()
