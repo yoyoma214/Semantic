@@ -14,7 +14,9 @@ namespace CodeHelper.Core.Parse
     {
         public ParseModuleBase()
         {
-            Types = new List<ITypeInfo>();
+            this.Types = new List<ITypeInfo>();
+            this.Properties = new List<OWLProperty>();
+            this.Instances = new List<OWLInstance>();
             Errors = new List<ParseErrorInfo>();
             UsingNameSpaces = new List<string>();
         }
@@ -43,7 +45,11 @@ namespace CodeHelper.Core.Parse
         {
             get;
             set;
-        }
+        } 
+
+        public List<OWLProperty> Properties { get; set; }
+
+        public List<OWLInstance> Instances { get; set; }        
 
         string mFile = null;
 
@@ -99,6 +105,24 @@ namespace CodeHelper.Core.Parse
         }
 
         public InputCharInfo InputChar
+        {
+            get;
+            set;
+        }
+
+        public string Subject
+        {
+            get;
+            set;
+        }
+
+        public string Verb
+        {
+            get;
+            set;
+        }
+
+        public string Object
         {
             get;
             set;

@@ -48,6 +48,7 @@ namespace CodeHelper
             this.receiver.Listeners.Add(DocumentViewManager.Instance().Receiver);
             this.receiver.Listeners.Add(GlobalService.ModelManager.Receiver);
             this.receiver.Listeners.Add(GlobalService.EditorContextManager.Receiver);
+            this.receiver.Listeners.Add(this.m_navigatePanel.Receiver);
 
             this.Load += new EventHandler(MainFrm_Load);
             this.FormClosing += new FormClosingEventHandler(MainFrm_FormClosing);
@@ -80,7 +81,9 @@ namespace CodeHelper
         }
 
         void Init()
-        {                       
+        {
+
+            GlobalService.ModelManager.Receiver.Listeners.Add(this.m_navigatePanel.Receiver);
 
             var cmdHost_common = CommandHostManager.Instance().Get(CommandHostManager.HostType.Common);
             cmdHost_common.AddCommand(new RenameModelCommand(this.Receiver));

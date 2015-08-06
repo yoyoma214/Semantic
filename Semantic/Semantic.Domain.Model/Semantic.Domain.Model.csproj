@@ -62,6 +62,10 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\ICSharpCode.TextEditor-master\Project\ICSharpCode.TextEditor.csproj">
+      <Project>{E1BA3418-B337-45CE-8940-4C7262B39359}</Project>
+      <Name>ICSharpCode.TextEditor</Name>
+    </ProjectReference>
     <ProjectReference Include="..\Semantic.Commands\Semantic.Commands.csproj">
       <Project>{78A7C237-0077-484D-8D67-128936BF23EA}</Project>
       <Name>CodeHelper.Commands</Name>

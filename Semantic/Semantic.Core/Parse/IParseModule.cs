@@ -5,6 +5,7 @@ using System.Text;
 using CodeHelper.Core.Error;
 using CodeHelper.Core.Types;
 using CodeHelper.Core.Parse;
+using CodeHelper.Core.Parse.ParseResults;
 
 namespace CodeHelper.Core.Parser
 {
@@ -17,6 +18,12 @@ namespace CodeHelper.Core.Parser
 
     public interface IParseModule : IWiseble
     {
+        string Subject { get; set; }
+
+        string Verb { get; set; }
+
+        string Object { get; set; }
+
         string Name { get; set; }
 
         InputCharInfo InputChar { get; set; }
@@ -34,6 +41,10 @@ namespace CodeHelper.Core.Parser
         string File { get; set; }
         
         List<ITypeInfo> Types { get; set; }
+
+        List<OWLProperty> Properties { get; set; }
+
+        List<OWLInstance> Instances { get; set; }   
 
         void Initialize();
 

@@ -134,18 +134,21 @@
       <DependentUpon>ANTLRv4Parser.g4</DependentUpon>
     </Compile>
     <Compile Include="Parse\ParseResults\Antlrs\GrammarModel.cs" />
+    <Compile Include="Parse\ParseResults\OWLInstance.cs" />
+    <Compile Include="Parse\ParseResults\OWLProperty.cs" />
     <Compile Include="Parse\ParseResults\Sparqls\NSparqlParser.cs" />
     <Compile Include="Parse\ParseResults\Sparqls\SparqlComplier.cs" />
     <Compile Include="Parse\ParseResults\Sparqls\SparqlModule.cs" />
     <Compile Include="Parse\ParseResults\Sparqls\SparqlVisitor.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="Parse\ParseResults\Turtles\TurtleContext.cs" />
     <Compile Include="Parse\ParseResults\Turtles\TurtleModule.cs" />
     <Compile Include="Parse\ParseResults\AtomTokenPair.cs" />
     <Compile Include="Parse\ParseResults\AttributeInfo.cs" />
     <Compile Include="Parse\ParseResults\ErrorListener.cs" />
-    <Compile Include="Parse\ParseResults\IPropertyInfo.cs" />
-    <Compile Include="Parse\ParseResults\PropertyInfoBase.cs" />
+    <Compile Include="Parse\ParseResults\IRestrictPropertyInfo.cs" />
+    <Compile Include="Parse\ParseResults\RestrictProperty.cs" />
     <Compile Include="Parse\ParseResults\Sparqls\GrammarModel.cs" />
     <Compile Include="Parse\ParseResults\Sparqls\Sparql.g4.lexer.cs">
       <DependentUpon>Sparql.g4</DependentUpon>
@@ -172,6 +175,7 @@
     <Compile Include="Services\GlobalService.cs" />
     <Compile Include="Types\INameSpace.cs" />
     <Compile Include="Types\ITypeInfo.cs" />
+    <Compile Include="Types\OWLTypes.cs" />
     <Compile Include="UI\FindFrm.cs">
       <SubType>Form</SubType>
     </Compile>

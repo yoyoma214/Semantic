@@ -19,6 +19,7 @@ using CodeHelper.Core.Parse.ModuleRelations;
 using CodeHelper.Core.Parse.ParseResults.Turtles;
 using CodeHelper.Core.Parse.ParseResults.Antlrs;
 using CodeHelper.Core.Parse.ParseResults.Sparqls;
+using CodeHelper.Core.Infrastructure.Command;
 //using CodeHelper.Core.Parse.ParseResults.DataViews;
 //using CodeHelper.Core.Parse.ParseResults.ViewModels;
 //using CodeHelper.Core.Parse.ParseResults.Workflows;
@@ -30,6 +31,16 @@ namespace CodeHelper.Domain.Model
         public delegate void OnWiseCompleted(List<ParseErrorInfo> errors);
         public delegate void OnContinue();
 
+        //ReceiverBase receiver = new ReceiverBase();
+
+        //public ReceiverBase Receiver
+        //{
+        //    get
+        //    {
+        //        return receiver;
+        //    }
+        //}
+
         public struct ParseFlag
         {
             public IModel Model { get; set; }
@@ -39,7 +50,7 @@ namespace CodeHelper.Domain.Model
 
         public class WorkEngine
         {
-
+            
             private object syncObj = new object();
 
             private ConcurrentDictionary<string, object> status = new ConcurrentDictionary<string, object>();
@@ -238,6 +249,7 @@ namespace CodeHelper.Domain.Model
                                     var complier = new TurtleComplier();
                                    
                                     module = new TurtleModule();
+                                    ((TurtleModule)module).Caret = model.Caret;
                                     ((TurtleModule)module).Root =  complier.Parse(model.Content);
                                     module.Name = System.IO.Path.GetFileNameWithoutExtension(model.File);
                                 }
@@ -302,6 +314,10 @@ namespace CodeHelper.Domain.Model
                         {
                             ModelManager.Instance().ParseModules.Add(module.FileId, module);
                         }
+
+                        GlobalService.ModelManager.Receiver.ParseModule(model.FileId);
+
+                        GlobalService.ModelManager.FireParsed(model,true);
                     }
                     catch (Exception e)
                     {
@@ -887,9 +903,9 @@ namespace CodeHelper.Domain.Model
                         {
                             FileId = module.FileId,
                             File = module.File,
-                            CharPositionInLine = p.TokenPair.BeginToken.CharPositionInLine,
+                            CharPositionInLine = p.Position.BeginToken.CharPositionInLine,
                             ErrorType = ErrorType.Error,
-                            Line = p.TokenPair.BeginToken.Line,
+                            Line = p.Position.BeginToken.Line,
                             Message = error
                         });
                     }
@@ -899,9 +915,9 @@ namespace CodeHelper.Domain.Model
                         {
                             FileId = module.FileId,
                             File = module.File,
-                            CharPositionInLine = p.TokenPair.BeginToken.CharPositionInLine,
+                            CharPositionInLine = p.Position.BeginToken.CharPositionInLine,
                             ErrorType = ErrorType.Error,
-                            Line = p.TokenPair.BeginToken.Line,
+                            Line = p.Position.BeginToken.Line,
                             Message = string.Format("当前上下文无此类型{0}", p.Type)
                         });
                     }
@@ -911,9 +927,9 @@ namespace CodeHelper.Domain.Model
                         {
                             FileId = module.FileId,
                             File = module.File,
-                            CharPositionInLine = p.TokenPair.BeginToken.CharPositionInLine,
+                            CharPositionInLine = p.Position.BeginToken.CharPositionInLine,
                             ErrorType = ErrorType.Error,
-                            Line = p.TokenPair.BeginToken.Line,
+                            Line = p.Position.BeginToken.Line,
                             Message = string.Format("当前上下文有多个此类型{0}:{1}"
                             , p.Type
                             , String.Join(",", types.Select(x => x.FullName).ToArray()))
@@ -974,7 +990,7 @@ namespace CodeHelper.Domain.Model
             {
                 if (this.ParsedModules.ContainsKey(fileId))
                     return this.ParsedModules[fileId];
-
+                                
                 return null;
             }
         }

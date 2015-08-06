@@ -15,7 +15,7 @@ namespace CodeHelper.Core.Parse.ParseResults
         public TypeInfoBase()
         {
             TypeInfos = new List<ITypeInfo>();
-            PropertyInfos = new List<IPropertyInfo>();
+            PropertyInfos = new List<IRestrictPropertyInfo>();
             Attributes = new List<AttributeInfo>();
         }
 
@@ -55,7 +55,7 @@ namespace CodeHelper.Core.Parse.ParseResults
         }
 
 
-        public List<IPropertyInfo> PropertyInfos
+        public List<IRestrictPropertyInfo> PropertyInfos
         {
             get;
             set;
@@ -132,7 +132,7 @@ namespace CodeHelper.Core.Parse.ParseResults
             set;
         }
 
-        public IPropertyInfo FindProperty(string name)
+        public IRestrictPropertyInfo FindProperty(string name)
         {
             foreach (var f in this.PropertyInfos)
             {
@@ -146,13 +146,23 @@ namespace CodeHelper.Core.Parse.ParseResults
 
         public string NameSpace
         {
+            get;
+            set;
+        }
+
+
+        public ITypeInfo Super
+        {
+            get;
+            set;
+        }
+
+
+        public int EndCharPositionInLine
+        {
             get
             {
-                throw new NotImplementedException();
-            }
-            set
-            {
-                throw new NotImplementedException();
+                return this.CharPositionInLine + this.Length;
             }
         }
     }

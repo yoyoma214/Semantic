@@ -110,6 +110,7 @@ namespace CodeHelper.Core.EditorController
         {
             var args = ((ICSharpCode.TextEditor.Document.DocumentEventArgs)(e));
             this.model.Content = this.editorContainer.Text;
+            this.model.Caret = this.editorContainer.Editor.ActiveTextAreaControl.Caret; 
             model.Modifed = true;
         }
 

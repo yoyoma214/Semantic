@@ -6,7 +6,7 @@ using CodeHelper.Core.Types;
 
 namespace CodeHelper.Core.Parse.ParseResults
 {
-    public interface IPropertyInfo:IWiseble//, IToken
+    public interface IRestrictPropertyInfo:IWiseble//, IToken
     {
         String Name { get; set; }
 
@@ -20,7 +20,7 @@ namespace CodeHelper.Core.Parse.ParseResults
         //bool IsXmlNode { get; set; }
 
         //void Wise();
-        TokenPair TokenPair { get; set; }
+        TokenPair Position { get; set; }
 
         //bool Nullabe { get; set; }
 

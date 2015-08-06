@@ -34,5 +34,7 @@ namespace CodeHelper.Core.Command
         void ExitProcess();
 
         void PropertySelect(object obj);
+
+        void ParseModule(Guid fileId);
     }
 }

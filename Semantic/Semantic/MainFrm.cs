@@ -36,6 +36,8 @@ namespace CodeHelper
         ProjectPanel m_prjPanel = new ProjectPanel();
         ErrorPanel m_errorPanel = new ErrorPanel();
         PropertyPanel m_propertyPanel = new PropertyPanel();
+        NavigatePanel m_navigatePanel = new NavigatePanel();
+
         //FileTabPanel m_tabsPanel = new FileTabPanel();       
 
         private IDockContent GetContentFromPersistString(string persistString)
@@ -51,6 +53,10 @@ namespace CodeHelper
             if (persistString == typeof(PropertyPanel).ToString())
             {
                 return this.m_propertyPanel;
+            }
+            if (persistString == typeof(NavigatePanel).ToString())
+            {
+                return this.m_navigatePanel;
             }
 
             string[] strArray = persistString.Split(new char[] { ',' });
@@ -104,11 +110,13 @@ namespace CodeHelper
                 this.m_errorPanel = new ErrorPanel();
                 this.m_prjPanel = new ProjectPanel();
                 this.m_propertyPanel = new PropertyPanel();
+                this.m_navigatePanel = new NavigatePanel();
                 //this.m_tabsPanel = new TabsPanel();
 
                 m_prjPanel.Show(this.m_workspace, WeifenLuo.WinFormsUI.Docking.DockState.DockLeft);
                 m_errorPanel.Show(this.m_workspace, DockState.DockBottom);
                 m_propertyPanel.Show(this.m_workspace, DockState.DockRight);
+                m_navigatePanel.Show(this.m_workspace, DockState.DockRight);
                 //var f = new FileTabPanel();
                 //f.TabText = "1.dm";
                 //f.Show(this.m_workspace, DockState.Document);
