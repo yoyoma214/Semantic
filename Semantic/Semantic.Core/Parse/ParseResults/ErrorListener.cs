@@ -19,31 +19,17 @@ namespace CodeHelper.Core.Parse.ParseResults
                 return errors;
             }
         }
+       
 
-        public void SyntaxError(IRecognizer recognizer, IToken offendingSymbol, int line, int charPositionInLine, string msg, RecognitionException e)
-
-        //public void syntaxError(Recognizer<?, ?> recognizer,
-        //    Object offendingSymbol,
-        //    int line, int charPositionInLine,
-        //    String msg,
-        //    RecognitionException e)
-        {
-            if (recognizer is Antlr4.Runtime.Parser)
-            {
-                var stack = ((Antlr4.Runtime.Parser)recognizer).GetRuleInvocationStack();
-                stack.Reverse();
-                //System.err.println("rule stack: "+stack);
-            }
-            //System.err.println("line "+line+":"+charPositionInLine+" at "+
-            //offendingSymbol+": "+msg);
-
+        public override void SyntaxError(IRecognizer recognizer, Antlr4.Runtime.IToken offendingSymbol, int line, int charPositionInLine, string msg, RecognitionException e)
+        {            
             ParseErrorInfo errorInfo = new ParseErrorInfo();
             errorInfo.Line = line;
             errorInfo.CharPositionInLine = charPositionInLine;
-            errorInfo.Message = msg;
+            errorInfo.Message = msg.Replace("extraneous","意外").Replace("input","输入").Replace("expecting","期望");
 
-            this.errors.Add(errorInfo);
-            //base.SyntaxError(recognizer, offendingSymbol, line, charPositionInLine, msg, e);
+            this.errors.Add(errorInfo);            
+            base.SyntaxError(recognizer, offendingSymbol, line, charPositionInLine, msg, e);
         }
 
         /**
@@ -186,4 +172,5 @@ namespace CodeHelper.Core.Parse.ParseResults
             //});
         }
     }
+    
 }

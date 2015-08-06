@@ -121,8 +121,27 @@ namespace CodeHelper.Items.Antlr4
                     var path = dlg.SelectedPath;
                     var builder = new IndentStringBuilder();
                     //module.NameSpace = ns;
+                    var antlr = ((Antlr4Module)module);
+                    if (!string.IsNullOrWhiteSpace(model.Content))
+                    {
+                        TextReader r = new StringReader(model.Content);
+                        GrammarSpec.JavaModelNameSpace = r.ReadLine().Substring(2);
+                        GrammarSpec.JavaVisitorNameSpace = r.ReadLine().Substring(2);
+                        GrammarSpec.FunctionList.Clear();
 
-                    ((Antlr4Module)module).GenJava(builder,path);
+                        var func = "";
+                        while ( !string.IsNullOrWhiteSpace((func = r.ReadLine())))
+                        {
+                            var f = new GrammarSpec.FunctionInfo();
+                            var ss = func.Substring(2).Split(new char[] { ';' }, StringSplitOptions.RemoveEmptyEntries);                            
+                            f.FuncName = ss[0].Trim();
+                            f.FuncCall = ss[1].Trim();
+                            GrammarSpec.FunctionList.Add(f);
+                        }
+                        r.Close();
+                        r.Dispose();
+                    }
+                    antlr.GenJava(builder, path);
                     //codeFrm.SetText(builder.ToString());
                     //codeFrm.Show();
                 }      
@@ -172,7 +191,9 @@ namespace CodeHelper.Items.Antlr4
             {
                 var codeFrm = new ShowCodeFrm();
                 var model = ModelManager.Instance().GetModel(this.FileId.Value);
+                
                 var module = ModelManager.Instance().MakeSureParseModule(model.File);
+                
                 if (module == null)
                 {
                     System.Windows.Forms.MessageBox.Show("模块还没解析");
@@ -181,7 +202,17 @@ namespace CodeHelper.Items.Antlr4
 
                 var builder = new IndentStringBuilder();
                 //module.NameSpace = ns;
-                ((Antlr4Module)module).GenVisitJava(builder);
+                var antlr =((Antlr4Module)module);
+                if (!string.IsNullOrWhiteSpace(model.Content))
+                {
+                    TextReader r = new StringReader(model.Content);
+                    GrammarSpec.JavaModelNameSpace = r.ReadLine().Substring(2);
+                    GrammarSpec.JavaVisitorNameSpace = r.ReadLine().Substring(2);
+                    r.Close();
+                    r.Dispose();
+                }
+                antlr.GenVisitJava(builder);
+                
                 codeFrm.SetText(builder.ToString());
                 codeFrm.Show();
 

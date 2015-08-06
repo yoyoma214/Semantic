@@ -80,7 +80,7 @@ namespace CodeHelper.Domain.EditorController
             //base.OnBind();
 
             this.editorContainer.Editor.Document.HighlightingStrategy =
-                HighlightingStrategyFactory.CreateHighlightingStrategy("DataModel");
+                HighlightingStrategyFactory.CreateHighlightingStrategy("SparQL");
 
             this.editorContainer.Editor.Document.FoldingManager.FoldingStrategy =
                 new XM_ParserFoldingStrategy();           

@@ -14,6 +14,8 @@ namespace CodeHelper.Core.Parse.ParseResults.Antlrs
     {
         public string Rule { get; set; }
 
+        public bool IsLexer { get; set; }
+
         public string ENBF { get; set; }
 
         public bool IsList { get; set; }
@@ -33,6 +35,18 @@ namespace CodeHelper.Core.Parse.ParseResults.Antlrs
 
     public class GrammarSpec : TokenPair
     {
+        public class FunctionInfo
+        {
+            /// <summary>
+            /// 方法签名
+            /// </summary>
+            public string FuncName { get; set; }
+            /// <summary>
+            /// 方法调用
+            /// </summary>
+            public string FuncCall { get; set; }
+        }
+
         public GrammarType GrammarType { get; set; }
         public Id Id { get; set; }
         public List<PrequelConstruct> PrequelConstructs { get; set; }
@@ -41,6 +55,9 @@ namespace CodeHelper.Core.Parse.ParseResults.Antlrs
         public List<ParseErrorInfo> Errors { get; set; }
 
         public static String GrammarName { get; set; }
+        public static String JavaModelNameSpace { get; set; }
+        public static String JavaVisitorNameSpace { get; set; }
+        public static List<FunctionInfo> FunctionList = new List<FunctionInfo>();
 
         public GrammarSpec()
         {
@@ -95,7 +112,7 @@ namespace CodeHelper.Core.Parse.ParseResults.{0}s",GenHelper.GetClassName(this.I
 
         internal void GenVisitJava(IndentStringBuilder builder)
         {
-            builder.AppendFormatLine(@"package com.sixstar.kbase.knowledgeql;
+            builder.AppendFormatLine(@"{0}
 import java.util.List;
 import org.antlr.v4.runtime.misc.NotNull;
 import org.antlr.v4.runtime.tree.ParseTree;
@@ -103,7 +120,7 @@ import org.antlr.v4.runtime.tree.TerminalNodeImpl;
 
 import com.sixstar.kbase.knowledgeql.model;
 
-");
+", GrammarSpec.JavaVisitorNameSpace);
             //builder.IncreaseIndentLine("{");
             builder.AppendFormatLine("public class {0}Visitor extends {0}BaseVisitor<Void>", GenHelper.GetClassName(this.Id.TOKEN_REF));
             builder.IncreaseIndentLine("{");
@@ -532,14 +549,21 @@ import com.sixstar.kbase.knowledgeql.model;
             builder.IncreaseIndentLine("{");
             foreach (var rule in this.RuleInfos)
             {
+                var type = GenHelper.GetClassName(rule.Rule);
+                if (rule.IsLexer)
+                {
+                    type = "String";
+                }
+                
+
                 if (rule.IsList)
                 {
-                    builder.AppendFormatLine("public List<{0}> {0}s", rule.Rule);
+                    builder.AppendFormatLine("public List<{0}> {1}s",type, rule.Rule);
                     builder.AppendLine("{get;set;}");
                 }
                 else
                 {
-                    builder.AppendFormatLine("public {0} {0}", GenHelper.GetClassName(rule.Rule));
+                    builder.AppendFormatLine("public {0} {1}",type, GenHelper.GetClassName(rule.Rule));
                     builder.AppendLine("{get;set;}");
                 }
             }
@@ -563,29 +587,43 @@ import com.sixstar.kbase.knowledgeql.model;
             foreach (var rule in this.RuleInfos)
             {
                 var subRuleVar = GenHelper.GetVarName(rule.Rule);
-                var subRuleClazz = GenHelper.GetClassName(rule.Rule);
+                var subRuleClazz = GenHelper.GetClassName(rule.Rule);                
 
                 if (rule.IsList)
                 {
-                    builder.AppendFormatLine("var {0}Ctxs = context.{0}();", subRuleVar);
-                    builder.AppendFormatLine("foreach(var ctx in {0}Ctxs)", subRuleVar);
-                    builder.IncreaseIndentLine("{");
-                    builder.AppendFormatLine("var {0} = new {1}();", subRuleVar, subRuleClazz);
-                    builder.AppendFormatLine("{0}.{1}s.Add({2});", ruleVar, subRuleClazz, subRuleVar);
-                    builder.AppendFormatLine("this.stack.Push({0});", subRuleVar);
-                    builder.AppendFormatLine("this.Visit(ctx);", subRuleVar);
+                    builder.AppendFormatLine("var {0}Ctxs = context.{0}();", rule.Rule);
+                    builder.AppendFormatLine("foreach(var ctx in {0}Ctxs)", rule.Rule);
+                    builder.IncreaseIndentLine("{");                    
+                    if (rule.IsLexer)
+                    {
+                        builder.AppendFormatLine("{0}.{1}s.Add(ctx.GetText());", ruleVar, subRuleClazz);
+                    }
+                    else
+                    {
+                        builder.AppendFormatLine("var {0} = new {1}();", subRuleVar, subRuleClazz);
+                        builder.AppendFormatLine("{0}.{1}s.Add({2});", ruleVar, subRuleClazz, subRuleVar);
+                        builder.AppendFormatLine("this.stack.Push({0});", subRuleVar);
+                        builder.AppendFormatLine("this.Visit(ctx);");
+                    }
                     builder.AppendFormatLine("this.stack.Pop();");
                     builder.Decrease("}");
                 }
                 else
                 {
-                    builder.AppendFormatLine("var {0}Ctx = context.{0}();", subRuleVar);
-                    builder.AppendFormatLine("if ({0}Ctx != null)", subRuleVar);
+                    builder.AppendFormatLine("var {0}Ctx = context.{0}();", rule.Rule);
+                    builder.AppendFormatLine("if ({0}Ctx != null)", rule.Rule);
                     builder.IncreaseIndentLine("{");
-                    builder.AppendFormatLine("{0}.{1} = new {1}();", ruleVar, subRuleClazz);
-                    builder.AppendFormatLine("this.stack.Push({0}.{1});", ruleVar, subRuleClazz);
-                    builder.AppendFormatLine("this.Visit({0}Ctx);", subRuleVar);
-                    builder.AppendFormatLine("this.stack.Pop();");
+                    if (rule.IsLexer)
+                    {
+                        builder.AppendFormatLine("{0}.{1}= {2}Ctx.GetText();", ruleVar, subRuleClazz, rule.Rule);
+                    }
+                    else
+                    {
+                        builder.AppendFormatLine("{0}.{1} = new {1}();", ruleVar, subRuleClazz);
+                        builder.AppendFormatLine("this.stack.Push({0}.{1});", ruleVar, subRuleClazz);
+                        builder.AppendFormatLine("this.Visit({0}Ctx);", rule.Rule);
+                        builder.AppendFormatLine("this.stack.Pop();");
+                    }
                     builder.Decrease("}");
                 }
                 builder.AppendLine();
@@ -664,11 +702,11 @@ import com.sixstar.kbase.knowledgeql.model;
             {
             }
 
-            builder.AppendLine(@"package com.sixstar.kbase.knowledgeql.model;
+            builder.AppendFormatLine(@"{0}
 
 import java.util.ArrayList;
 import java.util.List;
-import com.sixstar.kbase.knowledgeql.common.TokenPair;");
+import com.sixstar.kbase.knowledgeql.common.TokenPair;", GrammarSpec.JavaModelNameSpace);
 
             builder.AppendFormatLine("public class {0} extends TokenPair", clzName);
             builder.IncreaseIndentLine("{");
@@ -711,25 +749,49 @@ import com.sixstar.kbase.knowledgeql.common.TokenPair;");
             }
             builder.AppendLine("// </editor-fold>");
 
-            builder.AppendLine();
-            builder.AppendLine("public void parse(){");
-            builder.AppendLine();
-            builder.AppendLine("}");
+            foreach (var func in GrammarSpec.FunctionList)
+            {
+                builder.AppendLine();
+                builder.AppendLine("public void " + func.FuncName + "{");
+                foreach (var rule in this.RuleInfos)
+                {
+                    var varRule = GenHelper.GetVarName(rule.Rule);
+                    var clzRule = GenHelper.GetClassName(rule.Rule);                    
+                    builder.IncreaseIndentLine();
+                    if (rule.IsList)
+                    {             
+                        builder.AppendFormatLine("for( int i = 0 ; i < this.{0}s.size() ; i ++ )", varRule);
+                        builder.IncreaseIndentLine("{");
+                        builder.AppendFormatLine("this.{0}s.get(i).{1};", varRule,func.FuncCall);
+                        builder.DecreaseIndentLine("}");                                          
+                    }
+                    else
+                    {
 
-            builder.AppendLine();
-            builder.AppendLine("public void wise(){");
-            builder.AppendLine();
-            builder.AppendLine("}");
+                        builder.AppendFormatLine("if(this.{0} != null )", varRule);
+                        builder.IncreaseIndentLine("{");
+                        builder.AppendFormatLine("this.{0}.{1};", varRule, func.FuncCall);
+                        builder.DecreaseIndentLine("}");                                        
+                    }
+                    builder.Decrease();
+                }
+                builder.AppendLine();
+                builder.AppendLine("}");
+            }
+            //builder.AppendLine();
+            //builder.AppendLine("public void wise(){");
+            //builder.AppendLine();
+            //builder.AppendLine("}");
 
-            builder.AppendLine();
-            builder.AppendLine("public void format(StringBuilder builder){");
-            builder.AppendLine();
-            builder.AppendLine("}");
+            //builder.AppendLine();
+            //builder.AppendLine("public void format(StringBuilder builder){");
+            //builder.AppendLine();
+            //builder.AppendLine("}");
 
-            builder.AppendLine();
-            builder.AppendLine("public void buildSql(StringBuilder builder){");
-            builder.AppendLine();
-            builder.AppendLine("}");
+            //builder.AppendLine();
+            //builder.AppendLine("public void buildSql(StringBuilder builder){");
+            //builder.AppendLine();
+            //builder.AppendLine("}");
 
             builder.Decrease("}");
             builder.AppendLine();
@@ -1409,6 +1471,17 @@ import com.sixstar.kbase.knowledgeql.common.TokenPair;");
                 //ruleInfos.Add(ruleInfo);
                 return ruleInfo;
             }
+            if (this.Range != null)
+            {
+                this.Range.Parse();
+            }
+            if (this.NotSet != null)
+                this.NotSet.Parse();
+            if (this.Terminal != null)
+            {
+                var ruleInfo = this.Terminal.Parse();       
+                return ruleInfo;
+            }
             return null;
         }
 
@@ -1563,9 +1636,19 @@ import com.sixstar.kbase.knowledgeql.common.TokenPair;");
         public string STRING_LITERAL { get; set; }
         public ElementOptions ElementOptions { get; set; }
 
-        public void Parse()
+        public RuleInfo Parse()
         {
+            if (this.TOKEN_REF != null)
+            {
+                var rule = new RuleInfo();
+                rule.Rule = this.TOKEN_REF;
+                rule.IsList = false;
+                rule.ENBF = "1";
+                rule.IsLexer = true;
+                return rule;
+            }
 
+            return null;
         }
 
         public void Wise()

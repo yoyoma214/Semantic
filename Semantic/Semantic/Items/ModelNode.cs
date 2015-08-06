@@ -51,7 +51,8 @@ namespace CodeHelper.Items
                 {
                     var model = GlobalService.ModelManager.GetModel(this.FileId.Value);
                     //Debug.Assert(model == this);
-                    return model.File;
+                    if ( model != null)
+                        return model.File;
                 }
                 return fullName;
             }
@@ -135,7 +136,8 @@ namespace CodeHelper.Items
 
             if (oldPath != newPath)
             {
-                File.Move(oldPath, newPath);
+                if ( File.Exists(oldPath ) )
+                    File.Move(oldPath, newPath);
             }
         }
 

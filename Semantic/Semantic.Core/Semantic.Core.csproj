@@ -61,10 +61,6 @@
     <CodeAnalysisFailOnMissingRules>false</CodeAnalysisFailOnMissingRules>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="Antlr4.Runtime.net40, Version=4.3.0.0, Culture=neutral, PublicKeyToken=eb42632606e9261f, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\Antlr4.Runtime.4.3.0\lib\net40-client\Antlr4.Runtime.net40.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
     <Reference Include="ICSharpCode.TextEditor">
       <HintPath>..\ICSharpCode.TextEditor-master\Project\obj\Debug\ICSharpCode.TextEditor.dll</HintPath>
     </Reference>
@@ -236,6 +232,10 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\Antlr4.Runtime\Antlr4.Runtime.net40-client.csproj">
+      <Project>{423978DF-85A4-409E-A16C-453683FE3969}</Project>
+      <Name>Antlr4.Runtime.net40-client</Name>
+    </ProjectReference>
     <ProjectReference Include="..\Semantic.Common\Semantic.Common.csproj">
       <Project>{29F95DE0-C821-498A-883A-7CB123B696CC}</Project>
       <Name>CodeHelper.Common</Name>

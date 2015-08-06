@@ -25,6 +25,8 @@ namespace CodeHelper.Core.Parse.ParseResults.Antlrs
 
             parser.BuildParseTree = true;
 
+           // parser.ErrorListenerDispatch = new AntlrErrorListener<Antlr4.Runtime.IToken>();
+           
             //parser.AddErrorListener(new AntlrErrorListener<IToken>());
 
             var listener = new ParseTreeListener();

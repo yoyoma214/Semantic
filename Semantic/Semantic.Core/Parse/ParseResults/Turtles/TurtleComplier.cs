@@ -30,14 +30,18 @@ namespace CodeHelper.Core.Parse.ParseResults.Turtles
             var listener = new ParseTreeListener();
             parser.AddParseListener(listener);
 
+            var l = new ErrorListener();
+            parser.AddErrorListener(l);
+
             var tree = parser.turtleDoc();
 
             var vis = new TurtleVisitor();
 
             vis.Visit(tree);
 
-            vis.Root.Errors.AddRange(listener_symbol.Errors);
-            vis.Root.Errors.AddRange(listener.Errors);
+            //vis.Root.Errors.AddRange(listener_symbol.Errors);
+            //vis.Root.Errors.AddRange(listener.Errors);
+            vis.Root.Errors.AddRange(l.Errors);
             return vis.Root;
         }
     }

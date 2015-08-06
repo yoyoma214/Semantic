@@ -172,9 +172,16 @@ namespace CodeHelper.Domain.Model
         {
             StreamWriter w = null;
 
-            if (System.IO.File.Exists(this.File))
+            try
             {
-                System.IO.File.Delete(this.File);
+                if (System.IO.File.Exists(this.File))
+                {
+                    System.IO.File.Delete(this.File);
+                }
+            }
+            catch
+            {
+
             }
 
             w = System.IO.File.CreateText(this.File);

@@ -2,6 +2,10 @@
   <Mode file       = "TSQL.xshd"
       name       = "TSQL"
       extensions = ".sql;.dv"/>
+
+  <Mode file       = "SparQL.xshd"
+    name       = "SparQL"
+    extensions = ".sparql"/>
   
   <Mode file       = "Data-Mode.xshd"
     name       = "DataModel"
