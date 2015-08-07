@@ -12,9 +12,9 @@ namespace CodeHelper.Core.Parse.ParseResults.Turtles
             : base()
         {
             //this.Mapings = new List<MappingInfo>();
-            this.UsingNameSpaces = new List<string>();
+            this.UsingNameSpaces = new Dictionary<string, string>();
             //this.Models = new Dictionary<string, ModelInfo>();
-        }        
+        }
 
         public TurtleDoc Root { get; set; }
 
@@ -30,11 +30,13 @@ namespace CodeHelper.Core.Parse.ParseResults.Turtles
             this.Verb = context.Verb;
             this.Object = context.Object;
 
-            this.Types.AddRange(context.Types.Values);
-            this.Properties.AddRange(context.Properties.Values);
-            this.Instances.AddRange(context.Instances.Values);
+            this.Types = context.Types;
+            this.Properties = context.Properties;
+            this.Instances = context.Instances;
 
             this.Errors.AddRange(Root.Errors);
+            this.NameSpace = context.NameSpace;
+            this.UsingNameSpaces = context.Imports;
         }
     }
 }

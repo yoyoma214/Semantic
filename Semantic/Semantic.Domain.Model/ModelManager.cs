@@ -104,7 +104,7 @@ namespace CodeHelper.Domain.Model
             //cmdHost_common.AddCommand(new ExitProcessCommand(this.Receiver));
 
             this.Errors = new List<ParseErrorInfo>();
-            
+
             GlobalService.Idle += new EventHandler(GlobalService_Idle);
 
             this.receiver.OnExitProcess += new ReceiverBase.ExitProcessHandler(receiver_OnExitProcess);
@@ -127,18 +127,12 @@ namespace CodeHelper.Domain.Model
 
         void workEngine_WiseCompleted(List<ParseErrorInfo> errors)
         {
-            //engineWaiting = true;
-
             if (this.ParseError != null && errors != null)
             {
                 var copy = new ParseErrorInfo[errors.Count];
                 errors.CopyTo(copy);
                 this.ParseError(null, copy.ToList());
             }
-
-            //mClearError = true;
-            //this.Errors.Clear();
-
 
             this.Errors = errors;
             this.ResetEvent.Set();
@@ -159,26 +153,6 @@ namespace CodeHelper.Domain.Model
 
             IModel model = null;
 
-            //if (extension == Dict.Extenstions.XmlModel_Extension)
-            //{
-            //    model = new Domain.Model.XmlModels.XmlModel();
-            //}
-            //if (extension == Dict.Extenstions.DataModel_Extension)
-            //{
-            //    model = new Domain.Model.DataModels.DataModel();
-            //}
-            //if (extension == Dict.Extenstions.DataView_Extension)
-            //{
-            //    model = new Domain.Model.DataViews.DataView();
-            //}
-            //if (extension == Dict.Extenstions.ViewModel_Extension)
-            //{
-            //    model = new Domain.Model.ViewModels.ViewModel();
-            //}
-            //if (extension == Dict.Extenstions.WorkFlow_Extension)
-            //{
-            //    model = new Domain.Model.WorkFlows.WorkFlow();
-            //}
             if (extension == Dict.Extenstions.Turtle_Extension)
             {
                 model = new Domain.Model.TurtleModels.TurtleModel();
@@ -197,8 +171,6 @@ namespace CodeHelper.Domain.Model
 
             model.Open();
 
-            //model.NameSpace = nameSpace;
-
             this.Regist(model);
 
             return model;
@@ -208,18 +180,18 @@ namespace CodeHelper.Domain.Model
 
         void GlobalService_Idle(object sender, EventArgs e)
         {
-               if (DateTime.Now.Subtract(autoParseTime).TotalSeconds > AUTO_PARSE_INTERVAL
-                && Interlocked.Read(ref EnableAutoParse ) == 1
-                )
+            if (DateTime.Now.Subtract(autoParseTime).TotalSeconds > AUTO_PARSE_INTERVAL
+             && Interlocked.Read(ref EnableAutoParse) == 1
+             )
             {
                 if (this.workEngine.IsWiseCompleted)
                 {
                     var waitingForParseModels = this.Models.Values.Where(x =>
-                        
+
                         !x.IsParsed && x.Content.Count(c => c == '\n') > 2)//至少有3行
-                        
+
                         .ToList();
-                    
+
                     waitingForParseModels.ForEach(x =>
                             this.workEngine.AddWaitingParseModel(x)
                      );
@@ -229,40 +201,7 @@ namespace CodeHelper.Domain.Model
                         this.workEngine.ActiveOneTime();
                     }
                 }
-
             }
-               /*
-               if (this.workEngine.IsWiseCompleted)
-               {
-                   if (this.ParseError != null && Errors != null && mClearError)
-                   {
-                       var copy = new ParseErrorInfo[Errors.Count];
-                       Errors.CopyTo(copy);
-                       this.ParseError(null, copy.ToList());
-                   }
-
-                   //mClearError = true;
-                   //this.Errors.Clear();
-               }
-               */
-
-            //if (Interlocked.Read(ref WiseCompeleted) == 1 && Interlocked.Read( ref this.needParse ) == 1)
-            //{
-            //    Interlocked.Decrement(ref this.WiseCompeleted);
-            //    Interlocked.Decrement(ref this.needParse);
-
-            //    if (this.ParseError != null)
-            //    {
-            //        var copy = new ParseErrorInfo[Errors.Count];
-            //        Errors.CopyTo(copy);
-            //        this.ParseError(null, copy.ToList());
-            //    }
-                
-            //    Errors.Clear();
-                
-            //    System.Console.WriteLine(DateTime.Now.ToString());
-            //}
-
         }
 
         private static ModelManager instance = new ModelManager();
@@ -291,41 +230,10 @@ namespace CodeHelper.Domain.Model
 
             return null;
 
-            //var model = this.MakeSureModel(file);
-
-            //if (this.ParseModules.ContainsKey(model.FileId))
-            //    return this.ParseModules[model.FileId];
-
-            //if (string.IsNullOrWhiteSpace(model.Content))
-            //{
-            //    model.Open();
-            //}
-
-            //this.workEngine.WaitWiseCompleted();
-
-            //this.workEngine.waitingParseModels.Add(model);
-
-            ////this.Parse(model, -1, () =>
-            ////{
-            ////    ResetEvent.Set();
-            ////});
-
-            ////this.workEngine.waitingParseModels
-
-            //ResetEvent.WaitOne(10000);
-
-            //if (this.ParseModules.ContainsKey(model.FileId))
-            //    return this.ParseModules[model.FileId];
-            //else
-            //    return null;
         }
 
         public void Regist(IModel model)
         {
-            //if (model is XmlModel)
-            //{
-            //    this.XmlModels.Add(model.File, model as XmlModel);
-            //}
             this.Models.Add(model.FileId, model);
 
             OnRegist(model);
@@ -335,7 +243,7 @@ namespace CodeHelper.Domain.Model
         private void OnRegist(IModel model)
         {
             model.ChangeName += new OnChangeName(model_ChangeName);
-            model.InvokeParse +=new OnInvokeParse(model_InvokeParse);
+            model.InvokeParse += new OnInvokeParse(model_InvokeParse);
             model.Removed += new OnRemoved(model_Removed);
         }
 
@@ -345,7 +253,7 @@ namespace CodeHelper.Domain.Model
             model.InvokeParse -= new OnInvokeParse(model_InvokeParse);
             model.Removed -= new OnRemoved(model_Removed);
         }
-       
+
         private string GetNameSpace(string s)
         {
             return string.IsNullOrWhiteSpace(s) ? "" : s.Trim();
@@ -365,8 +273,6 @@ namespace CodeHelper.Domain.Model
         {
             throw new NotImplementedException();
         }
-
-        //private Dictionary<string, ITypeInfo> SystemTypes = new Dictionary<string, ITypeInfo>();
 
         public IModel GetModel(Guid file)
         {
@@ -393,69 +299,10 @@ namespace CodeHelper.Domain.Model
             }
         }
 
-        //public OnInvokeParse model_InvokeParse { get; set; }
-
         public List<ITypeInfo> ParseType(string type, IParseModule ctx, out string error)
         {
-            return this.workEngine.ParseType(type, ctx, out error);            
+            return this.workEngine.ParseType(type, ctx, out error);
         }
-
-        //public void RegistDb(ConnectionType conn)
-        //{
-        //    #region remove all exsited types
-
-        //    var deletingTypes = new List<string>();
-
-        //    foreach (var key in this.workEngine.Types.Keys)
-        //    {
-        //        if (key.StartsWith("db."+ conn.Name + "."))
-        //        {
-        //            deletingTypes.Add(key);
-        //        }
-        //    }
-            
-        //    foreach (var key in deletingTypes)
-        //    {
-        //        this.workEngine.Types.Remove(key);
-        //    }
-        //    #endregion
-
-        //    //var tables = conn.Tables;
-        //    //for(var i = 0 ; i < tables.
-        //    foreach(TableType table in conn.Tables)
-        //    {
-        //        var type = new TypeInfoBase();
-        //        type.Name = table.Name;
-        //        type.FullName = "db." + conn.Name + "." + type.Name;
-
-        //        string error = null;
-
-        //        foreach (var field in table.ColumnSet.Columns)
-        //        {
-        //            var property = new PropertyInfoBase();
-        //            if ( !string.IsNullOrWhiteSpace(field.Description))
-        //            {
-        //                var attr = new AttributeInfo();
-        //                attr.Name = "Comments";
-        //                attr.Parameters.Add(field.Description);
-
-        //                property.Attributes.Add(attr);
-        //            }
-
-        //            property.Name = field.Name;
-        //            property.Nullabe = field.AllowDBNull;
-        //            property.Type = field.SystemType;
-        //            var types =  this.ParseType(field.SystemType, null, out error);
-        //            if (types != null && types.Count == 1)
-        //                property.TypeInfo = types[0];
-
-        //            type.PropertyInfos.Add(property);
-
-        //        }
-        //        this.workEngine.Types.Add(type.FullName, type);
-        //    }
-            
-        //}
 
         public IParseModule GetParseModule(Guid fileId)
         {
@@ -463,15 +310,102 @@ namespace CodeHelper.Domain.Model
                 return this.ParseModules[fileId];
 
             return null;
-
-            //return this.workEngine.GetParseModule(fileId);
         }
 
-
-        public void FireParsed(IModel model ,bool sucess)
+        public void FireParsed(IModel model, bool sucess)
         {
             if (this.OnParsed != null)
                 this.OnParsed(model, sucess);
+        }
+
+        public ITypeInfo ResolveType(string nameSpace, string name)
+        {
+            return Reslove(nameSpace, name) as ITypeInfo;
+        }
+
+        public OWLProperty ResolveProperty(string nameSpace, string name)
+        {
+            return Reslove(nameSpace, name) as OWLProperty;
+        }
+
+        public OWLInstance ResolveInstance(string nameSpace, string name)
+        {
+            return Reslove(nameSpace, name) as OWLInstance;
+        }
+
+        public object Reslove(string nameSpace, string name)
+        {
+            if (!this.Namespace_Modules.ContainsKey(nameSpace))
+            {
+                return null;
+            }
+
+            var modules = this.Namespace_Modules[nameSpace];
+            foreach (var m in modules)
+            {
+                if (m.Types.ContainsKey(name))
+                    return m.Types[name];
+                if (m.Properties.ContainsKey(name))
+                    return m.Properties[name];
+                if (m.Instances.ContainsKey(name))
+                    return m.Instances[name];
+            }
+
+            return null;
+        }
+
+        public List<ITypeInfo> ListType(string nameSpace)
+        {
+            var rslt = new List<ITypeInfo>();
+
+            if (!this.Namespace_Modules.ContainsKey(nameSpace))
+            {
+                return rslt;
+            }
+
+            var modules = this.Namespace_Modules[nameSpace];
+            foreach (var m in modules)
+            {
+                rslt.AddRange(m.Types.Values);
+            }
+
+            return rslt;
+        }
+
+        public List<OWLProperty> ListProperty(string nameSpace)
+        {
+            var rslt = new List<OWLProperty>();
+
+            if (!this.Namespace_Modules.ContainsKey(nameSpace))
+            {
+                return rslt;
+            }
+
+            var modules = this.Namespace_Modules[nameSpace];
+            foreach (var m in modules)
+            {
+                rslt.AddRange(m.Properties.Values);
+            }
+
+            return rslt;
+        }
+
+        public List<OWLInstance> ListInstance(string nameSpace)
+        {
+            var rslt = new List<OWLInstance>();
+
+            if (!this.Namespace_Modules.ContainsKey(nameSpace))
+            {
+                return rslt;
+            }
+
+            var modules = this.Namespace_Modules[nameSpace];
+            foreach (var m in modules)
+            {
+                rslt.AddRange(m.Instances.Values);
+            }
+
+            return rslt;
         }
     }
 }

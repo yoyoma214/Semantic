@@ -245,17 +245,17 @@ namespace CodeHelper.Domain.Controller.UI
         {
             this.m_module = module;
 
-            foreach (var t in module.Types)
+            foreach (var t in module.Types.Keys)
             {
-                data.Add(t.Name);
+                data.Add(t);
             }
-            foreach (var t in module.Properties)
+            foreach (var t in module.Properties.Keys)
             {
-                data.Add(t.Name);
+                data.Add(t);
             }
-            foreach (var t in module.Instances)
+            foreach (var t in module.Instances.Keys)
             {
-                data.Add(t.Name);
+                data.Add(t);
             }
 
             if ( prevText.EndsWith("^^"))
@@ -271,12 +271,28 @@ namespace CodeHelper.Domain.Controller.UI
             else if ( !string.IsNullOrWhiteSpace(module.Verb))
             {
                 this.data.Clear();
+                
+                foreach (var p in module.Properties.Keys)
+                {
+                    this.data.Add(p);
+                }
+                foreach (var ns in module.UsingNameSpaces)
+                {
+                    var ps = GlobalService.ModelManager.ListProperty(ns.Value);
+                    foreach (var property in ps)
+                        this.data.Add(property.Name);
+                }
 
                 this.data.AddRange(OWLTypes.Instance().Ver_Types.Keys);
             }
             else if (!string.IsNullOrWhiteSpace(module.Subject))
             {
-
+                //foreach (var ns in module.UsingNameSpaces)
+                //{
+                //    var ps = GlobalService.ModelManager.lis(ns.Value);
+                //    foreach (var property in ps)
+                //        this.data.Add(property.Name);
+                //}
             }          
             if ( prevText.EndsWith("^^"))
                 this.textBox1.Text = ":";

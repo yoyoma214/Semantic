@@ -173,7 +173,7 @@ namespace CodeHelper.Domain.Model
 
             private void WiseModule(IParseModule module)
             {
-                foreach (var type in module.Types)
+                foreach (var type in module.Types.Values)
                 {
                     Wise_Type(type, module);
                 }
@@ -440,7 +440,7 @@ namespace CodeHelper.Domain.Model
             {
                 foreach (var type in module.Types)
                 {
-                    AddTypes_Implements(name_space, type);
+                    AddTypes_Implements(name_space, type.Value);
                 }
             }
 
@@ -549,7 +549,7 @@ namespace CodeHelper.Domain.Model
             {
                 RemoveRepeatType(module.FileId);
 
-                foreach (var type in module.Types)
+                foreach (var type in module.Types.Values)
                 {
                     RemoveTypes_Implements(name_space, type, module);
                 }
@@ -601,8 +601,8 @@ namespace CodeHelper.Domain.Model
             void OnUpdateModule(Guid fileId, IParseModule module)
             { 
                 //模块内重复类型验证
-                module.Types.ForEach(x => {
-                    if (module.Types.Where(y => x != y && y.Name.Equals(x.Name)).Count() > 0)
+                module.Types.Values.ToList().ForEach(x => {
+                    if (module.Types.Values.Where(y => x != y && y.Name.Equals(x.Name)).Count() > 0)
                     {
                         this.AddError(new ParseErrorInfo()
                         {
@@ -616,7 +616,7 @@ namespace CodeHelper.Domain.Model
                     }
                 });
 
-                module.Types.ForEach(x => FillTypeInfo(fileId, x));
+                module.Types.Values.ToList().ForEach(x => FillTypeInfo(fileId, x));
                
                 if (!ParsedModules.ContainsKey(fileId))
                 {
@@ -871,7 +871,7 @@ namespace CodeHelper.Domain.Model
 
                 if (ctx.UsingNameSpaces != null || ctx.UsingNameSpaces.Count == 0)
                 {
-                    ctx.UsingNameSpaces.ForEach(x => list.Add(x + "." + type));
+                    ctx.UsingNameSpaces.ToList().ForEach(x => list.Add(x + "." + type));
                 }
 
                 list.ForEach(x =>
@@ -891,7 +891,7 @@ namespace CodeHelper.Domain.Model
                 this.Errors.Add(error);
             }
 
-            private void Wise_Type(ITypeInfo type, IParseModule module)
+            private void Wise_Type(TypeInfoBase type, IParseModule module)
             {
                 string error;
                 foreach (var p in type.PropertyInfos)

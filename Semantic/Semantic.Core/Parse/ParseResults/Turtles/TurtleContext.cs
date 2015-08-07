@@ -14,18 +14,18 @@ namespace CodeHelper.Core.Parse.ParseResults.Turtles
             Unkonw,
             Subject,
             Verb,
-            Object            
+            Object
         }
 
         public string NameSpace { get; set; }
 
-        public Dictionary<string,TypeInfoBase> Types { get; set; }
+        public Dictionary<string, TypeInfoBase> Types { get; set; }
 
-        public Dictionary<string,OWLProperty> Properties { get; set; }
+        public Dictionary<string, OWLProperty> Properties { get; set; }
 
-        public Dictionary<string,OWLInstance> Instances { get; set; }
+        public Dictionary<string, OWLInstance> Instances { get; set; }
 
-        public List<string> Imports { get; set; }
+        public Dictionary<string,string> Imports { get; set; }
 
         public List<ParseErrorInfo> Errors { get; set; }
 
@@ -63,7 +63,7 @@ namespace CodeHelper.Core.Parse.ParseResults.Turtles
         {
             this.Types = new Dictionary<string, TypeInfoBase>();
 
-            this.Imports = new List<string>();
+            this.Imports = new Dictionary<string, string>();
 
             this.Instances = new Dictionary<string, OWLInstance>();
 
@@ -122,7 +122,7 @@ namespace CodeHelper.Core.Parse.ParseResults.Turtles
             }
 
             if (m_matchCaret == true)
-               m_matchCaret = null;
+                m_matchCaret = null;
         }
 
         public void FlushTriple()
@@ -130,11 +130,18 @@ namespace CodeHelper.Core.Parse.ParseResults.Turtles
             foreach (var vo in this.CurrentVerbObjects)
             {
                 if (vo.Key == "rdf:type")
-                {
+                {                    
                     foreach (var obj in vo.Value)
                     {
-                        if (obj == "rdf:Class" || obj == "rdfs:subClassOf" || obj == "owl:equivalentClass")
+                        if (obj == "owl:Ontology")
                         {
+                            this.NameSpace = this.CurrentSubjects[0];
+                            break;
+                        }
+
+                        if (obj == "rdf:Class" )//|| obj == "rdfs:subClassOf" || obj == "owl:equivalentClass")
+                        {
+
                             foreach (var subject in this.CurrentSubjects)
                             {
                                 if (!this.Types.ContainsKey(subject))
@@ -201,6 +208,6 @@ namespace CodeHelper.Core.Parse.ParseResults.Turtles
                 return this.Types[type];
 
             return null;
-        }                
-    }    
+        }
+    }
 }

@@ -34,17 +34,17 @@ namespace CodeHelper.Core.Parser
 
         string NameSpace { get; set; }
 
-        List<string> UsingNameSpaces { get; set; }
+        Dictionary<string, string> UsingNameSpaces { get; set; }
 
         Guid FileId { get; set; }
 
         string File { get; set; }
         
-        List<ITypeInfo> Types { get; set; }
+        Dictionary<string, TypeInfoBase> Types { get; set; }
 
-        List<OWLProperty> Properties { get; set; }
+        Dictionary<string, OWLProperty> Properties { get; set; }
 
-        List<OWLInstance> Instances { get; set; }   
+        Dictionary<string, OWLInstance> Instances { get; set; }   
 
         void Initialize();
 
