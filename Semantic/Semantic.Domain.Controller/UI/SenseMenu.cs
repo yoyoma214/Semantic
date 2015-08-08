@@ -266,24 +266,15 @@ namespace CodeHelper.Domain.Controller.UI
             }
             else if (!string.IsNullOrWhiteSpace(module.Object))
             {
-                this.data.AddRange(OWLTypes.Instance().Object_Types.Keys);
+                //this.data.AddRange(OWLTypes.Instance().Object_Types.Keys);
+
+                this.data.AddRange(Sensor.SubjectSensor.Sensor(prevText, module));
             }
             else if ( !string.IsNullOrWhiteSpace(module.Verb))
             {
                 this.data.Clear();
-                
-                foreach (var p in module.Properties.Keys)
-                {
-                    this.data.Add(p);
-                }
-                foreach (var ns in module.UsingNameSpaces)
-                {
-                    var ps = GlobalService.ModelManager.ListProperty(ns.Value);
-                    foreach (var property in ps)
-                        this.data.Add(property.Name);
-                }
 
-                this.data.AddRange(OWLTypes.Instance().Ver_Types.Keys);
+                this.data.AddRange(Sensor.VerbSensor.Sensor(prevText, module));
             }
             else if (!string.IsNullOrWhiteSpace(module.Subject))
             {
@@ -346,6 +337,68 @@ namespace CodeHelper.Domain.Controller.UI
             this.listView1.EndUpdate();
 
             this.OnSelect(null);  
+        }
+    }
+
+    public class Sensor
+    {
+        public class SubjectSensor
+        {
+            public static List<String> Sensor(string prevText, IParseModule module)
+            {
+                var data = new List<String>();
+                data.AddRange(module.Types.Keys);
+                data.AddRange(module.Properties.Keys);
+                data.AddRange(module.Instances.Keys);
+
+                foreach (var ns in module.UsingNameSpaces)
+                {
+                    var types = GlobalService.ModelManager.ListType(ns.Value);
+                    foreach (var each in types)
+                        data.Add(each.Name);
+
+                    var ps = GlobalService.ModelManager.ListProperty(ns.Value);
+                    foreach (var each in ps)
+                        data.Add(each.Name);
+
+                    var ins = GlobalService.ModelManager.ListInstance(ns.Value);
+                    foreach (var each in ins)
+                        data.Add(each.Name);
+                }
+
+                return data;
+            }
+        }
+
+        public class VerbSensor
+        {
+            public static List<String> Sensor(string prevText, IParseModule module)
+            {
+                var data = new List<String>();
+
+                foreach (var p in module.Properties.Keys)
+                {
+                    data.Add(p);
+                }
+                foreach (var ns in module.UsingNameSpaces)
+                {
+                    var ps = GlobalService.ModelManager.ListProperty(ns.Value);
+                    foreach (var property in ps)
+                        data.Add(property.Name);
+                }
+
+                data.AddRange(OWLTypes.Instance().Ver_Types.Keys);
+
+                return data;
+            }
+        }
+
+        public class ObjectSensor
+        {
+            public static List<String> Sensor(string prevText, IParseModule module)
+            {
+                return null;
+            }
         }
     }
 }

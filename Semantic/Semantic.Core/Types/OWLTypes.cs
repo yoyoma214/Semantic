@@ -21,7 +21,7 @@ namespace CodeHelper.Core.Types
         public Dictionary<string, ITypeInfo> Ver_Types { get; set; }
 
         public Dictionary<string, ITypeInfo> Object_Types { get; set; }
-                
+
 
         private OWLTypes()
         {
@@ -57,6 +57,7 @@ namespace CodeHelper.Core.Types
             
             #region rdfs
             type.Name = "rdfs:subClassOf";
+            
             this.Ver_Types.Add(type.Name, type);
 
             type.Name = "rdfs:subPropertyOf";

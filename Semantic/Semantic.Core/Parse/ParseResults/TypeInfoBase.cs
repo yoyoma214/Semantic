@@ -34,7 +34,7 @@ namespace CodeHelper.Core.Parse.ParseResults
             get;
             set;
         }
-
+   
         public List<ITypeInfo> TypeInfos
         {
             get;
