@@ -19,7 +19,7 @@ namespace CodeHelper.Core.Types.RDF.Verbs
         {
             get
             {
-                return "Type";
+                return "rdf:type";
             }
         }
 

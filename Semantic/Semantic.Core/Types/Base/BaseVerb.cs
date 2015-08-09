@@ -47,5 +47,6 @@ namespace CodeHelper.Core.Types.Base
             get;
             set;
         }
+
     }
 }
