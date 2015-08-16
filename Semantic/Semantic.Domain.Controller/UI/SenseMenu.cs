@@ -9,6 +9,7 @@ using System.Windows.Forms;
 using CodeHelper.Core.Types;
 using CodeHelper.Core.Services;
 using CodeHelper.Core.Parser;
+using CodeHelper.Core.Parse.ParseResults;
 
 namespace CodeHelper.Domain.Controller.UI
 {
@@ -376,10 +377,47 @@ namespace CodeHelper.Domain.Controller.UI
             {
                 var data = new List<String>();
 
+
+                var subject = module.Subject;
+                if (string.IsNullOrWhiteSpace(subject))
+                    return new List<string>();
+
+                OWLName owlName = module.ResloveName(subject);
+
+                object obj = GlobalService.ModelManager.Reslove(owlName.NameSpace, owlName.LocalName);
+
+                #region 如果主语是类
+                if (obj is ITypeInfo)
+                {
+                    
+                }
+
+                #endregion
+
+                #region 如果主语是实例
+
+                #endregion
+
+                #region 如果主语是属性
+                if (obj is OWLProperty)
+                {
+                    foreach (var ver in OWLTypes.Instance().Ver_Types)
+                    {
+                        if (ver.Value.Allow_Subject_Property)
+                        {
+                            data.Add(ver.Key);
+                        }
+                    }
+                    return data;
+                }
+
+                #endregion
+                
                 foreach (var p in module.Properties.Keys)
                 {
                     data.Add(p);
                 }
+
                 foreach (var ns in module.UsingNameSpaces)
                 {
                     var ps = GlobalService.ModelManager.ListProperty(ns.Value);

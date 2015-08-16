@@ -10,8 +10,8 @@ namespace CodeHelper.Core.Types.OWL.Verbs
     {
         public AllValuesFrom()
         {
-            this.Allow_Subject_Class = true;
-            this.Allow_Subject_Instance = true;
+            this.Allow_Subject_Class = false;
+            this.Allow_Subject_Instance = false;
             this.Allow_Subject_Property = true; 
         }
 

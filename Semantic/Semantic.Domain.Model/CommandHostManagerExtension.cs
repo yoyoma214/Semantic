@@ -10,6 +10,7 @@ using CodeHelper.Commands.ViewModel;
 using CodeHelper.Commands.WorkFlow;
 using CodeHelper.Commands.TurtleModel;
 using CodeHelper.Commands.SparqlModel;
+using CodeHelper.Commands.Antlr4Model;
 
 namespace CodeHelper.Domain.Model
 {
@@ -100,6 +101,21 @@ namespace CodeHelper.Domain.Model
 
                 return;
             }
+
+            if (extension == Dict.Extenstions.Antlr4_Extension)
+            {
+                var host = CommandHostManager.Instance().Get(CommandHostManager.HostType.OWL);
+
+                var cmd = host.GetCommand(Dict.Commands.OpenAntlr4Model)
+                     as OpenAntlr4ModelCommand;
+
+                cmd.File = file;
+
+                cmd.Execute();
+
+                return;
+            }
+
             throw new Exception("在打开不支持的文件");
         }
     }

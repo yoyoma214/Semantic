@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using CodeHelper.Core.Error;
 using ICSharpCode.TextEditor;
+using CodeHelper.Core.Parser;
 
 namespace CodeHelper.Core.Parse.ParseResults.Turtles
 {
@@ -147,7 +148,7 @@ namespace CodeHelper.Core.Parse.ParseResults.Turtles
                                 if (!this.Types.ContainsKey(subject))
                                 {
                                     var t = new TypeInfoBase();
-                                    t.Name = subject;
+                                    t.Name = OWLName.ParseLocalName(subject); 
                                     t.NameSpace = null;
                                     this.Types.Add(t.Name, t);
                                 }
@@ -160,7 +161,7 @@ namespace CodeHelper.Core.Parse.ParseResults.Turtles
                                 if (!this.Properties.ContainsKey(subject))
                                 {
                                     OWLProperty p = new OWLProperty();
-                                    p.Name = subject;
+                                    p.Name = OWLName.ParseLocalName(subject); 
                                     p.IsObject = true;
                                     this.Properties.Add(p.Name, p);
                                 }
@@ -173,7 +174,7 @@ namespace CodeHelper.Core.Parse.ParseResults.Turtles
                                 if (!this.Properties.ContainsKey(subject))
                                 {
                                     OWLProperty p = new OWLProperty();
-                                    p.Name = subject;
+                                    p.Name = OWLName.ParseLocalName(subject);                                    
                                     p.IsObject = false;
                                     this.Properties.Add(p.Name, p);
                                 }
@@ -186,7 +187,7 @@ namespace CodeHelper.Core.Parse.ParseResults.Turtles
                                 if (!this.Instances.ContainsKey(subject))
                                 {
                                     OWLInstance p = new OWLInstance();
-                                    p.Name = subject;
+                                    p.Name = OWLName.ParseLocalName(subject); 
                                     p.Type = this.Parse(obj);
                                     this.Instances.Add(p.Name, p);
                                 }

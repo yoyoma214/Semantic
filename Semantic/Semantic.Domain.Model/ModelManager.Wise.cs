@@ -177,6 +177,26 @@ namespace CodeHelper.Domain.Model
                 {
                     Wise_Type(type, module);
                 }
+
+                foreach (var property in module.Properties.Values)
+                {
+                    Wise_Property(property, module);
+                }
+
+                foreach (var instance in module.Instances.Values)
+                {
+                    Wise_Instance(instance, module);
+                }
+            }
+
+            private void Wise_Instance(OWLInstance instance, IParseModule module)
+            {
+                
+            }
+
+            private void Wise_Property(OWLProperty property, IParseModule module)
+            {
+                
             }
 
             void Parse(IModel model, int charIndex, System.Action callback)
@@ -297,7 +317,7 @@ namespace CodeHelper.Domain.Model
 
                         module.Errors.ForEach(x => { x.File = model.File; x.FileId = model.FileId; });
 
-                        //OnUpdateModule(model.FileId, module);
+                        OnUpdateModule(model.FileId, module);
 
                         this.waitingWiseModules.Add(module);
 
@@ -486,7 +506,6 @@ namespace CodeHelper.Domain.Model
                 return false;
             }
 
-
             private void CheckIsRepeatType_WhenRemove(ITypeInfo type)
             {
 
@@ -544,7 +563,6 @@ namespace CodeHelper.Domain.Model
                 //}
             }
 
-
             void RemoveTypes(string name_space, IParseModule module)
             {
                 RemoveRepeatType(module.FileId);
@@ -599,7 +617,8 @@ namespace CodeHelper.Domain.Model
             }
 
             void OnUpdateModule(Guid fileId, IParseModule module)
-            { 
+            {                
+
                 //模块内重复类型验证
                 module.Types.Values.ToList().ForEach(x => {
                     if (module.Types.Values.Where(y => x != y && y.Name.Equals(x.Name)).Count() > 0)
@@ -637,8 +656,7 @@ namespace CodeHelper.Domain.Model
                 {
                     ms = new List<IParseModule>();
                     ms.Add(module);
-                    Namespace_Modules.Add(name_space, ms);
-                    
+                    Namespace_Modules.Add(name_space, ms);                    
                 }
                 else
                 {
@@ -657,6 +675,8 @@ namespace CodeHelper.Domain.Model
                         //AddTypes(module.NameSpace, module);
                     }
                 }
+
+                ModelManager.Instance().OnUpdateModule(fileId, module);
             }
 
             internal void OnRemoveModule(Guid fileId)
@@ -995,5 +1015,44 @@ namespace CodeHelper.Domain.Model
             }
         }
 
+
+        internal void OnUpdateModule(Guid fileId, IParseModule module)
+        {
+            string ns = module.NameSpace;
+            bool has = false;
+
+            foreach (var nameSpace in this.Namespace_Modules.Keys)
+            {
+                if (ns.Equals(ns))
+                {
+                   has = true;
+                   break;
+                }
+            }
+
+            List<IParseModule> modules = null;
+
+            if (!has)
+            {
+                modules = new List<IParseModule>();
+                modules.Add(module);
+                this.Namespace_Modules.Add(ns, modules);
+            }
+            else
+            {
+                modules = this.Namespace_Modules[ns];
+                foreach (var md in modules)
+                {
+                    if (md.FileId.Equals(module.FileId))
+                    {
+                        modules.Remove(md);
+                        modules.Add(module);
+                        return;
+                    }
+                }
+
+                modules.Add(module);
+            }
+        }
     }
 }

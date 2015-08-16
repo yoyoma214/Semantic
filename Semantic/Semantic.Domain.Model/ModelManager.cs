@@ -303,6 +303,7 @@ namespace CodeHelper.Domain.Model
         {
             return this.workEngine.ParseType(type, ctx, out error);
         }
+        
 
         public IParseModule GetParseModule(Guid fileId)
         {

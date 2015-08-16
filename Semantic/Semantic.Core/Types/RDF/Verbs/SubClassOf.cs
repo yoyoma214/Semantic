@@ -12,7 +12,7 @@ namespace CodeHelper.Core.Types.RDF.Verbs
         {
             this.Allow_Subject_Class = true;
             this.Allow_Subject_Instance = true;
-            this.Allow_Subject_Property = true; 
+            this.Allow_Subject_Property = false; 
         }
 
         public override string Name
