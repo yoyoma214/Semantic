@@ -142,6 +142,12 @@
     <Compile Include="Parse\ParseResults\Sparqls\SparqlVisitor.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="Parse\ParseResults\Turtles\JSON.g4.lexer.cs">
+      <DependentUpon>JSON.g4</DependentUpon>
+    </Compile>
+    <Compile Include="Parse\ParseResults\Turtles\JSON.g4.parser.cs">
+      <DependentUpon>JSON.g4</DependentUpon>
+    </Compile>
     <Compile Include="Parse\ParseResults\Turtles\TurtleContext.cs" />
     <Compile Include="Parse\ParseResults\Turtles\TurtleModule.cs" />
     <Compile Include="Parse\ParseResults\AtomTokenPair.cs" />
@@ -224,6 +230,11 @@
     <Antlr4 Include="Parse\ParseResults\Antlrs\ANTLRv4Lexer.g4">
       <Generator>MSBuild:Compile</Generator>
       <CustomToolNamespace>CodeHelper.Core.Parse.ParseResults.Antlrs</CustomToolNamespace>
+    </Antlr4>
+    <Antlr4 Include="Parse\ParseResults\Turtles\JSON.g4">
+      <Generator>MSBuild:Compile</Generator>
+      <CustomToolNamespace>APIComponent.Json</CustomToolNamespace>
+      <Listener>False</Listener>
     </Antlr4>
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>

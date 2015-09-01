@@ -7,6 +7,11 @@ namespace CodeHelper.Common
 {
     public static class GenHelper
     {
+        public static string GetClassNameOld(string name)
+        {
+            return name[0].ToString().ToUpper() + name.Substring(1);
+        }
+
         public static string GetClassName(string name,bool special = false)
         {
             var varName = GetVarName(name, special);

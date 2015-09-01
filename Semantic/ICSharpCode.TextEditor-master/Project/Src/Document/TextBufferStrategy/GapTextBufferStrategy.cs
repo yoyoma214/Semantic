@@ -71,7 +71,8 @@ namespace ICSharpCode.TextEditor.Document
 				throw new ArgumentOutOfRangeException("offset", offset, "0 <= offset <= " + Length.ToString());
 			}
 			if (length < 0 || offset + length > Length) {
-				throw new ArgumentOutOfRangeException("length", length, "0 <= length, offset(" + offset + ")+length <= " + Length.ToString());
+				
+                throw new ArgumentOutOfRangeException("length", length, "0 <= length, offset(" + offset + ")+length <= " + Length.ToString());
 			}
 			if (offset == 0 && length == Length) {
 				if (cachedContent != null)

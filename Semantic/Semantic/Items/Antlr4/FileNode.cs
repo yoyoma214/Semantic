@@ -84,6 +84,26 @@ namespace CodeHelper.Items.Antlr4
                     return;
                 }
 
+                if (!string.IsNullOrWhiteSpace(model.Content))
+                {
+                    TextReader r = new StringReader(model.Content);
+                    GrammarSpec.JavaModelNameSpace = r.ReadLine().Substring(2);
+                    GrammarSpec.JavaVisitorNameSpace = r.ReadLine().Substring(2);
+                    GrammarSpec.FunctionList.Clear();
+
+                    var func = "";
+                    while (!string.IsNullOrWhiteSpace((func = r.ReadLine())))
+                    {
+                        var f = new GrammarSpec.FunctionInfo();
+                        var ss = func.Substring(2).Split(new char[] { ';' }, StringSplitOptions.RemoveEmptyEntries);
+                        f.FuncName = ss[0].Trim();
+                        f.FuncCall = ss[1].Trim();
+                        GrammarSpec.FunctionList.Add(f);
+                    }
+                    r.Close();
+                    r.Dispose();
+                }
+
                 var builder = new IndentStringBuilder();
                 ((Antlr4Module)module).GenCSharp(builder);
                 codeFrm.SetText(builder.ToString());

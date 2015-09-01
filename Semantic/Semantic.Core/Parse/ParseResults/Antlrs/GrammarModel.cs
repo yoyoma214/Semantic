@@ -547,6 +547,18 @@ import com.sixstar.kbase.knowledgeql.model;
 
             builder.AppendFormatLine("public class {0} : TokenPair", GenHelper.GetClassName(this.RULE_REF));
             builder.IncreaseIndentLine("{");
+
+            builder.AppendFormatLine("public {0}()",GenHelper.GetClassName(this.RULE_REF));
+            builder.IncreaseIndentLine("{");
+            foreach (var rule in this.RuleInfos)
+            {
+                var type = GenHelper.GetClassName(rule.Rule);
+                if (rule.IsList)
+                {
+                    builder.AppendFormatLine("this.{0}s = new List<{1}>();", type, GenHelper.GetClassName(rule.Rule));                    
+                }
+            }
+            builder.DecreaseIndentLine("}");
             foreach (var rule in this.RuleInfos)
             {
                 var type = GenHelper.GetClassName(rule.Rule);
@@ -558,14 +570,47 @@ import com.sixstar.kbase.knowledgeql.model;
 
                 if (rule.IsList)
                 {
-                    builder.AppendFormatLine("public List<{0}> {1}s",type, rule.Rule);
+                    builder.AppendFormatLine("public List<{0}> {1}s", type, GenHelper.GetClassName(rule.Rule));
                     builder.AppendLine("{get;set;}");
                 }
                 else
                 {
                     builder.AppendFormatLine("public {0} {1}",type, GenHelper.GetClassName(rule.Rule));
                     builder.AppendLine("{get;set;}");
+               }                
+            }
+
+            foreach (var func in GrammarSpec.FunctionList)
+            {
+                builder.AppendLine();
+                builder.AppendLine("public void " + func.FuncName + "{");
+                foreach (var rule in this.RuleInfos)
+                {
+                    if (rule.IsLexer)
+                        continue;
+
+                    var varRule = GenHelper.GetClassName(rule.Rule);
+                    var clzRule = GenHelper.GetClassName(rule.Rule);
+                    builder.IncreaseIndentLine();
+                    if (rule.IsList)
+                    {
+                        builder.AppendFormatLine("for( int i = 0 ; i < this.{0}s.Count() ; i ++ )", varRule);
+                        builder.IncreaseIndentLine("{");
+                        builder.AppendFormatLine("this.{0}s[i].{1};", varRule, func.FuncCall);
+                        builder.DecreaseIndentLine("}");
+                    }
+                    else
+                    {
+
+                        builder.AppendFormatLine("if(this.{0} != null )", varRule);
+                        builder.IncreaseIndentLine("{");
+                        builder.AppendFormatLine("this.{0}.{1};", varRule, func.FuncCall);
+                        builder.DecreaseIndentLine("}");
+                    }
+                    builder.Decrease();
                 }
+                builder.AppendLine();
+                builder.AppendLine("}");
             }
             builder.Decrease("}");
             builder.AppendLine();
@@ -578,7 +623,7 @@ import com.sixstar.kbase.knowledgeql.model;
             var ruleVar = GenHelper.GetVarName(this.RULE_REF);
             var ruleClazz = GenHelper.GetClassName(this.RULE_REF);
             builder.AppendFormatLine("public override int Visit{0}([NotNull] {1}Parser.{0}Context context)",
-                ruleClazz.Replace("@", ""), GenHelper.GetClassName(GrammarSpec.GrammarName));
+                GenHelper.GetClassNameOld(this.RULE_REF.Replace("@", "")), GenHelper.GetClassName(GrammarSpec.GrammarName));
             builder.IncreaseIndentLine("{");
             builder.AppendFormatLine("var {0} = this.stack.PeekCtx<{1}>();", ruleVar, ruleClazz);
             builder.AppendFormatLine("{0}.Parse(context);", GenHelper.GetVarName(this.RULE_REF));
