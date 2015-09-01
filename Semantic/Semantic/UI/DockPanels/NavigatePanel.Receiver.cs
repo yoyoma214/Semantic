@@ -79,13 +79,13 @@ namespace CodeHelper.UI.DockPanels
             this.propertyRoot.Nodes.Clear();
             
             foreach(var type in module.Types)
-                this.typeRoot.Nodes.Add(type.Name);
+                this.typeRoot.Nodes.Add(type.Key);
 
             foreach (var type in module.Properties)
-                this.propertyRoot.Nodes.Add(type.Name);
+                this.propertyRoot.Nodes.Add(type.Key);
 
             foreach (var type in module.Instances)
-                this.instanceRoot.Nodes.Add(type.Name);
+                this.instanceRoot.Nodes.Add(type.Key);
 
             this.treeView1.ExpandAll();
 

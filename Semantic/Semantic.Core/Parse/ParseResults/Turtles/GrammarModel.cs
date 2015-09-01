@@ -95,7 +95,7 @@ namespace CodeHelper.Core.Parse.ParseResults.Turtles
 
         internal void Parse(TurtleContext context)
         {
-            
+            context.Imports.Add(this.PNAME_NS, this.IRIREF);
         }
     }
 
@@ -105,7 +105,7 @@ namespace CodeHelper.Core.Parse.ParseResults.Turtles
 
         internal void Parse(TurtleContext context)
         {
-            
+            context.Imports.Add(":", this.IRIREF);
         }
     }
 
@@ -116,7 +116,7 @@ namespace CodeHelper.Core.Parse.ParseResults.Turtles
 
         internal void Parse(TurtleContext context)
         {
-            
+            context.Imports.Add(this.PNAME_NS, this.IRIREF);
         }
     }
 
@@ -126,7 +126,7 @@ namespace CodeHelper.Core.Parse.ParseResults.Turtles
 
         internal void Parse(TurtleContext context)
         {
-            
+            context.Imports.Add(":", this.IRIREF);
         }
     }
 

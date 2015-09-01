@@ -3,6 +3,13 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using CodeHelper.Core.Parse.ParseResults;
+using CodeHelper.Core.Types.Base;
+using CodeHelper.Core.Types.RDF.Verbs;
+using CodeHelper.Core.Types.RDF;
+using CodeHelper.Core.Types.OWL.Verbs;
+using CodeHelper.Core.Types.XSD;
+using CodeHelper.Core.Types.OWL.Objects;
+using CodeHelper.Core.Types.RDF.Objects;
 
 namespace CodeHelper.Core.Types
 {
@@ -16,12 +23,12 @@ namespace CodeHelper.Core.Types
 
         //public Dictionary<string, ITypeInfo> OWL_Properties { get; set; }
 
-        public Dictionary<string, ITypeInfo> XSD_Typtes { get; set; }
+        public Dictionary<string, IXsdType> XSD_Typtes { get; set; }
 
-        public Dictionary<string, ITypeInfo> Ver_Types { get; set; }
+        public Dictionary<string, BaseVerb> Ver_Types { get; set; }
 
-        public Dictionary<string, ITypeInfo> Object_Types { get; set; }
-                
+        public Dictionary<string, IObject> Object_Types { get; set; }
+
 
         private OWLTypes()
         {
@@ -30,9 +37,9 @@ namespace CodeHelper.Core.Types
             //this.OWL_Typtes = new Dictionary<string, ITypeInfo>();
             //this.OWL_Properties = new Dictionary<string, ITypeInfo>();
 
-            this.XSD_Typtes = new Dictionary<string, ITypeInfo>();
-            this.Ver_Types = new Dictionary<string, ITypeInfo>();
-            this.Object_Types = new Dictionary<string, ITypeInfo>();
+            this.XSD_Typtes = new Dictionary<string, IXsdType>();
+            this.Ver_Types = new Dictionary<string, BaseVerb>();
+            this.Object_Types = new Dictionary<string, IObject>();
 
             Init();
         }
@@ -46,270 +53,278 @@ namespace CodeHelper.Core.Types
 
         private void Init()
         {
-            var type = new TypeInfoBase();
+            BaseVerb type = null;
 
             #region verb 
 
             #region rdf
-            type.Name = "rdf:type";
-            this.Ver_Types.Add(type.Name, type);
+            //type.Name = "rdf:type";
+            type = new RDF_Type();
+            this.Ver_Types.Add(type.Name,type);
             #endregion
             
             #region rdfs
-            type.Name = "rdfs:subClassOf";
-            this.Ver_Types.Add(type.Name, type);
-
-            type.Name = "rdfs:subPropertyOf";
-            this.Ver_Types.Add(type.Name, type);
-
-            type.Name = "rdfs:domain";
-            this.Ver_Types.Add(type.Name, type);
-
-            type.Name = "rdfs:range";
+           
+            type = new SubClassOf();
             this.Ver_Types.Add(type.Name, type);
             
-            type.Name = "rdfs:comment";
-            this.Ver_Types.Add(type.Name, type);           
+            type = new SubPropertyOf();
+            this.Ver_Types.Add(type.Name, type);
+            
+            type = new Domain();
+            this.Ver_Types.Add(type.Name, type);
+            
+            type = new Range();
+            this.Ver_Types.Add(type.Name, type);
+                        
+            type = new Comment();
+            this.Ver_Types.Add(type.Name, type);         
             #endregion
 
             #region owl
-            type.Name = "owl:equivalentClass";
-            this.Ver_Types.Add(type.Name, type);
-
-            type.Name = "owl:differentFrom";
-            this.Ver_Types.Add(type.Name, type);
-
-            type.Name = "owl:sameAs";
-            this.Ver_Types.Add(type.Name, type);
-
-            type.Name = "owl:sourceIndividual";
-            this.Ver_Types.Add(type.Name, type);
-
-            type.Name = "owl:assertionProperty";
-            this.Ver_Types.Add(type.Name, type);
-
-            type.Name = "owl:targetValue";
-            this.Ver_Types.Add(type.Name, type);
-
-            type.Name = "owl:intersectionOf";
-            this.Ver_Types.Add(type.Name, type);
-
-            type.Name = "owl:unionOf";
+            
+            type = new EquivalentClass();
             this.Ver_Types.Add(type.Name, type);
             
-            type.Name = "owl:onProperty";
+            type = new DifferentFrom();
             this.Ver_Types.Add(type.Name, type);
-
-            type.Name = "owl:someValuesFrom";
+            
+            type = new SameAs();
             this.Ver_Types.Add(type.Name, type);
-
-            type.Name = "owl:allValuesFrom";
+            
+            type = new SourceIndividual();
             this.Ver_Types.Add(type.Name, type);
-
-            type.Name = "owl:hasValue";
+            
+            type = new AssertionProperty();
             this.Ver_Types.Add(type.Name, type);
-
-            type.Name = "owl:hasSelf";
+            
+            type = new TargetValue();
             this.Ver_Types.Add(type.Name, type);
-
-            type.Name = "owl:onClass";
+            
+            type = new IntersectionOf();
             this.Ver_Types.Add(type.Name, type);
-
-            type.Name = "owl:minQualifiedCardinality";
+            
+            type = new UnionOf();
             this.Ver_Types.Add(type.Name, type);
-
-            type.Name = "owl:qualifiedCardinality";
+                        
+            type = new OnProperty();
             this.Ver_Types.Add(type.Name, type);
-
-            type.Name = "owl:cardinality";
+            
+            type = new SomeValuesFrom();
             this.Ver_Types.Add(type.Name, type);
-
-            type.Name = "owl:oneOf";
+            
+            type = new AllValuesFrom();
             this.Ver_Types.Add(type.Name, type);
-
-            type.Name = "owl:inverseOf";
-            this.Ver_Types.Add(type.Name, type);                      
-           
-            type.Name = "owl:propertyDisjointWith";
+            
+            type = new HasValue();
             this.Ver_Types.Add(type.Name, type);
-           
-            type.Name = "owl:propertyChainAxiom";
+            
+            type = new HasSelf();
             this.Ver_Types.Add(type.Name, type);
-
-            type.Name = "owl:hasKey ";
+            
+            type = new OnClass();
             this.Ver_Types.Add(type.Name, type);
-
-            type.Name = "owl:onDatatype";
+            
+            type = new MinQualifiedCardinality();
             this.Ver_Types.Add(type.Name, type);
-
-            type.Name = "owl:withRestrictions";
+            
+            type = new QualifiedCardinality();
             this.Ver_Types.Add(type.Name, type);
-
-            type.Name = "owl:datatypeComplementOf";
+            
+            type = new Cardinality();
             this.Ver_Types.Add(type.Name, type);
-
-            type.Name = "owl:annotatedSource";
+            
+            type = new OneOf();
             this.Ver_Types.Add(type.Name, type);
-
-            type.Name = "owl:annotatedProperty";
+            
+            type = new InverseOf();
+            this.Ver_Types.Add(type.Name, type);                   
+                       
+            type = new PropertyDisjointWith();
             this.Ver_Types.Add(type.Name, type);
-
-            type.Name = "owl:annotatedTarget";
+                       
+            type = new PropertyChainAxiom();
             this.Ver_Types.Add(type.Name, type);
-
-            type.Name = "owl:equivalentProperty";
-            this.Ver_Types.Add(type.Name, type); 
+            
+            type = new HasKey();
+            this.Ver_Types.Add(type.Name, type);
+            
+            type = new OnDatatype();
+            this.Ver_Types.Add(type.Name, type);
+            
+            type = new WithRestrictions();
+            this.Ver_Types.Add(type.Name, type);
+            
+            type = new DatatypeComplementOf();
+            this.Ver_Types.Add(type.Name, type);
+            
+            type = new AnnotatedSource();
+            this.Ver_Types.Add(type.Name, type);
+            
+            type = new AnnotatedProperty();
+            this.Ver_Types.Add(type.Name, type);
+            
+            type = new AnnotatedTarget();
+            this.Ver_Types.Add(type.Name, type);
+            
+            type = new EquivalentProperty();
+            this.Ver_Types.Add(type.Name, type);
             #endregion            
 
             #endregion
 
+            IXsdType xsd = null;
+
             #region xsd
-            type.Name = "xsd:anyURI";
-            this.XSD_Typtes.Add(type.Name, type);
+            xsd = new AnyURI();
+            this.XSD_Typtes.Add(xsd.Name, xsd);
+            
+            xsd = new Base64Binary();
+            this.XSD_Typtes.Add(xsd.Name, xsd);
+            
+            xsd = new BooleanN();
+            this.XSD_Typtes.Add(xsd.Name, xsd);
+            
+            xsd = new ByteN();
+            this.XSD_Typtes.Add(xsd.Name, xsd);
+            
+            xsd = new DateTimeN();
+            this.XSD_Typtes.Add(xsd.Name, xsd);
+            
+            xsd = new DateTimeStamp();
+            this.XSD_Typtes.Add(xsd.Name, xsd);
+            
+            xsd = new DecimalN();
+            this.XSD_Typtes.Add(xsd.Name, xsd);
+            
+            xsd = new DoubleN();
+            this.XSD_Typtes.Add(xsd.Name, xsd);
+            
+            xsd = new FloatN();
+            this.XSD_Typtes.Add(xsd.Name, xsd);
+            
+            xsd = new HexBinary();
+            this.XSD_Typtes.Add(xsd.Name, xsd);
 
-            type.Name = "xsd:base64Binary";
-            this.XSD_Typtes.Add(type.Name, type);
-
-            type.Name = "xsd:boolean";
-            this.XSD_Typtes.Add(type.Name, type);
-
-            type.Name = "xsd:byte";
-            this.XSD_Typtes.Add(type.Name, type);
-
-            type.Name = "xsd:dateTime";
-            this.XSD_Typtes.Add(type.Name, type);
-
-            type.Name = "xsd:dateTimeStamp";
-            this.XSD_Typtes.Add(type.Name, type);
-
-            type.Name = "xsd:decimal";
-            this.XSD_Typtes.Add(type.Name, type);
-
-            type.Name = "xsd:double";
-            this.XSD_Typtes.Add(type.Name, type);
-
-            type.Name = "xsd:float";
-            this.XSD_Typtes.Add(type.Name, type);
-
-            type.Name = "xsd:hexBinary";
-            this.XSD_Typtes.Add(type.Name, type);
-
-            type.Name = "xsd:int";
-            this.XSD_Typtes.Add(type.Name, type);
-
-            type.Name = "xsd:integer";
-            this.XSD_Typtes.Add(type.Name, type);
-
-            type.Name = "xsd:language";
-            this.XSD_Typtes.Add(type.Name, type);
-
-            type.Name = "xsd:Literal";
-            this.XSD_Typtes.Add(type.Name, type);
-
-            type.Name = "xsd:long";
-            this.XSD_Typtes.Add(type.Name, type);
-
-            type.Name = "xsd:Name";
-            this.XSD_Typtes.Add(type.Name, type);
-
-            type.Name = "xsd:NCName";
-            this.XSD_Typtes.Add(type.Name, type);
-
-            type.Name = "xsd:negativeInteger";
-            this.XSD_Typtes.Add(type.Name, type);
-
-            type.Name = "xsd:NMTOKEN";
-            this.XSD_Typtes.Add(type.Name, type);
-
-            type.Name = "xsd:nonNegativeInteger";
-            this.XSD_Typtes.Add(type.Name, type);
-
-            type.Name = "xsd:nonPostiveInteger";
-            this.XSD_Typtes.Add(type.Name, type);
-
-            type.Name = "xsd:normalizeString";
-            this.XSD_Typtes.Add(type.Name, type);
-
-            type.Name = "xsd:PlainLiteral";
-            this.XSD_Typtes.Add(type.Name, type);
-
-            type.Name = "xsd:postiveInteger";
-            this.XSD_Typtes.Add(type.Name, type);
-
-            type.Name = "xsd:rational";
-            this.XSD_Typtes.Add(type.Name, type);
-
-            type.Name = "xsd:real";
-            this.XSD_Typtes.Add(type.Name, type);
-
-            type.Name = "xsd:short";
-            this.XSD_Typtes.Add(type.Name, type);
-
-            type.Name = "xsd:string";
-            this.XSD_Typtes.Add(type.Name, type);
-
-            type.Name = "xsd:token";
-            this.XSD_Typtes.Add(type.Name, type);
-
-            type.Name = "xsd:unsignedByte";
-            this.XSD_Typtes.Add(type.Name, type);
-
-            type.Name = "xsd:unsignedInt";
-            this.XSD_Typtes.Add(type.Name, type);
-
-            type.Name = "xsd:unsignedLong";
-            this.XSD_Typtes.Add(type.Name, type);
-
-            type.Name = "xsd:unsignedShort";
-            this.XSD_Typtes.Add(type.Name, type);
-
-            type.Name = "xsd:XMLLiteral";
-            this.XSD_Typtes.Add(type.Name, type);
+            xsd = new IntN();
+            this.XSD_Typtes.Add(xsd.Name, xsd);
+            
+            xsd = new IntegerN();
+            this.XSD_Typtes.Add(xsd.Name, xsd);
+           
+            xsd = new Language();
+            this.XSD_Typtes.Add(xsd.Name, xsd);
+            
+            xsd = new Literal();
+            this.XSD_Typtes.Add(xsd.Name, xsd);
+           
+            xsd = new LongN();
+            this.XSD_Typtes.Add(xsd.Name, xsd);
+            
+            xsd = new NameN();
+            this.XSD_Typtes.Add(xsd.Name, xsd);
+            
+            xsd = new NCName();
+            this.XSD_Typtes.Add(xsd.Name, xsd);
+            
+            xsd = new NegativeInteger();
+            this.XSD_Typtes.Add(xsd.Name, xsd);
+            
+            xsd = new NMTOKEN();
+            this.XSD_Typtes.Add(xsd.Name, xsd);
+            
+            xsd = new NonNegativeInteger();
+            this.XSD_Typtes.Add(xsd.Name, xsd);
+            
+            xsd = new NonPostiveInteger();
+            this.XSD_Typtes.Add(xsd.Name, xsd);
+            
+            xsd = new NormalizeString();
+            this.XSD_Typtes.Add(xsd.Name, xsd);
+            
+            xsd = new PlainLiteral();
+            this.XSD_Typtes.Add(xsd.Name, xsd);
+            
+            xsd = new PostiveInteger();
+            this.XSD_Typtes.Add(xsd.Name, xsd);
+            
+            xsd = new Rational();
+            this.XSD_Typtes.Add(xsd.Name, xsd);
+            
+            xsd = new Real();
+            this.XSD_Typtes.Add(xsd.Name, xsd);
+            
+            xsd = new ShortN();
+            this.XSD_Typtes.Add(xsd.Name, xsd);
+            
+            xsd = new StringN();
+            this.XSD_Typtes.Add(xsd.Name, xsd);
+            
+            xsd = new TokenN();
+            this.XSD_Typtes.Add(xsd.Name, xsd);
+            
+            xsd = new UnsignedByte();
+            this.XSD_Typtes.Add(xsd.Name, xsd);
+            
+            xsd = new UnsignedInt();
+            this.XSD_Typtes.Add(xsd.Name, xsd);
+            
+            xsd = new UnsignedLong();
+            this.XSD_Typtes.Add(xsd.Name, xsd);
+            
+            xsd = new UnsignedShort();
+            this.XSD_Typtes.Add(xsd.Name, xsd);
+            
+            xsd = new XMLLiteral();
+            this.XSD_Typtes.Add(xsd.Name, xsd);
 
             #endregion
 
+            IObject obj = null;
+
             #region object
-            type.Name = "owl:SymmetricProperty";
-            this.Object_Types.Add(type.Name, type);
+               
+            obj = new SymmetricProperty();
+            this.Object_Types.Add(obj.Name, obj);
+     
+            obj = new AsymmetricProperty();
+            this.Object_Types.Add(obj.Name, obj);
+     
+            obj = new ReflexiveProperty();
+            this.Object_Types.Add(obj.Name, obj);
+            
+            obj = new IrreflexiveProperty();
+            this.Object_Types.Add(obj.Name, obj);
 
-            type.Name = "owl:AsymmetricProperty";
-            this.Object_Types.Add(type.Name, type);
-
-            type.Name = "owl:ReflexiveProperty";
-            this.Object_Types.Add(type.Name, type);
-
-            type.Name = "owl:IrreflexiveProperty";
-            this.Object_Types.Add(type.Name, type);
-
-            type.Name = "owl:FunctionalProperty";
-            this.Object_Types.Add(type.Name, type);
-
-            type.Name = "owl:InverseFunctionalProperty";
-            this.Object_Types.Add(type.Name, type);
-
-            type.Name = "owl:TransitiveProperty";
-            this.Object_Types.Add(type.Name, type);
-
-            type.Name = "rdfs:Datatype";
-            this.Object_Types.Add(type.Name, type);
-
-            type.Name = "owl:Restriction";
-            this.Object_Types.Add(type.Name, type);
-
-            type.Name = "owl:NamedIndividual";
-            this.Object_Types.Add(type.Name, type);
-
-            type.Name = "owl:Class";
-            this.Object_Types.Add(type.Name, type);
-
-            type.Name = "owl:ObjectProperty";
-            this.Object_Types.Add(type.Name, type);
-
-            type.Name = "owl:DatatypeProperty";
-            this.Object_Types.Add(type.Name, type);
-
-            type.Name = "owl:NegativePropertyAssertion";
-            this.Object_Types.Add(type.Name, type);
+            obj = new FunctionalProperty();
+            this.Object_Types.Add(obj.Name, obj);
+            
+            obj = new InverseFunctionalProperty();
+            this.Object_Types.Add(obj.Name, obj);
+            
+            obj = new TransitiveProperty();
+            this.Object_Types.Add(obj.Name, obj);
+            
+            obj = new Datatype();
+            this.Object_Types.Add(obj.Name, obj);
+            
+            obj = new Restriction();
+            this.Object_Types.Add(obj.Name, obj);
+            
+            obj = new NamedIndividual();
+            this.Object_Types.Add(obj.Name, obj);
+            
+            obj = new Class();
+            this.Object_Types.Add(obj.Name, obj);
+            
+            obj = new ObjectProperty();
+            this.Object_Types.Add(obj.Name, obj);
+            
+            obj = new DatatypeProperty();
+            this.Object_Types.Add(obj.Name, obj);
+            
+            obj = new NegativePropertyAssertion();
+            this.Object_Types.Add(obj.Name, obj);
             #endregion
         }
     }

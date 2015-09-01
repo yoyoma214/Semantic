@@ -14,11 +14,11 @@ namespace CodeHelper.Core.Parse
     {
         public ParseModuleBase()
         {
-            this.Types = new List<ITypeInfo>();
-            this.Properties = new List<OWLProperty>();
-            this.Instances = new List<OWLInstance>();
+            this.Types = new Dictionary<string, TypeInfoBase>();
+            this.Properties = new Dictionary<string, OWLProperty>();
+            this.Instances = new Dictionary<string, OWLInstance>();
             Errors = new List<ParseErrorInfo>();
-            UsingNameSpaces = new List<string>();
+            UsingNameSpaces = new Dictionary<string, string>();
         }
 
         public string Name { get; set; }
@@ -41,15 +41,15 @@ namespace CodeHelper.Core.Parse
             set;
         }
 
-        public List<string> UsingNameSpaces
+        public Dictionary<string, string> UsingNameSpaces
         {
             get;
             set;
         } 
 
-        public List<OWLProperty> Properties { get; set; }
+        public Dictionary<string,OWLProperty> Properties { get; set; }
 
-        public List<OWLInstance> Instances { get; set; }        
+        public Dictionary<string, OWLInstance> Instances { get; set; }        
 
         string mFile = null;
 
@@ -82,7 +82,7 @@ namespace CodeHelper.Core.Parse
         }
 
 
-        public List<ITypeInfo> Types
+        public Dictionary<string, TypeInfoBase> Types
         {
             get;
             set;
@@ -92,7 +92,7 @@ namespace CodeHelper.Core.Parse
 
         public virtual void Wise()
         {
-            foreach (var t in this.Types)
+            foreach (var t in this.Types.Values)
             {
                 t.Wise();
             }            
@@ -126,6 +126,28 @@ namespace CodeHelper.Core.Parse
         {
             get;
             set;
+        }
+
+
+        public OWLName ResloveName(string mixedName)
+        {
+            if (mixedName.StartsWith(":"))
+                return new OWLName() { NameSpace = this.NameSpace, LocalName = mixedName.Substring(1) };
+
+            var ss = mixedName.Split(new char[]{':'}, StringSplitOptions.RemoveEmptyEntries);
+
+            OWLName owlName = new OWLName();
+
+            foreach (var ns in this.UsingNameSpaces)
+            {
+                if (ns.Key.Equals(ss[0]))
+                {
+                    owlName.NameSpace = ns.Key;
+                    break;
+                }
+            }
+
+            return owlName;
         }
     }
 }

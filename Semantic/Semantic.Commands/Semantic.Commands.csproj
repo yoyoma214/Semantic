@@ -67,8 +67,8 @@
     <Compile Include="XmlModel\OpenXmlModelCommand.cs" />
     <Compile Include="CloseProjectCommand.cs" />
     <Compile Include="ExitProcessCommand.cs" />
-    <Compile Include="Antlr4Model\NewTurtleModelCommand.cs" />
-    <Compile Include="Antlr4Model\OpenTurtleModelCommand.cs" />
+    <Compile Include="Antlr4Model\NewAntlr4ModelCommand.cs" />
+    <Compile Include="Antlr4Model\OpenAntlr4ModelCommand.cs" />
     <Compile Include="SparqlModel\NewSparqlModelCommand.cs" />
     <Compile Include="SparqlModel\OpenSparqlModelCommand.cs" />
   </ItemGroup>

@@ -7,6 +7,7 @@ using CodeHelper.Core.Parser;
 using CodeHelper.Core.Types;
 using CodeHelper.Core.Infrastructure.Command;
 using Project;
+using CodeHelper.Core.Parse.ParseResults;
 
 namespace CodeHelper.Core.Infrastructure.Model
 {
@@ -44,5 +45,19 @@ namespace CodeHelper.Core.Infrastructure.Model
         IParseModule GetParseModule(Guid fileId);
 
         void FireParsed(IModel model, bool sucess);
+
+        ITypeInfo ResolveType(string nameSpace, string name);
+
+        OWLProperty ResolveProperty(string nameSpace, string name);
+
+        OWLInstance ResolveInstance(string nameSpace, string name);
+
+        object Reslove(string nameSpace, string name);
+
+        List<ITypeInfo> ListType(string nameSpace);
+
+        List<OWLProperty> ListProperty(string nameSpace);
+
+        List<OWLInstance> ListInstance(string nameSpace);
     }
 }

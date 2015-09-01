@@ -12,7 +12,7 @@ namespace CodeHelper.Core.Parse.ParseResults.Antlrs
             : base()
         {
             //this.Mapings = new List<MappingInfo>();
-            this.UsingNameSpaces = new List<string>();
+            this.UsingNameSpaces = new Dictionary<string, string>();
             //this.Models = new Dictionary<string, ModelInfo>();
         }
 

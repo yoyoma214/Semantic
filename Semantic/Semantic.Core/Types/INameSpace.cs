@@ -10,5 +10,6 @@ namespace CodeHelper.Core.Types
         string Name { get; set; }
 
         List<ITypeInfo> TypeInfos { get; set; }
+        
     }
 }

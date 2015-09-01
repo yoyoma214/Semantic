@@ -61,6 +61,7 @@
     <CodeAnalysisFailOnMissingRules>false</CodeAnalysisFailOnMissingRules>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="EntityFramework, Version=4.1.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL" />
     <Reference Include="ICSharpCode.TextEditor">
       <HintPath>..\ICSharpCode.TextEditor-master\Project\obj\Debug\ICSharpCode.TextEditor.dll</HintPath>
     </Reference>
@@ -73,6 +74,7 @@
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
+    <Reference Include="System.Data.Entity" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />
@@ -179,9 +181,98 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Services\Dict.cs" />
     <Compile Include="Services\GlobalService.cs" />
+    <Compile Include="Types\Base\BaseObject.cs" />
+    <Compile Include="Types\Base\BaseVerb.cs" />
+    <Compile Include="Types\Base\BaseXsdType.cs" />
     <Compile Include="Types\INameSpace.cs" />
+    <Compile Include="Types\IObject.cs" />
     <Compile Include="Types\ITypeInfo.cs" />
+    <Compile Include="Types\IVerb.cs" />
+    <Compile Include="Types\IXsdType.cs" />
     <Compile Include="Types\OWLTypes.cs" />
+    <Compile Include="Types\OWL\Objects\AsymmetricProperty.cs" />
+    <Compile Include="Types\OWL\Objects\Class.cs" />
+    <Compile Include="Types\OWL\Objects\DatatypeProperty.cs" />
+    <Compile Include="Types\OWL\Objects\FunctionalProperty.cs" />
+    <Compile Include="Types\OWL\Objects\InverseFunctionalProperty.cs" />
+    <Compile Include="Types\OWL\Objects\IrreflexiveProperty.cs" />
+    <Compile Include="Types\OWL\Objects\NamedIndividual.cs" />
+    <Compile Include="Types\OWL\Objects\NegativePropertyAssertion.cs" />
+    <Compile Include="Types\OWL\Objects\ObjectProperty.cs" />
+    <Compile Include="Types\OWL\Objects\ReflexiveProperty.cs" />
+    <Compile Include="Types\OWL\Objects\Restriction.cs" />
+    <Compile Include="Types\OWL\Objects\SymmetricProperty.cs" />
+    <Compile Include="Types\OWL\Objects\TransitiveProperty.cs" />
+    <Compile Include="Types\OWL\Verbs\AllValuesFrom.cs" />
+    <Compile Include="Types\OWL\Verbs\AnnotatedProperty.cs" />
+    <Compile Include="Types\OWL\Verbs\AnnotatedSource.cs" />
+    <Compile Include="Types\OWL\Verbs\AnnotatedTarget.cs" />
+    <Compile Include="Types\OWL\Verbs\AssertionProperty.cs" />
+    <Compile Include="Types\OWL\Verbs\Cardinality.cs" />
+    <Compile Include="Types\OWL\Verbs\DatatypeComplementOf.cs" />
+    <Compile Include="Types\OWL\Verbs\DifferentFrom.cs" />
+    <Compile Include="Types\OWL\Verbs\EquivalentClass.cs" />
+    <Compile Include="Types\OWL\Verbs\EquivalentProperty.cs" />
+    <Compile Include="Types\OWL\Verbs\HasKey.cs" />
+    <Compile Include="Types\OWL\Verbs\HasSelf.cs" />
+    <Compile Include="Types\OWL\Verbs\HasValue.cs" />
+    <Compile Include="Types\OWL\Verbs\IntersectionOf.cs" />
+    <Compile Include="Types\OWL\Verbs\InverseOf.cs" />
+    <Compile Include="Types\OWL\Verbs\MinQualifiedCardinality.cs" />
+    <Compile Include="Types\OWL\Verbs\OnClass.cs" />
+    <Compile Include="Types\OWL\Verbs\OnDatatype.cs" />
+    <Compile Include="Types\OWL\Verbs\OneOf.cs" />
+    <Compile Include="Types\OWL\Verbs\OnProperty.cs" />
+    <Compile Include="Types\OWL\Verbs\PropertyChainAxiom.cs" />
+    <Compile Include="Types\OWL\Verbs\PropertyDisjointWith.cs" />
+    <Compile Include="Types\OWL\Verbs\QualifiedCardinality.cs" />
+    <Compile Include="Types\OWL\Verbs\SameAs.cs" />
+    <Compile Include="Types\OWL\Verbs\SomeValuesFrom.cs" />
+    <Compile Include="Types\OWL\Verbs\SourceIndividual.cs" />
+    <Compile Include="Types\OWL\Verbs\TargetValue.cs" />
+    <Compile Include="Types\OWL\Verbs\UnionOf.cs" />
+    <Compile Include="Types\OWL\Verbs\WithRestrictions.cs" />
+    <Compile Include="Types\RDF\Objects\Datatype.cs" />
+    <Compile Include="Types\RDF\Verbs\Comment.cs" />
+    <Compile Include="Types\RDF\Verbs\Domain.cs" />
+    <Compile Include="Types\RDF\Verbs\Range.cs" />
+    <Compile Include="Types\RDF\Verbs\RDF_Type.cs" />
+    <Compile Include="Types\RDF\Verbs\SubClassOf.cs" />
+    <Compile Include="Types\RDF\Verbs\SubPropertyOf.cs" />
+    <Compile Include="Types\XSD\AnyURI.cs" />
+    <Compile Include="Types\XSD\Base64Binary.cs" />
+    <Compile Include="Types\XSD\BooleanN.cs" />
+    <Compile Include="Types\XSD\ByteN.cs" />
+    <Compile Include="Types\XSD\DateTimeN.cs" />
+    <Compile Include="Types\XSD\DateTimeStamp.cs" />
+    <Compile Include="Types\XSD\DecimalN.cs" />
+    <Compile Include="Types\XSD\DoubleN.cs" />
+    <Compile Include="Types\XSD\FloatN.cs" />
+    <Compile Include="Types\XSD\HexBinary.cs" />
+    <Compile Include="Types\XSD\IntegerN.cs" />
+    <Compile Include="Types\XSD\IntN.cs" />
+    <Compile Include="Types\XSD\Language.cs" />
+    <Compile Include="Types\XSD\Literal.cs" />
+    <Compile Include="Types\XSD\LongN.cs" />
+    <Compile Include="Types\XSD\Name.cs" />
+    <Compile Include="Types\XSD\NCName.cs" />
+    <Compile Include="Types\XSD\NegativeInteger.cs" />
+    <Compile Include="Types\XSD\NMTOKEN.cs" />
+    <Compile Include="Types\XSD\NonNegativeInteger.cs" />
+    <Compile Include="Types\XSD\NonPostiveInteger.cs" />
+    <Compile Include="Types\XSD\NormalizeString.cs" />
+    <Compile Include="Types\XSD\PlainLiteral.cs" />
+    <Compile Include="Types\XSD\PostiveInteger.cs" />
+    <Compile Include="Types\XSD\Rational.cs" />
+    <Compile Include="Types\XSD\Real.cs" />
+    <Compile Include="Types\XSD\ShortN.cs" />
+    <Compile Include="Types\XSD\StringN.cs" />
+    <Compile Include="Types\XSD\TokenN.cs" />
+    <Compile Include="Types\XSD\UnsignedByte.cs" />
+    <Compile Include="Types\XSD\UnsignedInt.cs" />
+    <Compile Include="Types\XSD\UnsignedLong.cs" />
+    <Compile Include="Types\XSD\UnsignedShort.cs" />
+    <Compile Include="Types\XSD\XMLLiteral.cs" />
     <Compile Include="UI\FindFrm.cs">
       <SubType>Form</SubType>
     </Compile>
