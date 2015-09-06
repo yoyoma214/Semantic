@@ -246,18 +246,18 @@ namespace CodeHelper.Domain.Controller.UI
         {
             this.m_module = module;
 
-            foreach (var t in module.Types.Keys)
-            {
-                data.Add(t);
-            }
-            foreach (var t in module.Properties.Keys)
-            {
-                data.Add(t);
-            }
-            foreach (var t in module.Instances.Keys)
-            {
-                data.Add(t);
-            }
+            //foreach (var t in module.Types.Keys)
+            //{
+            //    data.Add(t);
+            //}
+            //foreach (var t in module.Properties.Keys)
+            //{
+            //    data.Add(t);
+            //}
+            //foreach (var t in module.Instances.Keys)
+            //{
+            //    data.Add(t);
+            //}
 
             if ( prevText.EndsWith("^^"))
             {
@@ -269,7 +269,7 @@ namespace CodeHelper.Domain.Controller.UI
             {
                 //this.data.AddRange(OWLTypes.Instance().Object_Types.Keys);
 
-                this.data.AddRange(Sensor.SubjectSensor.Sensor(prevText, module));
+                this.data.AddRange(Sensor.ObjectSensor.Sensor(prevText, module));
             }
             else if ( !string.IsNullOrWhiteSpace(module.Verb))
             {
@@ -279,6 +279,11 @@ namespace CodeHelper.Domain.Controller.UI
             }
             else if (!string.IsNullOrWhiteSpace(module.Subject))
             {
+
+                this.data.Clear();
+
+                this.data.AddRange(Sensor.SubjectSensor.Sensor(prevText, module));
+
                 //foreach (var ns in module.UsingNameSpaces)
                 //{
                 //    var ps = GlobalService.ModelManager.lis(ns.Value);
@@ -348,23 +353,23 @@ namespace CodeHelper.Domain.Controller.UI
             public static List<String> Sensor(string prevText, IParseModule module)
             {
                 var data = new List<String>();
-                data.AddRange(module.Types.Keys);
-                data.AddRange(module.Properties.Keys);
-                data.AddRange(module.Instances.Keys);
+                //data.AddRange(module.Types.Keys);
+                //data.AddRange(module.Properties.Keys);
+                //data.AddRange(module.Instances.Keys);
 
                 foreach (var ns in module.UsingNameSpaces)
                 {
                     var types = GlobalService.ModelManager.ListType(ns.Value);
                     foreach (var each in types)
-                        data.Add(each.Name);
+                        data.Add(ns.Key + each.Name);
 
                     var ps = GlobalService.ModelManager.ListProperty(ns.Value);
                     foreach (var each in ps)
-                        data.Add(each.Name);
+                        data.Add(ns.Key + each.Name);
 
                     var ins = GlobalService.ModelManager.ListInstance(ns.Value);
                     foreach (var each in ins)
-                        data.Add(each.Name);
+                        data.Add(ns.Key + each.Name);
                 }
 
                 return data;
@@ -389,12 +394,31 @@ namespace CodeHelper.Domain.Controller.UI
                 #region 如果主语是类
                 if (obj is ITypeInfo)
                 {
-                    
+
+                    foreach (var ver in OWLTypes.Instance().Ver_Types)
+                    {
+                        if (ver.Value.Allow_Subject_Class)
+                        {
+                            data.Add(ver.Key);
+                        }
+                    }
+                    return data;
                 }
 
                 #endregion
 
                 #region 如果主语是实例
+                if (obj is OWLInstance)
+                {
+                    foreach (var ver in OWLTypes.Instance().Ver_Types)
+                    {
+                        if (ver.Value.Allow_Subject_Instance)
+                        {
+                            data.Add(ver.Key);
+                        }
+                    }
+                    return data;
+                }
 
                 #endregion
 
@@ -425,7 +449,7 @@ namespace CodeHelper.Domain.Controller.UI
                         data.Add(property.Name);
                 }
 
-                data.AddRange(OWLTypes.Instance().Ver_Types.Keys);
+                //data.AddRange(OWLTypes.Instance().Ver_Types.Keys);
 
                 return data;
             }
@@ -435,7 +459,18 @@ namespace CodeHelper.Domain.Controller.UI
         {
             public static List<String> Sensor(string prevText, IParseModule module)
             {
-                return null;
+                OWLName owlName = module.ResloveName(module.Verb);
+
+                foreach (var ns in module.UsingNameSpaces)
+                {
+                    object obj = GlobalService.ModelManager.Reslove(owlName.NameSpace, module.Verb);
+                    if (obj is IVerb)
+                    {
+                        var verb =obj as IVerb;
+                        return verb.AllowSubject(module);                        
+                    }
+                }
+                return new List<string>();
             }
         }
     }

@@ -126,7 +126,7 @@ namespace CodeHelper.Core.Parse.ParseResults.Turtles
                 m_matchCaret = null;
         }
 
-        public void FlushTriple()
+        public void FlushTriple(TokenPair pair)
         {
             foreach (var vo in this.CurrentVerbObjects)
             {
@@ -150,6 +150,7 @@ namespace CodeHelper.Core.Parse.ParseResults.Turtles
                                     var t = new TypeInfoBase();
                                     t.Name = OWLName.ParseLocalName(subject); 
                                     t.NameSpace = null;
+                                    t.TokenPair = pair;
                                     this.Types.Add(t.Name, t);
                                 }
                             }
@@ -163,6 +164,7 @@ namespace CodeHelper.Core.Parse.ParseResults.Turtles
                                     OWLProperty p = new OWLProperty();
                                     p.Name = OWLName.ParseLocalName(subject); 
                                     p.IsObject = true;
+                                    p.TokenPair = pair;
                                     this.Properties.Add(p.Name, p);
                                 }
                             }
@@ -176,6 +178,7 @@ namespace CodeHelper.Core.Parse.ParseResults.Turtles
                                     OWLProperty p = new OWLProperty();
                                     p.Name = OWLName.ParseLocalName(subject);                                    
                                     p.IsObject = false;
+                                    p.TokenPair = pair;
                                     this.Properties.Add(p.Name, p);
                                 }
                             }
@@ -189,6 +192,7 @@ namespace CodeHelper.Core.Parse.ParseResults.Turtles
                                     OWLInstance p = new OWLInstance();
                                     p.Name = OWLName.ParseLocalName(subject); 
                                     p.Type = this.Parse(obj);
+                                    p.TokenPair = pair;
                                     this.Instances.Add(p.Name, p);
                                 }
                             }

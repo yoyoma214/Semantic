@@ -11,8 +11,8 @@ namespace CodeHelper.Core.Types.OWL.Verbs
         public MinQualifiedCardinality()
         {
             this.Allow_Subject_Class = true;
-            this.Allow_Subject_Instance = true;
-            this.Allow_Subject_Property = true; 
+            //this.Allow_Subject_Instance = true;
+            //this.Allow_Subject_Property = true; 
         }
 
         public override string Name

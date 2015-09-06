@@ -140,9 +140,10 @@ namespace CodeHelper.Core.Parse
 
             foreach (var ns in this.UsingNameSpaces)
             {
-                if (ns.Key.Equals(ss[0]))
+                if (ns.Key.Equals(ss[0] + ":"))
                 {
-                    owlName.NameSpace = ns.Key;
+                    owlName.LocalName = ss[1];
+                    owlName.NameSpace = ns.Value;
                     break;
                 }
             }

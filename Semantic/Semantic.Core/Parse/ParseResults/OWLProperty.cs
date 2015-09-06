@@ -15,6 +15,8 @@ namespace CodeHelper.Core.Parse.ParseResults
         public TokenPair Position { get; set; }
         public bool IsObject { get; set; }
 
+        public TokenPair TokenPair { get; set; }
+
         public OWLProperty()
         {
             this.Domain = new List<TypeInfoBase>();

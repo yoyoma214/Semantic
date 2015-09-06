@@ -10,8 +10,8 @@ namespace CodeHelper.Core.Types.OWL.Verbs
     {
         public PropertyChainAxiom()
         {
-            this.Allow_Subject_Class = true;
-            this.Allow_Subject_Instance = true;
+            //this.Allow_Subject_Class = true;
+            //this.Allow_Subject_Instance = true;
             this.Allow_Subject_Property = true; 
         }
 

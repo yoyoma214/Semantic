@@ -24,7 +24,7 @@ namespace CodeHelper.Core.Parse.ParseResults.Turtles
             {
                 s.Parse(context);
 
-                context.FlushTriple();
+                context.FlushTriple(s);
             }
         }
     }

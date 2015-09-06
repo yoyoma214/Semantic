@@ -2,10 +2,11 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using CodeHelper.Core.Parser;
 
 namespace CodeHelper.Core.Types.Base
 {
-    public class BaseVerb:IVerb
+    public class BaseVerb : IVerb
     {
         public virtual string Name
         {
@@ -48,5 +49,9 @@ namespace CodeHelper.Core.Types.Base
             set;
         }
 
+        public virtual List<string> AllowSubject(IParseModule module)
+        {
+            return new List<string>();
+        }
     }
 }

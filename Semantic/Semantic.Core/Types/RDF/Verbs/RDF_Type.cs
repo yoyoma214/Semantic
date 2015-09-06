@@ -12,7 +12,7 @@ namespace CodeHelper.Core.Types.RDF.Verbs
         {
             this.Allow_Subject_Class = true;
             this.Allow_Subject_Instance = true;
-            this.Allow_Subject_Property = false; 
+            this.Allow_Subject_Property = false;
         }
 
         public override string Name
@@ -26,6 +26,6 @@ namespace CodeHelper.Core.Types.RDF.Verbs
         public override bool Wise(string subject, string obj)
         {
             return base.Wise(subject, obj);
-        }        
+        }
     }
 }

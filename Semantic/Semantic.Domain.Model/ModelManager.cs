@@ -20,6 +20,7 @@ using CodeHelper.Core.Infrastructure.Command;
 using CodeHelper.Core.Command;
 using CodeHelper.Commands;
 using Project;
+using CodeHelper.Core.Parse.ParseResults.Turtles;
 
 namespace CodeHelper.Domain.Model
 {
@@ -102,6 +103,13 @@ namespace CodeHelper.Domain.Model
 
             //var cmdHost_common = CommandHostManager.Instance().Get(CommandHostManager.HostType.Common);
             //cmdHost_common.AddCommand(new ExitProcessCommand(this.Receiver));
+
+            //加载rdf
+            //var rdfM = new TurtleModule();
+            
+            //rdfs
+            //owl
+            //xsd
 
             this.Errors = new List<ParseErrorInfo>();
 
@@ -336,6 +344,16 @@ namespace CodeHelper.Domain.Model
 
         public object Reslove(string nameSpace, string name)
         {
+            if (nameSpace.Equals("<http://www.w3.org/2002/07/owl#>"))
+            {
+                if (OWLTypes.Instance().Object_Types.ContainsKey(name))
+                    return OWLTypes.Instance().Object_Types[name];
+                if (OWLTypes.Instance().Ver_Types.ContainsKey(name))
+                    return OWLTypes.Instance().Ver_Types[name];
+                if (OWLTypes.Instance().XSD_Typtes.ContainsKey(name))
+                    return OWLTypes.Instance().XSD_Typtes[name];
+            }
+
             if (!this.Namespace_Modules.ContainsKey(nameSpace))
             {
                 return null;
