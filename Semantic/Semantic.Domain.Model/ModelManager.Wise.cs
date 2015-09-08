@@ -617,7 +617,9 @@ namespace CodeHelper.Domain.Model
             }
 
             void OnUpdateModule(Guid fileId, IParseModule module)
-            {                
+            {
+                if (module.ParseType != Core.Parser.ParseType.TurtleModel)
+                    return;
 
                 //模块内重复类型验证
                 module.Types.Values.ToList().ForEach(x => {

@@ -38,5 +38,17 @@ namespace CodeHelper.Core.Parse.ParseResults.Turtles
             this.NameSpace = context.NameSpace;
             this.UsingNameSpaces = context.Imports;
         }
+
+        public override Parser.ParseType ParseType
+        {
+            get
+            {
+                return Parser.ParseType.TurtleModel;
+            }
+            set
+            {
+                base.ParseType = value;
+            }
+        }
     }
 }

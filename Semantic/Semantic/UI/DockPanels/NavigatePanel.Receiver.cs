@@ -40,16 +40,24 @@ namespace CodeHelper.UI.DockPanels
 
         //DesignProjectNode mDesignNode;
         //DBProjectNode mDataBaseNode;
-
+        
         public NavigatePanel()
             : base()
         {
             InitializeComponent();
-
-            receiver.OnModuleParsed += new ReceiverBase.ModuleParsedHandler(receiver_OnModuleParsed);
-            this.Load += new EventHandler(NavigatePanel_Load);
             
+            receiver.OnModuleParsed += new ReceiverBase.ModuleParsedHandler(receiver_OnModuleParsed);            
+            this.Load += new EventHandler(NavigatePanel_Load);
+
+            DocumentViewManager.Instance().Receiver.OnFileTabChanged 
+                += new ReceiverBase.FileTabChangeHandler(Receiver_OnFileTabChanged);
         }
+
+        void Receiver_OnFileTabChanged(Guid fileId)
+        {
+            if (this.Visible)
+                receiver_OnModuleParsed(fileId);
+        }      
 
         void treeView1_NodeMouseDoubleClick(object sender, TreeNodeMouseClickEventArgs e)
         {
@@ -100,20 +108,37 @@ namespace CodeHelper.UI.DockPanels
         
         private delegate void LoadTreeDelegate(IParseModule module);
 
-
         bool receiver_OnModuleParsed(Guid fileId)
         {
+            if (GlobalService.EditorContextManager.CurrentContext.Model.FileId != fileId)
+                return true;
+
             this.fileId = fileId;
+            //var model = ModelManager.Instance().GetModel(fileId);
+            //var moudel = ModelManager.Instance().MakeSureParseModule(model.File);
             var moudel = ModelManager.Instance().GetParseModule(fileId);
+            
             if (moudel != null)
             {
-                this.BeginInvoke(new LoadTreeDelegate(this.LoadTree),moudel);
+                this.BeginInvoke(new LoadTreeDelegate(this.LoadTree), moudel);
+            }
+            else
+            {
+                this.BeginInvoke(new LoadTreeDelegate(this.LoadTree), moudel);
             }
             return true;
         }
 
         private void LoadTree(IParseModule module)
         {
+            if (module == null)
+            {
+                this.typeRoot.Nodes.Clear();
+                this.instanceRoot.Nodes.Clear();
+                this.propertyRoot.Nodes.Clear();
+                return;
+            }
+
             this.treeView1.BeginUpdate();
 
             this.typeRoot.Nodes.Clear();

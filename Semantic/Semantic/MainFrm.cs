@@ -112,7 +112,7 @@ namespace CodeHelper
                 this.m_propertyPanel = new PropertyPanel();
                 this.m_navigatePanel = new NavigatePanel();
                 //this.m_tabsPanel = new TabsPanel();
-
+                
                 m_prjPanel.Show(this.m_workspace, WeifenLuo.WinFormsUI.Docking.DockState.DockLeft);
                 m_errorPanel.Show(this.m_workspace, DockState.DockBottom);
                 m_propertyPanel.Show(this.m_workspace, DockState.DockRight);
@@ -145,7 +145,6 @@ namespace CodeHelper
                 }
             }
 
-
             this.m_workspace.SaveAsXml(fileName);
             
             var cmdHost_common = CommandHostManager.Instance().Get(CommandHostManager.HostType.Common);
@@ -170,8 +169,7 @@ namespace CodeHelper
         {
             if ( DateTime.Now.Millisecond % 3 == 1 )
                 GlobalService.GoIdle(sender, e);
-        }
-        
+        }        
 
         private void mnuNewProject_Click(object sender, EventArgs e)
         {
@@ -186,8 +184,7 @@ namespace CodeHelper
             {
                 this.receiver.OpenProject();
             }
-        }
-         
+        }         
 
         private void mnuSave_Click(object sender, EventArgs e)
         {

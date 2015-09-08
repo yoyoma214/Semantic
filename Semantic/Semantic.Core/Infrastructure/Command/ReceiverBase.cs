@@ -49,6 +49,8 @@ namespace CodeHelper.Core.Infrastructure.Command
 
         public delegate void PropertySelectedHandler(object obj);
 
+        public delegate void FileTabChangeHandler(Guid fileId);
+
         public event ExitProcessHandler OnExitProcess;
         public event ExitProcessCompletedHandler OnExitProcessCompleted;
 
@@ -88,6 +90,8 @@ namespace CodeHelper.Core.Infrastructure.Command
         public event PropertySelectedHandler OnPropertySelected;
 
         public event ModuleParsedHandler OnModuleParsed;
+
+        public event FileTabChangeHandler OnFileTabChanged;
 
         private List<IReceiver> _Listeners = new List<IReceiver>();
 
@@ -259,6 +263,14 @@ namespace CodeHelper.Core.Infrastructure.Command
                 this.OnModuleParsed(fileId);
 
             Listeners.ForEach(x => x.ParseModule(fileId));
+        }
+
+        public void ChangeFileTab(Guid fileId)
+        {
+            if (this.OnFileTabChanged != null)
+                this.OnFileTabChanged(fileId);
+
+            Listeners.ForEach(x => x.ChangeFileTab(fileId));
         }
     }
 }
