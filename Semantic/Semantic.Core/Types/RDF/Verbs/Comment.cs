@@ -15,6 +15,13 @@ namespace CodeHelper.Core.Types.RDF
             this.Allow_Subject_Instance = true;
             this.Allow_Subject_Property = true;
         }
+        public override string NameSpace
+        {
+            get
+            {
+                return NameSpaceEnum.RDFS;
+            }
+        }
 
         public override string Name
         {

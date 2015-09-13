@@ -8,6 +8,14 @@ namespace CodeHelper.Core.Types.XSD
 {
     class NonPostiveInteger : BaseXsdType
     {
+        public override string NameSpace
+        {
+            get
+            {
+                return NameSpaceEnum.XSD;
+            }
+        }
+
         public override string Name
         {
             get

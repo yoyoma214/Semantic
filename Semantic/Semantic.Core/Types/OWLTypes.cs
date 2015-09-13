@@ -10,6 +10,7 @@ using CodeHelper.Core.Types.OWL.Verbs;
 using CodeHelper.Core.Types.XSD;
 using CodeHelper.Core.Types.OWL.Objects;
 using CodeHelper.Core.Types.RDF.Objects;
+using CodeHelper.Core.Services;
 
 namespace CodeHelper.Core.Types
 {
@@ -29,6 +30,13 @@ namespace CodeHelper.Core.Types
 
         public Dictionary<string, IObject> Object_Types { get; set; }
 
+        //public TurtleModule RdfModule { get; set; }
+
+        //public TurtleModule RdfsModule { get; set; }
+
+        //public TurtleModule OwlModule { get; set; }
+
+        //public TurtleModule XsdModule { get; set; }
 
         private OWLTypes()
         {
@@ -40,6 +48,22 @@ namespace CodeHelper.Core.Types
             this.XSD_Typtes = new Dictionary<string, IXsdType>();
             this.Ver_Types = new Dictionary<string, BaseVerb>();
             this.Object_Types = new Dictionary<string, IObject>();
+
+            //this.RdfModule = new TurtleModule();
+            //this.RdfModule.Name = "rdf";
+            //this.RdfModule.NameSpace = "http://www.w3.org/1999/02/22-rdf-syntax-ns#";
+            
+            //this.RdfsModule = new TurtleModule();
+            //this.RdfModule.Name = "rdfs";
+            //this.RdfModule.NameSpace = "http://www.w3.org/2000/01/rdf-schema#";
+
+            //this.OwlModule = new TurtleModule();
+            //this.OwlModule.Name = "owl";
+            //this.OwlModule.NameSpace = "http://www.w3.org/2002/07/owl#>";
+
+            //this.XsdModule = new TurtleModule();
+            //this.XsdModule.Name = "xsd";
+            //this.XsdModule.NameSpace = "http://www.w3.org/2001/XMLSchema#";
 
             Init();
         }
@@ -61,6 +85,7 @@ namespace CodeHelper.Core.Types
             //type.Name = "rdf:type";
             type = new RDF_Type();
             this.Ver_Types.Add(type.Name,type);
+            
             #endregion
             
             #region rdfs

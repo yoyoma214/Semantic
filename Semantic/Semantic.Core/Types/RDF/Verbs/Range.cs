@@ -9,10 +9,16 @@ namespace CodeHelper.Core.Types.RDF.Verbs
     class Range: BaseVerb
     {
         public Range()
-        {
-            this.Allow_Subject_Class = true;
-            this.Allow_Subject_Instance = true;
+        {            
+            //this.Allow_Subject_Instance = true;
             this.Allow_Subject_Property = true; 
+        }
+        public override string NameSpace
+        {
+            get
+            {
+                return NameSpaceEnum.RDFS;
+            }
         }
 
         public override string Name

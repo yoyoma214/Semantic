@@ -17,5 +17,10 @@ namespace CodeHelper.Core.Types.Base
         {
             return true;
         }
+
+        public virtual string NameSpace
+        {
+            get { throw new NotImplementedException(); }
+        }
     }
 }

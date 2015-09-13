@@ -11,7 +11,14 @@ namespace CodeHelper.Core.Types.RDF.Verbs
         public Domain()
             : base()
         {
-            this.Allow_Subject_Class = true;
+            this.Allow_Subject_Property = true;
+        }
+        public override string NameSpace
+        {
+            get
+            {
+                return NameSpaceEnum.RDFS;
+            }
         }
 
         public override string Name

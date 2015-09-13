@@ -99,34 +99,41 @@ namespace CodeHelper.Core.Parse.ParseResults.Turtles
             if (this.Visit == VisitType.Subject)
             {
                 CurrentSubjects.Add(part);
-                this.Verb = this.Object = null;
-
-                if (m_matchCaret != null)
+                
+                if ( m_matchCaret == false)
                     this.Subject = part;
+
+                if (m_matchCaret== true)
+                    this.Verb = this.Object = null;
             }
             else if (this.Visit == VisitType.Verb)
             {
                 CurrentVerbObjects.Add(part, new List<string>());
                 CurrentVerb = part;
 
-                this.Object = null;
-
-                if (m_matchCaret != null)
+                if (m_matchCaret == false)
                     this.Verb = part;
+                if (m_matchCaret == true)
+                    this.Object = null;                    
             }
             else if (this.Visit == VisitType.Object)
             {
                 this.CurrentVerbObjects[this.CurrentVerb].Add(part);
 
-                if (m_matchCaret != null)
+                if (m_matchCaret == true)
                     this.Object = part;
             }
 
             if (m_matchCaret == true)
                 m_matchCaret = null;
+
+            if (this.Caret == null)
+            {
+                this.Subject = this.Verb = this.Object = null;
+            }
         }
 
-        public void FlushTriple()
+        public void FlushTriple(TokenPair pair)
         {
             foreach (var vo in this.CurrentVerbObjects)
             {
@@ -140,7 +147,7 @@ namespace CodeHelper.Core.Parse.ParseResults.Turtles
                             break;
                         }
 
-                        if (obj == "rdf:Class" )//|| obj == "rdfs:subClassOf" || obj == "owl:equivalentClass")
+                        if (obj == "owl:Class" )//|| obj == "rdfs:subClassOf" || obj == "owl:equivalentClass")
                         {
 
                             foreach (var subject in this.CurrentSubjects)
@@ -148,9 +155,11 @@ namespace CodeHelper.Core.Parse.ParseResults.Turtles
                                 if (!this.Types.ContainsKey(subject))
                                 {
                                     var t = new TypeInfoBase();
-                                    t.Name = OWLName.ParseLocalName(subject); 
-                                    t.NameSpace = null;
-                                    this.Types.Add(t.Name, t);
+                                    t.Name = OWLName.ParseLocalName(subject);
+                                    t.FullName = subject;
+                                    t.NameSpace = this.NameSpace;
+                                    t.TokenPair = pair;
+                                    this.Types.Add(t.FullName, t);
                                 }
                             }
                         }
@@ -161,9 +170,12 @@ namespace CodeHelper.Core.Parse.ParseResults.Turtles
                                 if (!this.Properties.ContainsKey(subject))
                                 {
                                     OWLProperty p = new OWLProperty();
-                                    p.Name = OWLName.ParseLocalName(subject); 
+                                    p.Name = OWLName.ParseLocalName(subject);
+                                    p.FullName = subject;
+                                    p.NameSpace = this.NameSpace;
                                     p.IsObject = true;
-                                    this.Properties.Add(p.Name, p);
+                                    p.TokenPair = pair;
+                                    this.Properties.Add(p.FullName, p);
                                 }
                             }
                         }
@@ -176,7 +188,10 @@ namespace CodeHelper.Core.Parse.ParseResults.Turtles
                                     OWLProperty p = new OWLProperty();
                                     p.Name = OWLName.ParseLocalName(subject);                                    
                                     p.IsObject = false;
-                                    this.Properties.Add(p.Name, p);
+                                    p.NameSpace = this.NameSpace;
+                                    p.FullName = subject;
+                                    p.TokenPair = pair;
+                                    this.Properties.Add(p.FullName, p);
                                 }
                             }
                         }
@@ -187,9 +202,12 @@ namespace CodeHelper.Core.Parse.ParseResults.Turtles
                                 if (!this.Instances.ContainsKey(subject))
                                 {
                                     OWLInstance p = new OWLInstance();
-                                    p.Name = OWLName.ParseLocalName(subject); 
+                                    p.Name = OWLName.ParseLocalName(subject);
+                                    p.FullName = subject;
+                                    p.NameSpace = this.NameSpace;
                                     p.Type = this.Parse(obj);
-                                    this.Instances.Add(p.Name, p);
+                                    p.TokenPair = pair;
+                                    this.Instances.Add(p.FullName, p);
                                 }
                             }
                         }

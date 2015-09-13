@@ -36,5 +36,7 @@ namespace CodeHelper.Core.Command
         void PropertySelect(object obj);
 
         void ParseModule(Guid fileId);
+
+        void ChangeFileTab(Guid fileId);
     }
 }

@@ -20,6 +20,8 @@ using CodeHelper.Core.Infrastructure.Command;
 using CodeHelper.Core.Command;
 using CodeHelper.Commands;
 using Project;
+using CodeHelper.Core.Parse.ParseResults.Turtles;
+using CodeHelper.Core.Types.Base;
 
 namespace CodeHelper.Domain.Model
 {
@@ -103,6 +105,14 @@ namespace CodeHelper.Domain.Model
             //var cmdHost_common = CommandHostManager.Instance().Get(CommandHostManager.HostType.Common);
             //cmdHost_common.AddCommand(new ExitProcessCommand(this.Receiver));
 
+            //加载rdf
+            //var rdfM = new TurtleModule();
+            //rdfM.
+            
+            //rdfs
+            //owl
+            //xsd
+
             this.Errors = new List<ParseErrorInfo>();
 
             GlobalService.Idle += new EventHandler(GlobalService_Idle);
@@ -111,6 +121,27 @@ namespace CodeHelper.Domain.Model
             workEngine.WiseCompleted += new OnWiseCompleted(workEngine_WiseCompleted);
             workEngine.Continue += new OnContinue(workEngine_Continue);
             workEngine.Start();
+        }
+
+        private List<object> ListBuildinItem(string nameSpace)
+        {
+            var rslt = new List<object>();
+            rslt.AddRange(OWLTypes.Instance().Ver_Types.Where(x => x.Value.NameSpace == nameSpace).Select(x=>x.Value));
+            rslt.AddRange(OWLTypes.Instance().Object_Types.Where(x => x.Value.NameSpace == nameSpace).Select(x => x.Value));
+            rslt.AddRange(OWLTypes.Instance().Ver_Types.Where(x => x.Value.NameSpace == nameSpace).Select(x => x.Value));
+            return rslt;
+        }
+
+        private object ResloveBuildinItem(string nameSpace, string name)
+        {
+            var obj = OWLTypes.Instance().Ver_Types.Where(x => x.Value.NameSpace == nameSpace && x.Key == name).Select(x => x.Value).FirstOrDefault();
+            if (obj != null)
+                return obj;
+            var obj1 = OWLTypes.Instance().Object_Types.Where(x => x.Value.NameSpace == nameSpace && x.Key == name).Select(x => x.Value).FirstOrDefault();
+            if (obj1 != null)
+                return obj1;
+            var obj2 = OWLTypes.Instance().XSD_Typtes.Where(x => x.Value.NameSpace == nameSpace && x.Key == name).Select(x => x.Value).FirstOrDefault();
+            return obj2;
         }
 
         bool receiver_OnExitProcess()
@@ -336,6 +367,29 @@ namespace CodeHelper.Domain.Model
 
         public object Reslove(string nameSpace, string name)
         {
+            //if (nameSpace.Equals("<http://www.w3.org/2002/07/owl#>"))
+            //{
+            //    if (OWLTypes.Instance().Object_Types.ContainsKey(name))
+            //        return OWLTypes.Instance().Object_Types[name];
+            //    if (OWLTypes.Instance().Ver_Types.ContainsKey(name))
+            //        return OWLTypes.Instance().Ver_Types[name];
+            //    if (OWLTypes.Instance().XSD_Typtes.ContainsKey(name))
+            //        return OWLTypes.Instance().XSD_Typtes[name];
+            //}
+            //else if (nameSpace.Equals("<http://www.w3.org/1999/02/22-rdf-syntax-ns#>"))
+            //{
+            //    if (OWLTypes.Instance().Object_Types.ContainsKey(name))
+            //        return OWLTypes.Instance().Object_Types[name];
+            //    if (OWLTypes.Instance().Ver_Types.ContainsKey(name))
+            //        return OWLTypes.Instance().Ver_Types[name];
+            //    if (OWLTypes.Instance().XSD_Typtes.ContainsKey(name))
+            //        return OWLTypes.Instance().XSD_Typtes[name];
+            //}
+
+            var obj = ResloveBuildinItem(nameSpace, name);
+            if (obj != null)
+                return obj;
+
             if (!this.Namespace_Modules.ContainsKey(nameSpace))
             {
                 return null;
@@ -407,6 +461,60 @@ namespace CodeHelper.Domain.Model
             }
 
             return rslt;
+        }
+
+        public object Reslove(List<string> nameSpaces, string name)
+        {
+            foreach (var ns in nameSpaces)
+            {
+                var obj = this.Reslove(ns, name);
+                if (obj != null)
+                    return obj;
+            }
+
+            return null; 
+        }
+
+        public List<ITypeInfo> ListType(List<string> nameSpaces)
+        {
+            var rslt = new List<ITypeInfo>();
+
+            foreach (var ns in nameSpaces)
+            {
+                var obj = this.ListType(ns);
+                if (obj != null)
+                    rslt.AddRange(obj);
+            }
+
+            return rslt; 
+        }
+
+        public List<OWLProperty> ListProperty(List<string> nameSpaces)
+        {
+            var rslt = new List<OWLProperty>();
+
+            foreach (var ns in nameSpaces)
+            {
+                var obj = this.ListProperty(ns);
+                if (obj != null)
+                    rslt.AddRange(obj);
+            }
+
+            return rslt; 
+        }
+
+        public List<OWLInstance> ListInstance(List<string> nameSpaces)
+        {
+            var rslt = new List<OWLInstance>();
+
+            foreach (var ns in nameSpaces)
+            {
+                var obj = this.ListInstance(ns);
+                if (obj != null)
+                    rslt.AddRange(obj);
+            }
+
+            return rslt; 
         }
     }
 }

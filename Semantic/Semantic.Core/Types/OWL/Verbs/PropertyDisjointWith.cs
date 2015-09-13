@@ -10,9 +10,16 @@ namespace CodeHelper.Core.Types.OWL.Verbs
     {
         public PropertyDisjointWith()
         {
-            this.Allow_Subject_Class = true;
-            this.Allow_Subject_Instance = true;
+            //this.Allow_Subject_Class = true;
+            //this.Allow_Subject_Instance = true;
             this.Allow_Subject_Property = true; 
+        }
+        public override string NameSpace
+        {
+            get
+            {
+                return NameSpaceEnum.OWL;
+            }
         }
 
         public override string Name

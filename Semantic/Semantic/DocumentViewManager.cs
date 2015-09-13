@@ -13,6 +13,7 @@ using CodeHelper.Core.Infrastructure.Model;
 using System.Diagnostics;
 using CodeHelper.Core.Command;
 using CodeHelper.Commands.DataModel;
+using CodeHelper.Core.Parser;
 
 namespace CodeHelper
 {
@@ -169,12 +170,15 @@ namespace CodeHelper
             //GlobalService.EditorContextManager.CurrentContext = 
             //var ctx = ((WeifenLuo.WinFormsUI.Docking.DockPanel)(sender)).ActiveDocument;
             var ctx = ((WeifenLuo.WinFormsUI.Docking.DockPanel)(sender)).ActiveDocument as FileTabPanel;
+            if (ctx == null)
+                return;
 
-            if (ctx != null)
+            GlobalService.EditorContextManager.SetCurrent((Guid)ctx.Tag);
+
+            if (Path.GetExtension(ctx.FileName) == Dict.Extenstions.Turtle_Extension)
             {
-                GlobalService.EditorContextManager.SetCurrent((Guid)ctx.Tag);
+                this.Receiver.ChangeFileTab((Guid)ctx.Tag);
             }
-            
         }
 
         public void ActiveView(Guid fileId)
@@ -184,7 +188,6 @@ namespace CodeHelper
             {
                 docView.Select();
             }
-
         }
 
         void m_documentViewContainer_ActiveContentChanged(object sender, EventArgs e)

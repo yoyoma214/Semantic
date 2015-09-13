@@ -23,5 +23,20 @@ namespace CodeHelper.Core.Types.Base
             get;
             set;
         }
+
+        public virtual string NameSpace
+        {
+            get { throw new NotImplementedException(); }
+        }
+
+        public virtual bool AllowVerb(IVerb verb)
+        {
+            throw new NotImplementedException();
+        }
+
+        public virtual bool AllowVerb(string fullName)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

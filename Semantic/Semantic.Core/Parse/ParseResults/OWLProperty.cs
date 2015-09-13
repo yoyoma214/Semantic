@@ -9,11 +9,14 @@ namespace CodeHelper.Core.Parse.ParseResults
     {
         public string NameSpace { get; set; }
         public string Name { get; set; }
+        public string FullName { get; set; }
         public List<TypeInfoBase> Domain { get; set; }
         public List<TypeInfoBase> Range { get; set; }
         public OWLProperty Parent { get; set; }
         public TokenPair Position { get; set; }
         public bool IsObject { get; set; }
+
+        public TokenPair TokenPair { get; set; }
 
         public OWLProperty()
         {

@@ -11,18 +11,22 @@ namespace CodeHelper.Core.Parse.ParseResults
 
         public Object Value { get; set; }
 
-        public TokenPair Position { get; set; }
+        public TokenPair TokenPair { get; set; }
     }
 
     public class OWLInstance
     {
         public string Name { get; set; }
 
+        public string NameSpace { get; set; }
+
+        public string FullName { get; set; }
+
         public TypeInfoBase Type { get; set; }
 
         public List<PropertyValue> PropertyValues { get; set; }
 
-        public TokenPair Position { get; set; }
+        public TokenPair TokenPair { get; set; }
 
         public OWLInstance()
         {

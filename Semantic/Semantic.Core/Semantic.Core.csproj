@@ -184,6 +184,7 @@
     <Compile Include="Types\Base\BaseObject.cs" />
     <Compile Include="Types\Base\BaseVerb.cs" />
     <Compile Include="Types\Base\BaseXsdType.cs" />
+    <Compile Include="Types\Base\NameSpaceEnum.cs" />
     <Compile Include="Types\INameSpace.cs" />
     <Compile Include="Types\IObject.cs" />
     <Compile Include="Types\ITypeInfo.cs" />

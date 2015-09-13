@@ -45,5 +45,17 @@ namespace CodeHelper.Core.Parse.ParseResults.Antlrs
         {
             this.Root.GenJava(builder, path);
         }
+
+        public override Parser.ParseType ParseType
+        {
+            get
+            {
+                return Parser.ParseType.Antlr4Model;
+            }
+            set
+            {
+                base.ParseType = value;
+            }
+        }
     }
 }

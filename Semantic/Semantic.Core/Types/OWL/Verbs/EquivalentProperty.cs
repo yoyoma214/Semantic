@@ -14,6 +14,13 @@ namespace CodeHelper.Core.Types.OWL.Verbs
             this.Allow_Subject_Instance = false;
             this.Allow_Subject_Property = true; 
         }
+        public override string NameSpace
+        {
+            get
+            {
+                return NameSpaceEnum.OWL;
+            }
+        }
 
         public override string Name
         {

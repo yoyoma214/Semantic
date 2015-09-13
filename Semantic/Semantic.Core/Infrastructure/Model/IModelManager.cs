@@ -54,10 +54,18 @@ namespace CodeHelper.Core.Infrastructure.Model
 
         object Reslove(string nameSpace, string name);
 
+        object Reslove(List<string> nameSpaces, string name);
+
         List<ITypeInfo> ListType(string nameSpace);
+
+        List<ITypeInfo> ListType(List<string> nameSpaces);
 
         List<OWLProperty> ListProperty(string nameSpace);
 
+        List<OWLProperty> ListProperty(List<string> nameSpaces);
+
         List<OWLInstance> ListInstance(string nameSpace);
+
+        List<OWLInstance> ListInstance(List<string> nameSpaces);
     }
 }

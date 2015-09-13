@@ -34,5 +34,17 @@ namespace CodeHelper.Core.Parse.ParseResults.Sparqls
         {
             //this.Root.GenVisitCSharp(builder);
         }
+
+        public override Parser.ParseType ParseType
+        {
+            get
+            {
+                return Parser.ParseType.SparqlModel;
+            }
+            set
+            {
+                base.ParseType = value;
+            }
+        }
     }
 }
