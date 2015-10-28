@@ -64,12 +64,12 @@ namespace CodeHelper.Core.Parser
         Guid FileId { get; set; }
 
         string File { get; set; }
-        
-        Dictionary<string, TypeInfoBase> Types { get; set; }
 
-        Dictionary<string, OWLProperty> Properties { get; set; }
+        Dictionary<string, TypeInfoBase> Types { get; }
 
-        Dictionary<string, OWLInstance> Instances { get; set; }   
+        Dictionary<string, OWLProperty> Properties { get; }
+
+        Dictionary<string, OWLInstance> Instances { get; }   
 
         void Initialize();
 
@@ -84,5 +84,20 @@ namespace CodeHelper.Core.Parser
         /// <returns></returns>
         OWLName ResloveName(string mixedName);
 
+        TypeInfoBase ResloveType(string nameSpace,string name);
+
+        OWLProperty ResloveProperty(string nameSpace, string name);
+
+        OWLInstance ResloveInstance(string nameSpace, string name);
+
+        Object Reslove(string nameSpace, string name);
+
+        List<Object> AnySeeAble(string nameSpace, string name, bool equal);
+
+        List<TypeInfoBase> TypeSeeAble(string nameSpace, string name, bool equal);
+
+        List<TypeInfoBase> PropertySeeAble(string nameSpace, string name, bool equal);
+
+        List<TypeInfoBase> InstanceSeeAble(string nameSpace, string name, bool equal);
     }
 }

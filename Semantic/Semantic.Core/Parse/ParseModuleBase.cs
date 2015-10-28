@@ -150,5 +150,84 @@ namespace CodeHelper.Core.Parse
 
             return owlName;
         }
+
+        private string GetLocalName(string nameSpace, string name)
+        {
+            foreach (var ns in this.UsingNameSpaces)
+            {
+                if (ns.Value.Equals(nameSpace))
+                {
+                    return ns.Key  + name;
+                }
+            }
+            return null;
+        }
+
+        public TypeInfoBase ResloveType(string nameSpace, string name)
+        {
+            var ln = this.GetLocalName(nameSpace, name);
+            if (ln == null)
+                return null;
+
+            if (this.Types.ContainsKey(ln))
+                return this.Types[ln];
+            return null;
+        }
+
+        public OWLProperty ResloveProperty(string nameSpace, string name)
+        {
+            var ln = this.GetLocalName(nameSpace, name);
+            if (ln == null)
+                return null;
+
+            if (this.Properties.ContainsKey(ln))
+                return this.Properties[ln];
+            return null;
+        }
+
+        public OWLInstance ResloveInstance(string nameSpace, string name)
+        {
+            var ln = this.GetLocalName(nameSpace, name);
+            if (ln == null)
+                return null;
+            if (this.Instances.ContainsKey(ln))
+                return this.Instances[ln];
+            return null;
+        }
+
+        public object Reslove(string nameSpace, string name)
+        {
+            var ln = this.GetLocalName(nameSpace, name);
+            if (ln == null)
+                return null;
+
+            if (this.Types.ContainsKey(ln))
+                return this.Types[ln]; 
+            if (this.Properties.ContainsKey(ln))
+                return this.Properties[ln];
+            if (this.Instances.ContainsKey(ln))
+                return this.Instances[ln];
+            return null;
+        }
+
+        public List<object> AnySeeAble(string nameSpace, string name, bool equal)
+        {
+            throw new NotImplementedException();
+        }
+
+        public List<TypeInfoBase> TypeSeeAble(string nameSpace, string name, bool equal)
+        {
+            throw new NotImplementedException();
+        }
+
+        public List<TypeInfoBase> PropertySeeAble(string nameSpace, string name, bool equal)
+        {
+            throw new NotImplementedException();
+        }
+
+        public List<TypeInfoBase> InstanceSeeAble(string nameSpace, string name, bool equal)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

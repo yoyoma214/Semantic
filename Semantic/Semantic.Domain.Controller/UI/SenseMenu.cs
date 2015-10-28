@@ -427,6 +427,9 @@ namespace CodeHelper.Domain.Controller.UI
                             data.Add(ver.Key);
                         }
                     }
+
+                    //添加当前模块能看到的属性
+                    module.Reslove
                     return data;
                 }
 

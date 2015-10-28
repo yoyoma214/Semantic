@@ -398,12 +398,14 @@ namespace CodeHelper.Domain.Model
             var modules = this.Namespace_Modules[nameSpace];
             foreach (var m in modules)
             {
-                if (m.Types.ContainsKey(name))
-                    return m.Types[name];
-                if (m.Properties.ContainsKey(name))
-                    return m.Properties[name];
-                if (m.Instances.ContainsKey(name))
-                    return m.Instances[name];
+                //if (m.Types.ContainsKey(name))
+                //    return m.Types[name];
+                //if (m.Properties.ContainsKey(name))
+                //    return m.Properties[name];
+                //if (m.Instances.ContainsKey(name))
+                //    return m.Instances[name];
+
+                return m.Reslove(nameSpace, name);
             }
 
             return null;
