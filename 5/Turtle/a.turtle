@@ -1,0 +1,28 @@
+@prefix : <http://example.com/owl/families> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+<http://example.com/owl/families> rdf:type owl:Ontology .
+
+:Person rdf:type rdfs:Class .
+
+:cuiqingyong rdf:type :Person .
+
+:tom rdf:type :Person .
+
+:Person owl:differentFrom rdfs:range  .
+
+:Person owl:minQualifiedCardinality "3"^^xsd:int .
+
+:hasAge rdf:type owl:DatatypeProperty .
+
+:hasGrandparent  owl:propertyChainAxiom  ( :hasParent  :hasAge ) .
+
+ 
+:tom owl:sameAs :cuiqingyong .
+
+:tom :hasAge "33"^^xsd:int .
+
+:tom :
