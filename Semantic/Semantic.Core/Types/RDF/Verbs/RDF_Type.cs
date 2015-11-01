@@ -49,29 +49,35 @@ namespace CodeHelper.Core.Types.RDF.Verbs
             var rslt = new List<string>();
             var obj = module.Object;
             //类型，属性，约束
-            var types = GlobalService.ModelManager.ListType(module.UsingNameSpaces.Values.ToList());
+            var types = GlobalService.ModelManager.ListType(module.UsingNameSpaces.Values.ToList(),null,true);
             foreach(var t in types)
             {
-                var ns = t.NameSpace;
+                var ns = module.GetLocalNameSpace(t.NameSpace);
                 if (ns == null) ns = ":";
                 rslt.Add(ns + t.Name);
             }
 
-            var props = GlobalService.ModelManager.ListProperty(module.UsingNameSpaces.Values.ToList());
+            var props = GlobalService.ModelManager.ListProperty(module.UsingNameSpaces.Values.ToList(),null,true);
             foreach (var p in props)
             {
-                rslt.Add(p.Name);
+                var ns = module.GetLocalNameSpace(p.NameSpace);
+                if (ns == null) ns = ":";
+                rslt.Add(ns + p.Name);
             }
 
             foreach (var ob in OWLTypes.Instance().Object_Types.Values)
             {
                 if (ob.AllowVerb(this))
-                    rslt.Add(ob.Name);
+                {
+                    var ns = module.GetLocalNameSpace(ob.NameSpace);
+                    if (ns == null) ns = ":";
+                    rslt.Add(ns + ob.Name);
+                }
             }
 
             rslt.AddRange(OWLTypes.Instance().XSD_Typtes.Keys);
                         
-            return rslt;
+             return rslt;
         }
     }
 }

@@ -96,8 +96,22 @@ namespace CodeHelper.Core.Parser
 
         List<TypeInfoBase> TypeSeeAble(string nameSpace, string name, bool equal);
 
-        List<TypeInfoBase> PropertySeeAble(string nameSpace, string name, bool equal);
+        List<OWLProperty> PropertySeeAble(string nameSpace, string name, bool equal);
 
-        List<TypeInfoBase> InstanceSeeAble(string nameSpace, string name, bool equal);
+        List<OWLInstance> InstanceSeeAble(string nameSpace, string name, bool equal);
+
+        /// <summary>
+        /// 得到名称空间的本地名字，如果没有在当前模块中申明则返回null
+        /// </summary>
+        /// <param name="fullNameSpace"></param>
+        /// <returns></returns>
+        string GetLocalNameSpace(string fullNameSpace);
+
+        /// <summary>
+        /// 得到命名空间的全名称，如果没有在当前模块中申明则返回null
+        /// </summary>
+        /// <param name="shortNameSpace"></param>
+        /// <returns></returns>
+        string GetFullNameSpace(string shortNameSpace);
     }
 }

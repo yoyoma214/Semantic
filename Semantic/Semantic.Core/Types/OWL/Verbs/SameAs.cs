@@ -41,7 +41,7 @@ namespace CodeHelper.Core.Types.OWL.Verbs
             var result = new List<String>();
             foreach (var ns in module.UsingNameSpaces)
             {
-                foreach (var type in GlobalService.ModelManager.ListInstance(ns.Value))
+                foreach (var type in GlobalService.ModelManager.ListInstance(ns.Value,null,true))
                 {
                     result.Add(type.Name);
                 }

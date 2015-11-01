@@ -18,7 +18,7 @@ namespace CodeHelper.Core.Infrastructure.Model
         List<IParseModule> GetAlllModules(ParseType? type);
 
         void Regist(IModel model);
-        
+
         //void RegistDb(ConnectionType conn);
 
         void Remove(IModel model);
@@ -31,13 +31,13 @@ namespace CodeHelper.Core.Infrastructure.Model
 
         event OnParsed OnParsed;
 
-        List<ITypeInfo> ParseType(string type, IParseModule ctx , out string error);
+        List<ITypeInfo> ParseType(string type, IParseModule ctx, out string error);
 
         IModel MakeSureModel(string file);
 
         List<ParseErrorInfo> Errors
         {
-            get;            
+            get;
         }
 
         IParseModule MakeSureParseModule(string p);
@@ -56,16 +56,16 @@ namespace CodeHelper.Core.Infrastructure.Model
 
         object Reslove(List<string> nameSpaces, string name);
 
-        List<ITypeInfo> ListType(string nameSpace);
+        List<ITypeInfo> ListType(string nameSpace, string name, bool equal);
 
-        List<ITypeInfo> ListType(List<string> nameSpaces);
+        List<ITypeInfo> ListType(List<string> nameSpaces, string name, bool equal);
 
-        List<OWLProperty> ListProperty(string nameSpace);
+        List<OWLProperty> ListProperty(string nameSpace, string name, bool equal);
 
-        List<OWLProperty> ListProperty(List<string> nameSpaces);
+        List<OWLProperty> ListProperty(List<string> nameSpaces, string name, bool equal);
 
-        List<OWLInstance> ListInstance(string nameSpace);
+        List<OWLInstance> ListInstance(string nameSpace, string name, bool equal);
 
-        List<OWLInstance> ListInstance(List<string> nameSpaces);
+        List<OWLInstance> ListInstance(List<string> nameSpaces, string name, bool equal);
     }
 }

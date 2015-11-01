@@ -404,14 +404,16 @@ namespace CodeHelper.Domain.Model
                 //    return m.Properties[name];
                 //if (m.Instances.ContainsKey(name))
                 //    return m.Instances[name];
-
-                return m.Reslove(nameSpace, name);
+                var r = m.Reslove(nameSpace, name);
+                if (r != null)
+                    return r;
+                //return m.Reslove(nameSpace, name);
             }
 
             return null;
         }
 
-        public List<ITypeInfo> ListType(string nameSpace)
+        public List<ITypeInfo> ListType(string nameSpace, string name, bool equal)
         {
             var rslt = new List<ITypeInfo>();
 
@@ -423,13 +425,14 @@ namespace CodeHelper.Domain.Model
             var modules = this.Namespace_Modules[nameSpace];
             foreach (var m in modules)
             {
-                rslt.AddRange(m.Types.Values);
+                rslt.AddRange(m.TypeSeeAble(nameSpace, name, equal));
+                //rslt.AddRange(m.Types.Values);
             }
 
             return rslt;
         }
 
-        public List<OWLProperty> ListProperty(string nameSpace)
+        public List<OWLProperty> ListProperty(string nameSpace, string name, bool equal)
         {
             var rslt = new List<OWLProperty>();
 
@@ -441,13 +444,14 @@ namespace CodeHelper.Domain.Model
             var modules = this.Namespace_Modules[nameSpace];
             foreach (var m in modules)
             {
-                rslt.AddRange(m.Properties.Values);
+                rslt.AddRange(m.PropertySeeAble(nameSpace,name,equal));
+                //rslt.AddRange(m.Properties.Values);
             }
 
             return rslt;
         }
 
-        public List<OWLInstance> ListInstance(string nameSpace)
+        public List<OWLInstance> ListInstance(string nameSpace, string name, bool equal)
         {
             var rslt = new List<OWLInstance>();
 
@@ -459,7 +463,8 @@ namespace CodeHelper.Domain.Model
             var modules = this.Namespace_Modules[nameSpace];
             foreach (var m in modules)
             {
-                rslt.AddRange(m.Instances.Values);
+                rslt.AddRange(m.InstanceSeeAble(nameSpace,name,equal));
+                //rslt.AddRange(m.Instances.Values);
             }
 
             return rslt;
@@ -477,13 +482,13 @@ namespace CodeHelper.Domain.Model
             return null; 
         }
 
-        public List<ITypeInfo> ListType(List<string> nameSpaces)
+        public List<ITypeInfo> ListType(List<string> nameSpaces, string name, bool equal)
         {
             var rslt = new List<ITypeInfo>();
 
             foreach (var ns in nameSpaces)
             {
-                var obj = this.ListType(ns);
+                var obj = this.ListType(ns,name,equal);
                 if (obj != null)
                     rslt.AddRange(obj);
             }
@@ -491,27 +496,27 @@ namespace CodeHelper.Domain.Model
             return rslt; 
         }
 
-        public List<OWLProperty> ListProperty(List<string> nameSpaces)
+        public List<OWLProperty> ListProperty(List<string> nameSpaces, string name, bool equal)
         {
             var rslt = new List<OWLProperty>();
 
             foreach (var ns in nameSpaces)
             {
-                var obj = this.ListProperty(ns);
+                var obj = this.ListProperty(ns,name,equal);
                 if (obj != null)
                     rslt.AddRange(obj);
             }
 
-            return rslt; 
+            return rslt;
         }
 
-        public List<OWLInstance> ListInstance(List<string> nameSpaces)
+        public List<OWLInstance> ListInstance(List<string> nameSpaces, string name, bool equal)
         {
             var rslt = new List<OWLInstance>();
 
             foreach (var ns in nameSpaces)
             {
-                var obj = this.ListInstance(ns);
+                var obj = this.ListInstance(ns,name,equal);
                 if (obj != null)
                     rslt.AddRange(obj);
             }
