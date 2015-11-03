@@ -113,5 +113,10 @@ namespace CodeHelper.Core.Parser
         /// <param name="shortNameSpace"></param>
         /// <returns></returns>
         string GetFullNameSpace(string shortNameSpace);
+
+        /// <summary>
+        /// 遇到解析崩溃性错误,无法继续往下进行处理
+        /// </summary>
+        bool ParseCrashed { get; set; }
     }
 }

@@ -12,17 +12,19 @@
 
 :tom rdf:type :Person .
 
+:enName rdf:type owl:ObjectProperty .
+
 :Person owl:differentFrom rdfs:range  .
 
 :Person owl:minQualifiedCardinality "3"^^xsd:int .
 
 :hasAge rdf:type owl:DatatypeProperty .
 
-:hasGrandparent  owl:propertyChainAxiom  ( :hasParent  :hasAge ) .
-
+:hasGrandparent  owl:propertyChainAxiom  ( :hasParent  :hasAge ).
  
 :tom owl:sameAs :cuiqingyong .
 
+:cqy :enName  "ccc"^^xsd:string .
+
 :tom :hasAge "33"^^xsd:int .
 
-:tom :

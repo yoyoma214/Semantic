@@ -335,7 +335,6 @@ namespace CodeHelper.Domain.Model
             return this.workEngine.ParseType(type, ctx, out error);
         }
         
-
         public IParseModule GetParseModule(Guid fileId)
         {
             if (this.ParseModules.ContainsKey(fileId))
@@ -347,7 +346,7 @@ namespace CodeHelper.Domain.Model
         public void FireParsed(IModel model, bool sucess)
         {
             if (this.OnParsed != null)
-                this.OnParsed(model, sucess);
+                this.OnParsed(model, sucess);            
         }
 
         public ITypeInfo ResolveType(string nameSpace, string name)

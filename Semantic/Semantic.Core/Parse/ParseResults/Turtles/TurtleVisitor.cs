@@ -67,39 +67,48 @@ namespace CodeHelper.Core.Parse.ParseResults.Turtles
         }
 
         public override int VisitSubject([NotNull] TurtleParser.SubjectContext context) {
-            var subject = this.stack.PeekCtx<Subject>();
-            subject.Parse(context);
-
-            var iriCtx = context.iRI();
-            if (iriCtx != null)
+            try
             {
-                var iri = new IRI();
-                subject.IRI = iri;
-                this.stack.Push(iri);
-                this.Visit(iriCtx);
-                this.stack.Pop();
-            }
+                var subject = this.stack.PeekCtx<Subject>();
+                subject.Parse(context);
 
-            var blankNodeCtx = context.blankNode();
-            if (blankNodeCtx != null)
+                var iriCtx = context.iRI();
+                if (iriCtx != null)
+                {
+                    var iri = new IRI();
+                    subject.IRI = iri;
+                    this.stack.Push(iri);
+                    this.Visit(iriCtx);
+                    this.stack.Pop();
+                }
+
+                var blankNodeCtx = context.blankNode();
+                if (blankNodeCtx != null)
+                {
+                    var blankNode = new BlankNode();
+                    subject.BlankNode = blankNode;
+                    this.stack.Push(blankNode);
+                    this.Visit(blankNodeCtx);
+                    this.stack.Pop();
+                }
+
+                var collectionCtx = context.collection();
+                if (collectionCtx != null)
+                {
+                    var collection = new Collection();
+                    subject.Collection = collection;
+                    this.stack.Push(collection);
+                    if (iriCtx == null)
+                    {
+                    }
+                    this.Visit(iriCtx);
+                    this.stack.Pop();
+                }
+            }
+            catch (Exception ex)
             {
-                var blankNode = new BlankNode();
-                subject.BlankNode = blankNode;
-                this.stack.Push(blankNode);
-                this.Visit(blankNodeCtx);
-                this.stack.Pop();
+                Console.Out.WriteLine(ex.Message);
             }
-
-            var collectionCtx = context.collection();
-            if (collectionCtx != null)
-            {
-                var collection = new Collection();
-                subject.Collection = collection;
-                this.stack.Push(collection);
-                this.Visit(iriCtx);
-                this.stack.Pop();
-            }
-
             return 0;
         }
 

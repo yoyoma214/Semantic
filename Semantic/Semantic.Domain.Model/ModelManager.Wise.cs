@@ -311,6 +311,11 @@ namespace CodeHelper.Domain.Model
 
                         module.Initialize();
 
+                        if (module.ParseCrashed)
+                        {                            
+                            return;
+                        }
+
                         module.FileId = model.FileId;
 
                         model.SetParsed(true);

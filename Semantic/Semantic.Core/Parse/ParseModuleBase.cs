@@ -330,5 +330,11 @@ namespace CodeHelper.Core.Parse
 
             return null;
         }
+
+        public bool ParseCrashed
+        {
+            get;
+            set;
+        }
     }
 }

@@ -70,6 +70,11 @@ namespace CodeHelper.Core.Parse.ParseResults.Sparqls
         public List<DatasetClause> DatasetClauses { get; set; }
         public WhereClause WhereClause { get; set; }
         public SolutionModifier SolutionModifier { get; set; }
+
+        public SelectQuery():base()
+        {
+            this.DatasetClauses = new List<DatasetClause>();
+        }
     }
 
     public class ConstructQuery : TokenPair
@@ -99,6 +104,12 @@ namespace CodeHelper.Core.Parse.ParseResults.Sparqls
         public List<DatasetClause> DatasetClauses { get; set; }
         public WhereClause WhereClause { get; set; }
         public SolutionModifier SolutionModifier { get; set; }
+
+        public DescribeQuery():base()
+        {
+            this.VarOrIris = new List<VarOrIri>();
+            this.DatasetClauses = new List<DatasetClause>();
+        }
     }
 
     public class AskQuery : TokenPair

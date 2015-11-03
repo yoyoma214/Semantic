@@ -110,6 +110,9 @@ namespace CodeHelper.UI.DockPanels
 
         bool receiver_OnModuleParsed(Guid fileId)
         {
+            if (GlobalService.EditorContextManager.CurrentContext == null)
+                return true;
+
             if (GlobalService.EditorContextManager.CurrentContext.Model.FileId != fileId)
                 return true;
 
