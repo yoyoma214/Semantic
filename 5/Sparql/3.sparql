@@ -1,7 +1,1 @@
-PREFIX owl: <http://www.w3.org/2002/07/owl#>
-PREFIX f: <http://example.com/owl/families>
-
-SELECT ?title WHERE {
-	?s ?a ?b .
-	MINUS {}
-}
+sELECT
