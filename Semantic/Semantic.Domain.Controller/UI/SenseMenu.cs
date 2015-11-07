@@ -364,15 +364,15 @@ namespace CodeHelper.Domain.Controller.UI
 
                 foreach (var ns in module.UsingNameSpaces)
                 {
-                    var types = GlobalService.ModelManager.ListType(ns.Value);
+                    var types = GlobalService.ModelManager.ListType(ns.Value,null,true);
                     foreach (var each in types)
                         data.Add(ns.Key + each.Name);
 
-                    var ps = GlobalService.ModelManager.ListProperty(ns.Value);
+                    var ps = GlobalService.ModelManager.ListProperty(ns.Value,null,true);
                     foreach (var each in ps)
                         data.Add(ns.Key + each.Name);
 
-                    var ins = GlobalService.ModelManager.ListInstance(ns.Value);
+                    var ins = GlobalService.ModelManager.ListInstance(ns.Value,null,true);
                     foreach (var each in ins)
                         data.Add(ns.Key + each.Name);
                 }
@@ -386,7 +386,6 @@ namespace CodeHelper.Domain.Controller.UI
             public static List<String> Sensor(string prevText, IParseModule module)
             {
                 var data = new List<String>();
-
 
                 var subject = module.Subject;
                 if (string.IsNullOrWhiteSpace(subject))
@@ -404,7 +403,6 @@ namespace CodeHelper.Domain.Controller.UI
                 #region 如果主语是类
                 if (obj is ITypeInfo)
                 {
-
                     foreach (var ver in OWLTypes.Instance().Ver_Types)
                     {
                         if (ver.Value.Allow_Subject_Class)
@@ -427,6 +425,30 @@ namespace CodeHelper.Domain.Controller.UI
                             data.Add(ver.Key);
                         }
                     }
+
+                    //添加当前模块能看到的属性
+                    var nss = new List<string>();
+                    if ( prevText == ":" )
+                    {
+                        nss = module.UsingNameSpaces.Values.ToList();
+                    }
+                    else
+                    {
+                        var t = module.GetFullNameSpace(prevText);                        
+                        if(t != null )
+                            nss.Add(t);
+                    }
+
+                    var ps = GlobalService.ModelManager.ListProperty(nss,null,true);
+
+                    //var ps = module.PropertySeeAble(owlName.NameSpace, null, false);
+                    foreach (var p in ps)
+                    {
+                        data.Add(module.GetLocalNameSpace(owlName.NameSpace) + p.Name);
+                    }
+
+                    //data.AddRange(ps.Select(x=> owlName.LocalName + ":" + x.Name));
+
                     return data;
                 }
 
@@ -454,7 +476,7 @@ namespace CodeHelper.Domain.Controller.UI
 
                 foreach (var ns in module.UsingNameSpaces)
                 {
-                    var ps = GlobalService.ModelManager.ListProperty(ns.Value);
+                   var ps = GlobalService.ModelManager.ListProperty(ns.Value,null,true);
                     foreach (var property in ps)
                         data.Add(property.Name);
                 }

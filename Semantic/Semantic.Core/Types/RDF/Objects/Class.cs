@@ -5,7 +5,7 @@ using System.Text;
 using CodeHelper.Core.Types.Base;
 using CodeHelper.Core.Types.RDF.Verbs;
 
-namespace CodeHelper.Core.Types.OWL.Objects
+namespace CodeHelper.Core.Types.RDF.Objects
 {
     class Class : BaseObject
     {
@@ -13,7 +13,7 @@ namespace CodeHelper.Core.Types.OWL.Objects
         {
             get
             {
-                return NameSpaceEnum.OWL;
+                return NameSpaceEnum.RDFS;
             }
         }
 
@@ -21,7 +21,7 @@ namespace CodeHelper.Core.Types.OWL.Objects
         {
             get
             {
-                return "owl:Class";
+                return "rdfs:Class";
             }
         }
 

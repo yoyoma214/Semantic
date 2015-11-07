@@ -64,7 +64,7 @@ namespace CodeHelper.Core.Types.Base
         {
             var rslt = new List<string>();
 
-            var types = GlobalService.ModelManager.ListType(module.UsingNameSpaces.Values.ToList());
+            var types = GlobalService.ModelManager.ListType(module.UsingNameSpaces.Values.ToList(),null,true);
             foreach (var item in types)
             {
                 foreach(var ns in module.UsingNameSpaces)
@@ -76,7 +76,7 @@ namespace CodeHelper.Core.Types.Base
                 //rslt.Add(item.Name);
             }
 
-            var props = GlobalService.ModelManager.ListProperty(module.UsingNameSpaces.Values.ToList());
+            var props = GlobalService.ModelManager.ListProperty(module.UsingNameSpaces.Values.ToList(),null,true);
             foreach (var item in props)
             {
                 foreach (var ns in module.UsingNameSpaces)
@@ -86,7 +86,7 @@ namespace CodeHelper.Core.Types.Base
                 }                
             }
 
-            var ints = GlobalService.ModelManager.ListInstance(module.UsingNameSpaces.Values.ToList());
+            var ints = GlobalService.ModelManager.ListInstance(module.UsingNameSpaces.Values.ToList(),null,true);
             foreach (var item in ints)
             {
                 foreach (var ns in module.UsingNameSpaces)

@@ -64,12 +64,12 @@ namespace CodeHelper.Core.Parser
         Guid FileId { get; set; }
 
         string File { get; set; }
-        
-        Dictionary<string, TypeInfoBase> Types { get; set; }
 
-        Dictionary<string, OWLProperty> Properties { get; set; }
+        Dictionary<string, TypeInfoBase> Types { get; }
 
-        Dictionary<string, OWLInstance> Instances { get; set; }   
+        Dictionary<string, OWLProperty> Properties { get; }
+
+        Dictionary<string, OWLInstance> Instances { get; }   
 
         void Initialize();
 
@@ -84,5 +84,39 @@ namespace CodeHelper.Core.Parser
         /// <returns></returns>
         OWLName ResloveName(string mixedName);
 
+        TypeInfoBase ResloveType(string nameSpace,string name);
+
+        OWLProperty ResloveProperty(string nameSpace, string name);
+
+        OWLInstance ResloveInstance(string nameSpace, string name);
+
+        Object Reslove(string nameSpace, string name);
+
+        List<Object> AnySeeAble(string nameSpace, string name, bool equal);
+
+        List<TypeInfoBase> TypeSeeAble(string nameSpace, string name, bool equal);
+
+        List<OWLProperty> PropertySeeAble(string nameSpace, string name, bool equal);
+
+        List<OWLInstance> InstanceSeeAble(string nameSpace, string name, bool equal);
+
+        /// <summary>
+        /// 得到名称空间的本地名字，如果没有在当前模块中申明则返回null
+        /// </summary>
+        /// <param name="fullNameSpace"></param>
+        /// <returns></returns>
+        string GetLocalNameSpace(string fullNameSpace);
+
+        /// <summary>
+        /// 得到命名空间的全名称，如果没有在当前模块中申明则返回null
+        /// </summary>
+        /// <param name="shortNameSpace"></param>
+        /// <returns></returns>
+        string GetFullNameSpace(string shortNameSpace);
+
+        /// <summary>
+        /// 遇到解析崩溃性错误,无法继续往下进行处理
+        /// </summary>
+        bool ParseCrashed { get; set; }
     }
 }

@@ -117,7 +117,12 @@ namespace CodeHelper.Core.Parse.ParseResults.Turtles
                     this.Object = null;                    
             }
             else if (this.Visit == VisitType.Object)
-            {
+            {                
+                if (this.CurrentVerbObjects.Count == 0 || this.CurrentVerb == null)
+                {
+                    return;
+                }
+
                 this.CurrentVerbObjects[this.CurrentVerb].Add(part);
 
                 if (m_matchCaret == true)
@@ -147,7 +152,7 @@ namespace CodeHelper.Core.Parse.ParseResults.Turtles
                             break;
                         }
 
-                        if (obj == "owl:Class" )//|| obj == "rdfs:subClassOf" || obj == "owl:equivalentClass")
+                        if (obj == "rdfs:Class")//|| obj == "rdfs:subClassOf" || obj == "owl:equivalentClass")
                         {
 
                             foreach (var subject in this.CurrentSubjects)

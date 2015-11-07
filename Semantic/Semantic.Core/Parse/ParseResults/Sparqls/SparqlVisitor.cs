@@ -156,46 +156,52 @@ namespace CodeHelper.Core.Parse.ParseResults.Sparqls
 
         public override int VisitSelectQuery([NotNull] SparqlParser.SelectQueryContext context)
         {
-            var selectQuery = this.stack.PeekCtx<SelectQuery>();
-            selectQuery.Parse(context);
-
-            var selectClauseCtx = context.selectClause();
-            if (selectClauseCtx != null)
+            try
             {
-                selectQuery.SelectClause = new SelectClause();
-                this.stack.Push(selectQuery.SelectClause);
-                this.Visit(selectClauseCtx);
-                this.stack.Pop();
-            }
+                var selectQuery = this.stack.PeekCtx<SelectQuery>();
+                selectQuery.Parse(context);
 
-            var datasetClauseCtxs = context.datasetClause();
-            foreach (var ctx in datasetClauseCtxs)
+                var selectClauseCtx = context.selectClause();
+                if (selectClauseCtx != null)
+                {
+                    selectQuery.SelectClause = new SelectClause();
+                    this.stack.Push(selectQuery.SelectClause);
+                    this.Visit(selectClauseCtx);
+                    this.stack.Pop();
+                }
+
+                var datasetClauseCtxs = context.datasetClause();
+                foreach (var ctx in datasetClauseCtxs)
+                {
+                    var datasetClause = new DatasetClause();
+                    selectQuery.DatasetClauses.Add(datasetClause);
+                    this.stack.Push(datasetClause);
+                    this.Visit(ctx);
+                    this.stack.Pop();
+                }
+
+                var whereClauseCtx = context.whereClause();
+                if (whereClauseCtx != null)
+                {
+                    selectQuery.WhereClause = new WhereClause();
+                    this.stack.Push(selectQuery.WhereClause);
+                    this.Visit(whereClauseCtx);
+                    this.stack.Pop();
+                }
+
+                var solutionModifierCtx = context.solutionModifier();
+                if (solutionModifierCtx != null)
+                {
+                    selectQuery.SolutionModifier = new SolutionModifier();
+                    this.stack.Push(selectQuery.SolutionModifier);
+                    this.Visit(solutionModifierCtx);
+                    this.stack.Pop();
+                }
+            }
+            catch (Exception ex)
             {
-                var datasetClause = new DatasetClause();
-                selectQuery.DatasetClauses.Add(datasetClause);
-                this.stack.Push(datasetClause);
-                this.Visit(ctx);
-                this.stack.Pop();
+                Console.Out.WriteLine(ex.Message);
             }
-
-            var whereClauseCtx = context.whereClause();
-            if (whereClauseCtx != null)
-            {
-                selectQuery.WhereClause = new WhereClause();
-                this.stack.Push(selectQuery.WhereClause);
-                this.Visit(whereClauseCtx);
-                this.stack.Pop();
-            }
-
-            var solutionModifierCtx = context.solutionModifier();
-            if (solutionModifierCtx != null)
-            {
-                selectQuery.SolutionModifier = new SolutionModifier();
-                this.stack.Push(selectQuery.SolutionModifier);
-                this.Visit(solutionModifierCtx);
-                this.stack.Pop();
-            }
-
             return 0;
         }
 

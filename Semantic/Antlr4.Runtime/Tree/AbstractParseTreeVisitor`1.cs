@@ -42,7 +42,7 @@ namespace Antlr4.Runtime.Tree
         /// specified tree.</p>
         /// </summary>
         public virtual Result Visit(IParseTree tree)
-        {
+        {            
             return tree.Accept(this);
         }
 

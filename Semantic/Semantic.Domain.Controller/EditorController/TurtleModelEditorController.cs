@@ -31,7 +31,7 @@ namespace CodeHelper.Domain.EditorController
 
         protected override void OnInputChar(char c, int offset, System.Drawing.Point location)
         {
-            if (c == ':' || c=='@' || c=='^')
+            if (c == ':' || c == '@' || c == '^')
             {
                 if (c == '^')
                 {
@@ -51,7 +51,7 @@ namespace CodeHelper.Domain.EditorController
                 while (count < 100)
                 {
                     var ch = text[offset - count];
-                    if (ch == '\r' || ch == '\n' || ch == ' ')
+                    if (ch == '\r' || ch == '\n' || ch == ' ' || ch == ';')
                     {
                         break;
                     }
@@ -70,15 +70,18 @@ namespace CodeHelper.Domain.EditorController
 
                     var module = ModelManager.Instance().GetParseModule(this.model.FileId);
 
+                    if (module.ParseCrashed)
+                        return;
+
                     if (this.editorContainer.Editor.InvokeRequired)
                     {
                         this.editorContainer.Editor.Invoke(new DoSenseDelegate(this.DoSense), location, offset, prevText, module);
                     }
                 });
-                
+
                 GlobalService.ModelManager.OnParsed += d;
             }
-        }        
+        }
 
         private delegate void DoSenseDelegate(Point location, int offset, string prevText, IParseModule module);
 

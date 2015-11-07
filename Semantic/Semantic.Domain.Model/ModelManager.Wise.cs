@@ -311,6 +311,11 @@ namespace CodeHelper.Domain.Model
 
                         module.Initialize();
 
+                        if (module.ParseCrashed)
+                        {                            
+                            return;
+                        }
+
                         module.FileId = model.FileId;
 
                         model.SetParsed(true);
@@ -871,7 +876,6 @@ namespace CodeHelper.Domain.Model
                     return null;
                 }
 
-
                 #region 基础类型
 
                 #endregion
@@ -1016,7 +1020,6 @@ namespace CodeHelper.Domain.Model
                 return null;
             }
         }
-
 
         internal void OnUpdateModule(Guid fileId, IParseModule module)
         {

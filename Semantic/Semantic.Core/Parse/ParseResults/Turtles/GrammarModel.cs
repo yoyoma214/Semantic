@@ -188,9 +188,12 @@ namespace CodeHelper.Core.Parse.ParseResults.Turtles
         public List<ObjectList> ObjectLists { get; set; }
 
         internal void Parse(TurtleContext context)
-        {                        
-            for (var i = 0; i < this.Verbs.Count; i++)
+        {
+            if (this.Verbs[0].EndToken.Text == "owl:propertyChainAxiom")
             {
+            }
+            for (var i = 0; i < this.Verbs.Count; i++)
+            {                
                 context.Visit = TurtleContext.VisitType.Verb;
                 this.Verbs[i].Parse(context);
 

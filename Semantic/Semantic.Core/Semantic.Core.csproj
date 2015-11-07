@@ -198,7 +198,7 @@
     <Compile Include="Types\IXsdType.cs" />
     <Compile Include="Types\OWLTypes.cs" />
     <Compile Include="Types\OWL\Objects\AsymmetricProperty.cs" />
-    <Compile Include="Types\OWL\Objects\Class.cs" />
+    <Compile Include="Types\RDF\Objects\Class.cs" />
     <Compile Include="Types\OWL\Objects\DatatypeProperty.cs" />
     <Compile Include="Types\OWL\Objects\FunctionalProperty.cs" />
     <Compile Include="Types\OWL\Objects\InverseFunctionalProperty.cs" />

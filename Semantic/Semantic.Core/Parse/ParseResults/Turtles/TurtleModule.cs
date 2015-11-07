@@ -22,6 +22,12 @@ namespace CodeHelper.Core.Parse.ParseResults.Turtles
 
         public override void Initialize()
         {
+            if (this.Root == null)
+            {
+                this.ParseCrashed = true;
+                return;
+            }
+
             var context = new TurtleContext();
             context.Caret = Caret;
             this.Root.Parse(context);

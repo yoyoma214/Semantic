@@ -150,5 +150,191 @@ namespace CodeHelper.Core.Parse
 
             return owlName;
         }
+
+        private string GetLocalName(string nameSpace, string name)
+        {
+            foreach (var ns in this.UsingNameSpaces)
+            {
+                if (ns.Value.Equals(nameSpace))
+                {
+                    return ns.Key  + name;
+                }
+            }
+            return null;
+        }
+
+        public TypeInfoBase ResloveType(string nameSpace, string name)
+        {
+            var ln = this.GetLocalName(nameSpace, name);
+            if (ln == null)
+                return null;
+
+            if (this.Types.ContainsKey(ln))
+                return this.Types[ln];
+            return null;
+        }
+
+        public OWLProperty ResloveProperty(string nameSpace, string name)
+        {
+            var ln = this.GetLocalName(nameSpace, name);
+            if (ln == null)
+                return null;
+
+            if (this.Properties.ContainsKey(ln))
+                return this.Properties[ln];
+            return null;
+        }
+
+        public OWLInstance ResloveInstance(string nameSpace, string name)
+        {
+            var ln = this.GetLocalName(nameSpace, name);
+            if (ln == null)
+                return null;
+            if (this.Instances.ContainsKey(ln))
+                return this.Instances[ln];
+            return null;
+        }
+
+        public object Reslove(string nameSpace, string name)
+        {
+            var ln = this.GetLocalName(nameSpace, name);
+            if (ln == null)
+                return null;
+
+            if (this.Types.ContainsKey(ln))
+                return this.Types[ln]; 
+            if (this.Properties.ContainsKey(ln))
+                return this.Properties[ln];
+            if (this.Instances.ContainsKey(ln))
+                return this.Instances[ln];
+            return null;
+        }
+
+        public List<object> AnySeeAble(string nameSpace, string name, bool equal)
+        {
+            var rslt = new List<object>();
+            rslt.AddRange(this.TypeSeeAble(nameSpace,name,equal));
+            rslt.AddRange(this.PropertySeeAble(nameSpace, name, equal));
+            rslt.AddRange(this.InstanceSeeAble(nameSpace, name, equal));
+            return rslt;
+        }
+
+        public List<TypeInfoBase> TypeSeeAble(string nameSpace, string name, bool equal)
+        {
+            var rslt = new List<TypeInfoBase>();
+            foreach (var p in this.Types.Values)
+            {
+                if (name != null)
+                {
+                    if (equal == true)
+                    {
+                        if (p.Name == name)
+                        {
+                            rslt.Add(p);
+                            continue;
+                        }
+                    }
+                    else
+                    {
+                        if (p.Name.Contains(name))
+                        {
+                            rslt.Add(p);
+                            continue;
+                        }
+                    }
+                }
+
+                rslt.Add(p);
+            }
+            return rslt;
+        }        
+
+        public List<OWLProperty> PropertySeeAble(string nameSpace, string name, bool equal)
+        {
+            var rslt = new List<OWLProperty>();
+            foreach (var p in this.Properties.Values)
+            {                
+                if (name != null)
+                {
+                    if (equal == true)
+                    {
+                        if (p.Name == name)
+                        {
+                           rslt.Add(p);
+                           continue;
+                        }
+                    }
+                    else
+                    {
+                        if (p.Name.Contains(name))
+                        {
+                            rslt.Add(p);
+                            continue;
+                        }
+                    }
+                }
+
+                rslt.Add(p);
+            }
+            return rslt;
+        }
+
+        public List<OWLInstance> InstanceSeeAble(string nameSpace, string name, bool equal)
+        {
+            var rslt = new List<OWLInstance>();
+            foreach (var p in this.Instances.Values)
+            {
+                if (name != null)
+                {
+                    if (equal == true)
+                    {
+                        if (p.Name == name)
+                        {
+                            rslt.Add(p);
+                            continue;
+                        }
+                    }
+                    else
+                    {
+                        if (p.Name.Contains(name))
+                        {
+                            rslt.Add(p);
+                            continue;
+                        }
+                    }
+                }
+
+                rslt.Add(p);
+            }
+            return rslt;
+        }
+
+        public string GetLocalNameSpace(string fullNameSpace)
+        {
+            foreach (var ns in this.UsingNameSpaces)
+            {
+                if (ns.Value == fullNameSpace)
+                    return ns.Key;
+            }
+
+            return null;
+        }
+
+        public string GetFullNameSpace(string shortNameSpace)
+        {
+            foreach (var ns in this.UsingNameSpaces)
+            {
+                if (ns.Key == shortNameSpace)
+                    return ns.Value;
+            }
+
+            return null;
+        }
+
+        public bool ParseCrashed
+        {
+            get;
+            set;
+        }
     }
 }
