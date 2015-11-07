@@ -157,7 +157,7 @@ namespace CodeHelper.Core.Parse.ParseResults.Turtles
                                     var t = new TypeInfoBase();
                                     t.Name = OWLName.ParseLocalName(subject);
                                     t.FullName = subject;
-                                    t.NameSpace = this.NameSpace;
+                                    t.NameSpace = ":";
                                     t.TokenPair = pair;
                                     this.Types.Add(t.FullName, t);
                                 }

@@ -250,8 +250,11 @@ namespace CodeHelper.Domain.Model
             if (this.workEngine.ParsedModules.ContainsKey(model.FileId))
                 return this.workEngine.ParsedModules[model.FileId];
 
+            if (this.ParseModules.ContainsKey(model.FileId))
+                return this.ParseModules[model.FileId];
+            
             this.workEngine.AddWaitingParseModel(model);
-
+            
             this.workEngine.ActiveOneTime();
 
             ResetEvent.WaitOne(10000);

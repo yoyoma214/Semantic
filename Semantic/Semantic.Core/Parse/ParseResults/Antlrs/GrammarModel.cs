@@ -649,8 +649,8 @@ import com.sixstar.kbase.knowledgeql.model;
                         builder.AppendFormatLine("{0}.{1}s.Add({2});", ruleVar, subRuleClazz, subRuleVar);
                         builder.AppendFormatLine("this.stack.Push({0});", subRuleVar);
                         builder.AppendFormatLine("this.Visit(ctx);");
-                    }
-                    builder.AppendFormatLine("this.stack.Pop();");
+                        builder.AppendFormatLine("this.stack.Pop();");
+                    }                    
                     builder.Decrease("}");
                 }
                 else

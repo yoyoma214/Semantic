@@ -175,6 +175,12 @@
     <Compile Include="Parse\ParseResults\Turtles\TurtleComplier.cs" />
     <Compile Include="Parse\ParseResults\Antlrs\Antlr4Module.cs" />
     <Compile Include="Parse\ParseResults\Turtles\TurtleVisitor.cs" />
+    <Compile Include="Parse\ParseResults\Turtles\Uml.g4.lexer.cs">
+      <DependentUpon>Uml.g4</DependentUpon>
+    </Compile>
+    <Compile Include="Parse\ParseResults\Turtles\Uml.g4.parser.cs">
+      <DependentUpon>Uml.g4</DependentUpon>
+    </Compile>
     <Compile Include="Parse\ParseResults\TypeInfoBase.cs" />
     <Compile Include="Parse\ParseType.cs" />
     <Compile Include="Parse\StackUtil.cs" />
@@ -326,6 +332,11 @@
     <Antlr4 Include="Parse\ParseResults\Turtles\JSON.g4">
       <Generator>MSBuild:Compile</Generator>
       <CustomToolNamespace>APIComponent.Json</CustomToolNamespace>
+      <Listener>False</Listener>
+    </Antlr4>
+    <Antlr4 Include="Parse\ParseResults\Turtles\Uml.g4">
+      <Generator>MSBuild:Compile</Generator>
+      <CustomToolNamespace>UmlComponet.Uml</CustomToolNamespace>
       <Listener>False</Listener>
     </Antlr4>
     <None Include="Properties\Settings.settings">

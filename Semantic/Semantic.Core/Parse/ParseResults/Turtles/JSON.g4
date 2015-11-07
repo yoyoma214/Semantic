@@ -34,7 +34,7 @@ pair:   STRINGT ':' valueT annotation?;
 
 arrayT
     :   '[' valueT (',' valueT)* ']'  
-    |   '[' ']' // empty array
+    |   '[' annotation? ']' // empty array
     ;
 
 valueT
