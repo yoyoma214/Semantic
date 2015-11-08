@@ -28,6 +28,7 @@ namespace CodeHelper.Core.Types.OWL.Verbs
             get
             {
                 return "owl:sameAs";
+                //return "sameAs";
             }
         }
 
@@ -47,6 +48,16 @@ namespace CodeHelper.Core.Types.OWL.Verbs
                 }
             }
             return result;
+        }
+
+        public override List<string> AllowVerb(Parser.IParseModule module)
+        {
+            return base.AllowVerb(module);
+        }
+
+        public override List<string> AllowObject(Parser.IParseModule module)
+        {
+            return base.AllowObject(module);
         }
     }
 }

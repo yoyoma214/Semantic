@@ -22,6 +22,7 @@ namespace CodeHelper.Core.Types.OWL.Objects
             get
             {
                 return "owl:IrreflexiveProperty";
+                //return "IrreflexiveProperty";
             }
         }
 

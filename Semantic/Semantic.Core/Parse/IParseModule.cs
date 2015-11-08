@@ -43,6 +43,17 @@ namespace CodeHelper.Core.Parser
 
     public interface IParseModule : IWiseble
     {
+
+        /// <summary>
+        /// 前面一个语句的主语
+        /// </summary>
+        string PrevSubject { get; set; }       
+
+        /// <summary>
+        /// 前面一个语句的谓语宾语集合
+        /// </summary>
+        Dictionary<string, List<string>> PrevVerbObjects { get; set; }
+
         string Subject { get; set; }
 
         string Verb { get; set; }

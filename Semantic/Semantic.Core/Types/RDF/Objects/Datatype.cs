@@ -23,6 +23,7 @@ namespace CodeHelper.Core.Types.RDF.Objects
             get
             {
                 return "rdfs:Datatype";
+                //return "Datatype";
             }
         }
 
@@ -41,6 +42,6 @@ namespace CodeHelper.Core.Types.RDF.Objects
         public override bool AllowVerb(string fullName)
         {
             return base.AllowVerb(fullName);
-        }
+        }                
     }
 }

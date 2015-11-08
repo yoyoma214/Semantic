@@ -27,6 +27,7 @@ namespace CodeHelper.Core.Types.RDF.Verbs
             get
             {
                 return "rdfs:subPropertyOf";
+                //return "subPropertyOf";
             }
         }
 

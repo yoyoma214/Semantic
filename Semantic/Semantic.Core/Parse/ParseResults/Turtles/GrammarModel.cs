@@ -210,7 +210,10 @@ namespace CodeHelper.Core.Parse.ParseResults.Turtles
         internal void Parse(TurtleContext context)
         {
             if (this.PredicateObjectList != null)
+            {
+                context.FlushTriple(this);
                 this.PredicateObjectList.Parse(context);
+            }
         }
     }
 

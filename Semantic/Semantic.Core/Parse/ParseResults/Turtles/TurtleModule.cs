@@ -32,6 +32,9 @@ namespace CodeHelper.Core.Parse.ParseResults.Turtles
             context.Caret = Caret;
             this.Root.Parse(context);
 
+            this.PrevSubject = context.PrevSubject;
+            this.PrevVerbObjects = context.PrevVerbObjects;
+
             this.Subject = context.Subject;
             this.Verb = context.Verb;
             this.Object = context.Object;

@@ -1024,6 +1024,9 @@ namespace CodeHelper.Domain.Model
         internal void OnUpdateModule(Guid fileId, IParseModule module)
         {
             string ns = module.NameSpace;
+            if (string.IsNullOrWhiteSpace(ns))
+                return;
+
             bool has = false;
 
             foreach (var nameSpace in this.Namespace_Modules.Keys)
@@ -1045,18 +1048,21 @@ namespace CodeHelper.Domain.Model
             }
             else
             {
-                modules = this.Namespace_Modules[ns];
-                foreach (var md in modules)
+                if (this.Namespace_Modules.ContainsKey(ns))
                 {
-                    if (md.FileId.Equals(module.FileId))
+                    modules = this.Namespace_Modules[ns];
+                    foreach (var md in modules)
                     {
-                        modules.Remove(md);
-                        modules.Add(module);
-                        return;
+                        if (md.FileId.Equals(module.FileId))
+                        {
+                            modules.Remove(md);
+                            modules.Add(module);
+                            return;
+                        }
                     }
-                }
 
-                modules.Add(module);
+                    modules.Add(module);
+                }
             }
         }
     }

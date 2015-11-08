@@ -29,6 +29,7 @@ namespace CodeHelper.Core.Types.RDF.Verbs
             get
             {
                 return "rdf:type";
+                //return "type";
             }
         }
 
@@ -38,7 +39,7 @@ namespace CodeHelper.Core.Types.RDF.Verbs
         }
 
         public override List<string> AllowSubject(Parser.IParseModule module)
-        {            
+        {
             var subject = module.Subject;
             var obj = GlobalService.ModelManager.Reslove(module.UsingNameSpaces.Values.ToList(), subject);
             return base.AllowSubject(module);
@@ -48,16 +49,25 @@ namespace CodeHelper.Core.Types.RDF.Verbs
         {
             var rslt = new List<string>();
             var obj = module.Object;
+
+            //主语是否匿名类
+            var isAnonymous = module.Subject == null;
+            if (isAnonymous)
+            {
+                rslt.Add("rdfs:Class");
+                rslt.Add("rdfs:Datatype");
+                return rslt;
+            }
             //类型，属性，约束
-            var types = GlobalService.ModelManager.ListType(module.UsingNameSpaces.Values.ToList(),null,true);
-            foreach(var t in types)
+            var types = GlobalService.ModelManager.ListType(module.UsingNameSpaces.Values.ToList(), null, true);
+            foreach (var t in types)
             {
                 var ns = module.GetLocalNameSpace(t.NameSpace);
                 if (ns == null) ns = ":";
                 rslt.Add(ns + t.Name);
             }
 
-            var props = GlobalService.ModelManager.ListProperty(module.UsingNameSpaces.Values.ToList(),null,true);
+            var props = GlobalService.ModelManager.ListProperty(module.UsingNameSpaces.Values.ToList(), null, true);
             foreach (var p in props)
             {
                 var ns = module.GetLocalNameSpace(p.NameSpace);
@@ -76,8 +86,8 @@ namespace CodeHelper.Core.Types.RDF.Verbs
             }
 
             rslt.AddRange(OWLTypes.Instance().XSD_Typtes.Keys);
-                        
-             return rslt;
+
+            return rslt;
         }
     }
 }

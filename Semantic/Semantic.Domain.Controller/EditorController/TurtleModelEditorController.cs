@@ -51,7 +51,7 @@ namespace CodeHelper.Domain.EditorController
                 while (count < 100)
                 {
                     var ch = text[offset - count];
-                    if (ch == '\r' || ch == '\n' || ch == ' ' || ch == ';')
+                    if (ch == '\r' || ch == '\n' || ch == ' ' || ch == ';' || ch == '\t')
                     {
                         break;
                     }
@@ -114,6 +114,7 @@ namespace CodeHelper.Domain.EditorController
         void DoInput(string prevText ,int offset, string text)
         {
             Console.WriteLine("offset" + offset + ":" + text);
+            
             if (!text.EndsWith(" "))
             {
                 text += " ";

@@ -15,7 +15,7 @@
 	<Digits name = "Digits" bold = "false" italic = "false" color = "DarkBlue"/>
 	
 	<RuleSets>
-		<RuleSet ignorecase="false">
+		<RuleSet ignorecase="true">
 			<Delimiters>&amp;&lt;&gt;~!%^*()-+=|\#/{}[]:;"' ,	.?</Delimiters>
 			
 		
@@ -79,7 +79,7 @@
 			</KeyWords>
 			
 			<KeyWords name = "AccessKeywords" bold="true" italic="false" color="Black">
-				<Key word = "and" />
+				<Key word = "and"/>
 				<Key word = "or" />
         <Key word = "all" />
         <Key word = "any" />

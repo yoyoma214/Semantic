@@ -58,12 +58,17 @@ namespace CodeHelper.Domain.Controller.UI
         protected override void OnLeave(EventArgs e)
         {
             base.OnLeave(e);
+            this.Close();
         }
 
         protected override void OnDeactivate(EventArgs e)
         {
             base.OnDeactivate(e);
-
+            if (this.Visible)
+            {
+                this.Close();
+            }
+            this.Visible = false;
             //FireCompleteInput();
         }
 
@@ -249,7 +254,10 @@ namespace CodeHelper.Domain.Controller.UI
         public void SetData(string prevText, IParseModule module)
         {
             this.m_module = module;
+            if (prevText == null)
+                return;
 
+            //prevText = prevText.Trim();
             //foreach (var t in module.Types.Keys)
             //{
             //    data.Add(t);
@@ -273,20 +281,20 @@ namespace CodeHelper.Domain.Controller.UI
             {
                 //this.data.AddRange(OWLTypes.Instance().Object_Types.Keys);
 
-                this.data.AddRange(Sensor.ObjectSensor.Sensor(prevText, module));
+                this.data.AddRange(Sensor.ObjectSensor.Sensor(prevText.Trim(), module));
             }
             else if ( !string.IsNullOrWhiteSpace(module.Verb))
             {
                 this.data.Clear();
 
-                this.data.AddRange(Sensor.VerbSensor.Sensor(prevText, module));
+                this.data.AddRange(Sensor.VerbSensor.Sensor(prevText.Trim(), module));
             }
             else if (!string.IsNullOrWhiteSpace(module.Subject))
             {
 
                 this.data.Clear();
 
-                this.data.AddRange(Sensor.SubjectSensor.Sensor(prevText, module));
+                this.data.AddRange(Sensor.SubjectSensor.Sensor(prevText.Trim(), module));
 
                 //foreach (var ns in module.UsingNameSpaces)
                 //{
@@ -298,7 +306,7 @@ namespace CodeHelper.Domain.Controller.UI
             if ( prevText.EndsWith("^^"))
                 this.textBox1.Text = ":";
             else            
-            this.textBox1.Text = prevText;
+            this.textBox1.Text = prevText.Trim();
             this.textBox1.SelectionStart = this.textBox1.Text.Length;
             //textBox1_TextChanged(null, null);
         }
@@ -388,8 +396,15 @@ namespace CodeHelper.Domain.Controller.UI
                 var data = new List<String>();
 
                 var subject = module.Subject;
-                if (string.IsNullOrWhiteSpace(subject))
-                    return new List<string>();
+                var isAnonymous = module.Subject == null;
+                //if (string.IsNullOrWhiteSpace(subject))
+                //    return new List<string>();
+
+                if (isAnonymous)
+                {
+                    data.AddRange(OWLTypes.Instance().Ver_Types.Keys);
+                    return data;
+                }
 
                 OWLName owlName = module.ResloveName(subject);
 
@@ -401,7 +416,7 @@ namespace CodeHelper.Domain.Controller.UI
                 }
 
                 #region 如果主语是类
-                if (obj is ITypeInfo)
+                if (obj is ITypeInfo || isAnonymous)
                 {
                     foreach (var ver in OWLTypes.Instance().Ver_Types)
                     {
@@ -428,18 +443,18 @@ namespace CodeHelper.Domain.Controller.UI
 
                     //添加当前模块能看到的属性
                     var nss = new List<string>();
-                    if ( prevText == ":" )
+                    if (prevText == ":")
                     {
                         nss = module.UsingNameSpaces.Values.ToList();
                     }
                     else
                     {
-                        var t = module.GetFullNameSpace(prevText);                        
-                        if(t != null )
+                        var t = module.GetFullNameSpace(prevText);
+                        if (t != null)
                             nss.Add(t);
                     }
 
-                    var ps = GlobalService.ModelManager.ListProperty(nss,null,true);
+                    var ps = GlobalService.ModelManager.ListProperty(nss, null, true);
 
                     //var ps = module.PropertySeeAble(owlName.NameSpace, null, false);
                     foreach (var p in ps)
@@ -468,7 +483,7 @@ namespace CodeHelper.Domain.Controller.UI
                 }
 
                 #endregion
-                
+
                 foreach (var p in module.Properties.Keys)
                 {
                     data.Add(p);
@@ -476,11 +491,11 @@ namespace CodeHelper.Domain.Controller.UI
 
                 foreach (var ns in module.UsingNameSpaces)
                 {
-                   var ps = GlobalService.ModelManager.ListProperty(ns.Value,null,true);
+                    var ps = GlobalService.ModelManager.ListProperty(ns.Value, null, true);
                     foreach (var property in ps)
                         data.Add(property.Name);
                 }
-              
+
                 return data;
             }
         }

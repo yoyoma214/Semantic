@@ -3121,7 +3121,7 @@ namespace CodeHelper.Core.Parse.ParseResults.Sparqls
                 this.stack.Pop();
             }
 
-            var @stringCtx = context.@string();
+            var @stringCtx = context.String();
             if (@stringCtx != null)
             {
                 aggregate.@String = @stringCtx.GetText();
@@ -3164,7 +3164,7 @@ namespace CodeHelper.Core.Parse.ParseResults.Sparqls
             var rDFLiteral = this.stack.PeekCtx<RDFLiteral>();
             rDFLiteral.Parse(context);
 
-            var @stringCtx = context.@string();
+            var @stringCtx = context.String();
             if (@stringCtx != null)
             {
                 rDFLiteral.@String = @stringCtx.GetText();
@@ -3173,7 +3173,7 @@ namespace CodeHelper.Core.Parse.ParseResults.Sparqls
                 this.stack.Pop();
             }
 
-            var iriCtx = context.iri();
+            var iriCtx = context.xsdIri();
             if (iriCtx != null)
             {
                 rDFLiteral.Iri = new Iri();
@@ -3252,13 +3252,13 @@ namespace CodeHelper.Core.Parse.ParseResults.Sparqls
             return 0;
         }
 
-        public override int VisitString([NotNull] SparqlParser.StringContext context)
-        {
-            var @string = this.stack.PeekCtx<NString>();
-            @string.Parse(context);
+        //public override int VisitString([NotNull] SparqlParser.StringContext context)
+        //{
+        //    var @string = this.stack.PeekCtx<NString>();
+        //    @string.Parse(context);
 
-            return 0;
-        }
+        //    return 0;
+        //}
 
         public override int VisitIri([NotNull] SparqlParser.IriContext context)
         {

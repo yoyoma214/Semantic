@@ -96,6 +96,10 @@ namespace CodeHelper.Core.Parse.ParseResults.Sparqls
         /// 与constructTemplate,whereClause互斥
         /// </summary>
         public TriplesTemplate TriplesTemplate { get; set; }
+        public ConstructQuery()
+        {
+            this.TriplesTemplate = new TriplesTemplate();
+        }
     }
 
     public class DescribeQuery : TokenPair
@@ -622,12 +626,21 @@ namespace CodeHelper.Core.Parse.ParseResults.Sparqls
     {
         public string Var { get; set; }
         public List<DataBlockValue> DataBlockValues { get; set; }
+        public InlineDataOneVar()
+        {
+            this.DataBlockValues = new List<DataBlockValue>();
+        }
     }
     public class InlineDataFull : TokenPair
     {
         public string NIL { get; set; }
         public List<string> Vars { get; set; }
         public List<DataBlockValue> DataBlockValues { get; set; }
+        public InlineDataFull()
+        {
+            this.Vars = new List<string>();
+            this.DataBlockValues = new List<DataBlockValue>();
+        }
     }
     public class DataBlockValue : TokenPair
     {
@@ -663,6 +676,10 @@ namespace CodeHelper.Core.Parse.ParseResults.Sparqls
     public class GroupOrUnionGraphPattern : TokenPair
     {
         public List<GroupGraphPattern> GroupGraphPatterns { get; set; }
+        public GroupOrUnionGraphPattern()
+        {
+            this.GroupGraphPatterns = new List<GroupGraphPattern>();
+        }
     }
     public class Filter : TokenPair
     {
@@ -673,11 +690,19 @@ namespace CodeHelper.Core.Parse.ParseResults.Sparqls
         public bool Is_NIL { get; set; }
         public bool Is_DISTINCT { get; set; }
         public List<Expression> Expressions { get; set; }
+        public ArgList()
+        {
+            this.Expressions = new List<Expression>();
+        }
     }
     public class ExpressionList : TokenPair
     {
         public bool Is_NIL { get; set; }        
         public List<Expression> Expressions { get; set; }
+        public ExpressionList()
+        {
+            this.Expressions = new List<Expression>();
+        }
     }
     public class ConstructTriples : TokenPair
     {
@@ -700,11 +725,19 @@ namespace CodeHelper.Core.Parse.ParseResults.Sparqls
     {
         public List<Verb> Verbs { get; set; }
         public List<ObjectList> ObjectLists { get; set; }
+        public PropertyListNotEmpty()
+        {
+            this.Verbs = new List<Verb>();
+            this.ObjectLists = new List<ObjectList>();
+        }
     }
     public class ObjectList : TokenPair
     {
         public List<Object> Objects { get; set; }
-
+        public ObjectList()
+        {
+            this.Objects = new List<Object>();
+        }
     }
     public class Object : TokenPair
     {
@@ -990,6 +1023,11 @@ namespace CodeHelper.Core.Parse.ParseResults.Sparqls
         public bool Is_GT_Equal { get; set; }
         public bool Is_In { get; set; }
         public bool Is_NotIn { get; set; }
+
+        public RelationalExpression()
+        {
+            this.NumericExpressions = new List<NumericExpression>();
+        }
     }
 
     public class NumericExpression : TokenPair

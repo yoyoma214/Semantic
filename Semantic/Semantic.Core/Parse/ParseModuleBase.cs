@@ -19,6 +19,8 @@ namespace CodeHelper.Core.Parse
             this.Instances = new Dictionary<string, OWLInstance>();
             Errors = new List<ParseErrorInfo>();
             UsingNameSpaces = new Dictionary<string, string>();
+
+            this.PrevVerbObjects = new Dictionary<string, List<string>>();
         }
 
         public string Name { get; set; }
@@ -109,6 +111,18 @@ namespace CodeHelper.Core.Parse
             get;
             set;
         }
+
+        /// <summary>
+        /// 前面一个语句的主语
+        /// </summary>
+        public string PrevSubject { get; set; }
+
+        //public List<string> PrevVerbs { get; set; }
+
+        /// <summary>
+        /// 前面一个语句的谓语宾语集合
+        /// </summary>
+        public Dictionary<string, List<string>> PrevVerbObjects { get; set; }
 
         public string Subject
         {

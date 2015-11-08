@@ -28,6 +28,7 @@ namespace CodeHelper.Core.Types.RDF
             get
             {
                 return "rdfs:comment";
+                //return "comment";
             }
         }
     }

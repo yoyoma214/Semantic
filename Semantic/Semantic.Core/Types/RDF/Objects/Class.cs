@@ -22,6 +22,7 @@ namespace CodeHelper.Core.Types.RDF.Objects
             get
             {
                 return "rdfs:Class";
+                //return "Class";
             }
         }
 

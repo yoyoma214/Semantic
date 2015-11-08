@@ -26,6 +26,7 @@ namespace CodeHelper.Core.Types.RDF.Verbs
             get
             {
                 return "rdfs:domain";
+                //return "domain";
             }
         }
     }

@@ -51,6 +51,18 @@ namespace CodeHelper.Core.Parse.ParseResults.Turtles
         /// </summary>
         public string Object { get; set; }
 
+        /// <summary>
+        /// 前面一个语句的主语
+        /// </summary>
+        public string PrevSubject { get; set; }
+
+        //public List<string> PrevVerbs { get; set; }
+
+        /// <summary>
+        /// 前面一个语句的谓语宾语集合
+        /// </summary>
+        public Dictionary<string, List<string>> PrevVerbObjects { get; set; }
+
         public TurtleDoc Root { get; set; }
 
         /// <summary>
@@ -75,8 +87,16 @@ namespace CodeHelper.Core.Parse.ParseResults.Turtles
             this.CurrentSubjects = new List<string>();
 
             this.CurrentVerbObjects = new Dictionary<string, List<string>>();
+
+            //this.PrevVerbs = new List<string>();
+
+            this.PrevVerbObjects = new Dictionary<string, List<string>>();
+            
         }
 
+        /// <summary>
+        /// false表示还未匹配，true表示正匹配处理中，null表示匹配处理后
+        /// </summary>
         bool? m_matchCaret = false;
 
         public void AddTriple(string part, TokenPair tokenPair)
@@ -99,25 +119,40 @@ namespace CodeHelper.Core.Parse.ParseResults.Turtles
             if (this.Visit == VisitType.Subject)
             {
                 CurrentSubjects.Add(part);
-                
-                if ( m_matchCaret == false)
-                    this.Subject = part;
 
-                if (m_matchCaret== true)
-                    this.Verb = this.Object = null;
+                if (m_matchCaret != null)
+                {
+                    this.Subject = part;
+                }
+                if (m_matchCaret == true)
+                {
+                    this.Verb = this.Object = null;                    
+                }
+
             }
             else if (this.Visit == VisitType.Verb)
             {
-                CurrentVerbObjects.Add(part, new List<string>());
-                CurrentVerb = part;
+ 				CurrentVerb = part;
+                if (!CurrentVerbObjects.ContainsKey(CurrentVerb))
+                {
+                    CurrentVerbObjects.Add(CurrentVerb, new List<string>());
+                }
+                else
+                {
+                }
 
-                if (m_matchCaret == false)
+                if (m_matchCaret != null)
+                {
                     this.Verb = part;
+                }
+
                 if (m_matchCaret == true)
-                    this.Object = null;                    
+                {                    
+                    this.Object = null;
+                }
             }
             else if (this.Visit == VisitType.Object)
-            {                
+            {
                 if (this.CurrentVerbObjects.Count == 0 || this.CurrentVerb == null)
                 {
                     return;
@@ -152,7 +187,7 @@ namespace CodeHelper.Core.Parse.ParseResults.Turtles
                             break;
                         }
 
-                        if (obj == "rdfs:Class")//|| obj == "rdfs:subClassOf" || obj == "owl:equivalentClass")
+                        if (obj == "rdfs:Class" || obj == "rdfs:Datatype")//|| obj == "rdfs:subClassOf" || obj == "owl:equivalentClass")
                         {
 
                             foreach (var subject in this.CurrentSubjects)
@@ -164,6 +199,7 @@ namespace CodeHelper.Core.Parse.ParseResults.Turtles
                                     t.FullName = subject;
                                     t.NameSpace = ":";
                                     t.TokenPair = pair;
+                                    t.IsPrimitive = obj == "rdfs:Datatype";
                                     this.Types.Add(t.FullName, t);
                                 }
                             }
@@ -220,9 +256,21 @@ namespace CodeHelper.Core.Parse.ParseResults.Turtles
                 }
             }
 
-            this.CurrentSubjects.Clear();
-            this.CurrentVerb = null;
+            if (m_matchCaret == false)
+            {
+                this.PrevSubject = this.Subject;
+                this.PrevVerbObjects.Clear();
+                foreach (var kv in this.CurrentVerbObjects)
+                {
+                    this.PrevVerbObjects.Add(kv.Key, kv.Value);
+                }
+
+                this.Subject = null;
+                this.CurrentVerb = null;                
+            }
+
             this.CurrentVerbObjects.Clear();
+            this.CurrentSubjects.Clear();            
             this.Visit = VisitType.Unkonw;
         }
 

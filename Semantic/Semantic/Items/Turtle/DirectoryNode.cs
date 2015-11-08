@@ -62,7 +62,7 @@ namespace CodeHelper.Items.Semantic
 
             dataModel.Parent = this;
             dataModel.Text = dataModel.Name = newName;
-            //dataModel.FullName = fileName;
+            dataModel.FullName = fileName;
 
             this.TreeNode.Expand();
 

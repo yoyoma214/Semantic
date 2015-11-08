@@ -28,6 +28,7 @@ namespace CodeHelper.Core.Types.OWL.Verbs
             get
             {
                 return "owl:propertyChainAxiom";
+                //return "propertyChainAxiom";
             }
         }
 
@@ -51,5 +52,16 @@ namespace CodeHelper.Core.Types.OWL.Verbs
 
             return rslt;
         }
+
+        public override List<string> AllowSubject(Parser.IParseModule module)
+        {
+            return base.AllowSubject(module);
+        }
+
+        public override List<string> AllowVerb(Parser.IParseModule module)
+        {
+            return base.AllowVerb(module);
+        }
+
     }
 }

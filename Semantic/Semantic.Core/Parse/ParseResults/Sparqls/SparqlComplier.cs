@@ -37,7 +37,8 @@ namespace CodeHelper.Core.Parse.ParseResults.Sparqls
             var vis = new SparqlVisitor();
 
             vis.Visit(tree);
-            
+
+            vis.Root.Errors.AddRange(listener_symbol.Errors);
             vis.Root.Errors.AddRange(listener.Errors);
 
             var oo  = parser.GetMsg();
