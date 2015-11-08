@@ -12,5 +12,21 @@ namespace CodeHelper.Core.Types
         string Name { get; }
 
         bool Wise(string verb);
+
+        string UniversalDataType { get; }
+
+        bool IsNumber();
+
+        bool IsString();
+
+        bool IsBoolean();
+
+        bool IsBinary();
+
+        bool IsIri();
+
+        bool IsTime();
+
+        bool IsXmlLiteral();
     }
 }

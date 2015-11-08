@@ -11,6 +11,8 @@ using CodeHelper.Core.Types.XSD;
 using CodeHelper.Core.Types.OWL.Objects;
 using CodeHelper.Core.Types.RDF.Objects;
 using CodeHelper.Core.Services;
+using CodeHelper.Core.Types.RDF.Facets;
+using CodeHelper.Core.Types.XSD.Facets;
 
 namespace CodeHelper.Core.Types
 {
@@ -24,9 +26,11 @@ namespace CodeHelper.Core.Types
 
         //public Dictionary<string, ITypeInfo> OWL_Properties { get; set; }
 
-        public Dictionary<string, IXsdType> XSD_Typtes { get; set; }
+        public Dictionary<string, IXsdType> XSD_Typtes { get; set; }        
 
         public Dictionary<string, BaseVerb> Ver_Types { get; set; }
+
+        public Dictionary<string, IFacet> Ver_Facets { get; set; }
 
         public Dictionary<string, IObject> Object_Types { get; set; }
 
@@ -48,6 +52,7 @@ namespace CodeHelper.Core.Types
             this.XSD_Typtes = new Dictionary<string, IXsdType>();
             this.Ver_Types = new Dictionary<string, BaseVerb>();
             this.Object_Types = new Dictionary<string, IObject>();
+            this.Ver_Facets = new Dictionary<string, IFacet>();
 
             //this.RdfModule = new TurtleModule();
             //this.RdfModule.Name = "rdf";
@@ -194,8 +199,40 @@ namespace CodeHelper.Core.Types
             
             type = new EquivalentProperty();
             this.Ver_Types.Add(type.Name, type);
-            #endregion            
+            #endregion                        
 
+            #endregion
+
+            IFacet facet = null;
+
+            #region facet
+
+            facet = new LangRange();
+            this.Ver_Facets.Add(facet.Name, facet);
+
+            facet = new Length();
+            this.Ver_Facets.Add(facet.Name, facet);
+
+            facet = new MaxExclusive();
+            this.Ver_Facets.Add(facet.Name, facet);
+
+            facet = new MaxInclusive();
+            this.Ver_Facets.Add(facet.Name, facet);
+
+            facet = new MaxLength();
+            this.Ver_Facets.Add(facet.Name, facet);
+
+            facet = new MinExclusive();
+            this.Ver_Facets.Add(facet.Name, facet);
+
+            facet = new MinInclusive();
+            this.Ver_Facets.Add(facet.Name, facet);
+
+            facet = new MinLength();
+            this.Ver_Facets.Add(facet.Name, facet);
+
+            facet = new Pattern();
+            this.Ver_Facets.Add(facet.Name, facet);
             #endregion
 
             IXsdType xsd = null;

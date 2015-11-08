@@ -13,18 +13,18 @@
 :Employee rdf:type rdfs:Class .
 :Skill rdf:type rdfs:Class .
 :SexType rdf:type rdfs:Datatype ;
-owl:unionOf ([
-				rdf:type rdfs:Datatype ;
-		 		owl:onDatatype xsd:int ;
-		 		owl:withRestrictions (
-		 			[
-		 				:
-		 			]
-		 		)
-			]
-			[]
-	).
-
+	owl:unionOf ([
+					rdf:type rdfs:Datatype ;
+			 		owl:onDatatype xsd:int ;
+			 		owl:withRestrictions (
+			 			[
+			 				xsd:minInclusive 3;
+			 			]
+			 		)
+				]
+				[]			
+		).
+	
 #endregion类--结束
 
 #region 属性--开始

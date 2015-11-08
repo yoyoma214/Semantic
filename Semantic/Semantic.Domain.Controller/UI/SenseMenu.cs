@@ -402,6 +402,14 @@ namespace CodeHelper.Domain.Controller.UI
 
                 if (isAnonymous)
                 {
+                    if (module.PrevVerbObjects.Count > 0)
+                    {
+                        if (module.PrevVerbObjects.Last().Key == "owl:withRestrictions")
+                        {
+                            return SenseFact(prevText, module);
+                        }
+                    }
+
                     data.AddRange(OWLTypes.Instance().Ver_Types.Keys);
                     return data;
                 }
@@ -494,6 +502,33 @@ namespace CodeHelper.Domain.Controller.UI
                     var ps = GlobalService.ModelManager.ListProperty(ns.Value, null, true);
                     foreach (var property in ps)
                         data.Add(property.Name);
+                }
+
+                return data;
+            }
+
+            private static List<String> SenseFact(string prevText, IParseModule module)
+            {
+                var data = new List<String>();
+
+                string typeName = null;
+                foreach (var vo in module.PrevVerbObjects)
+                {
+                    if (vo.Key == "owl:onDatatype")
+                    {
+                        typeName = vo.Value[0];
+                    }
+                }
+                
+                var owlName = module.ResloveName(typeName);
+                //var dataType = module.ResloveType(owlName.NameSpace, owlName.LocalName);
+
+                foreach (var f in OWLTypes.Instance().Ver_Facets)
+                {
+                    if (f.Value.AllowDataType(owlName))
+                    {
+                        data.Add(f.Key);
+                    }
                 }
 
                 return data;

@@ -200,6 +200,7 @@
     <Compile Include="Types\IXsdType.cs" />
     <Compile Include="Types\OWLTypes.cs" />
     <Compile Include="Types\OWL\Objects\AsymmetricProperty.cs" />
+    <Compile Include="Types\RDF\Facets\LangRange.cs" />
     <Compile Include="Types\RDF\Objects\Class.cs" />
     <Compile Include="Types\OWL\Objects\DatatypeProperty.cs" />
     <Compile Include="Types\OWL\Objects\FunctionalProperty.cs" />
@@ -248,6 +249,14 @@
     <Compile Include="Types\RDF\Verbs\RDF_Type.cs" />
     <Compile Include="Types\RDF\Verbs\SubClassOf.cs" />
     <Compile Include="Types\RDF\Verbs\SubPropertyOf.cs" />
+    <Compile Include="Types\XSD\Facets\Length.cs" />
+    <Compile Include="Types\XSD\Facets\MaxExclusive.cs" />
+    <Compile Include="Types\XSD\Facets\MaxInclusive.cs" />
+    <Compile Include="Types\XSD\Facets\MaxLength.cs" />
+    <Compile Include="Types\XSD\Facets\MinExclusive.cs" />
+    <Compile Include="Types\XSD\Facets\MinInclusive.cs" />
+    <Compile Include="Types\XSD\Facets\MinLength.cs" />
+    <Compile Include="Types\XSD\Facets\Pattern.cs" />
     <Compile Include="Types\XSD\Types\AnyURI.cs" />
     <Compile Include="Types\XSD\Types\Base64Binary.cs" />
     <Compile Include="Types\XSD\Types\BooleanN.cs" />
@@ -369,10 +378,7 @@
       <Name>CodeHelper.Xml</Name>
     </ProjectReference>
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Types\RDF\Facets\" />
-    <Folder Include="Types\XSD\Facets\" />
-  </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
     <PropertyGroup>

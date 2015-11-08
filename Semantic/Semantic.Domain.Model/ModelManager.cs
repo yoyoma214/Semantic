@@ -134,13 +134,16 @@ namespace CodeHelper.Domain.Model
 
         private object ResloveBuildinItem(string nameSpace, string name)
         {
-            var obj = OWLTypes.Instance().Ver_Types.Where(x => x.Value.NameSpace == nameSpace && x.Key == name).Select(x => x.Value).FirstOrDefault();
+            var obj = OWLTypes.Instance().Ver_Types.Where(x => x.Value.NameSpace == nameSpace
+                && (x.Key == name  || x.Key.EndsWith(":" + name))).Select(x => x.Value).FirstOrDefault();
             if (obj != null)
                 return obj;
-            var obj1 = OWLTypes.Instance().Object_Types.Where(x => x.Value.NameSpace == nameSpace && x.Key == name).Select(x => x.Value).FirstOrDefault();
+            var obj1 = OWLTypes.Instance().Object_Types.Where(x => x.Value.NameSpace == nameSpace
+                && (x.Key == name || x.Key.EndsWith(":" + name))).Select(x => x.Value).FirstOrDefault();
             if (obj1 != null)
                 return obj1;
-            var obj2 = OWLTypes.Instance().XSD_Typtes.Where(x => x.Value.NameSpace == nameSpace && x.Key == name).Select(x => x.Value).FirstOrDefault();
+            var obj2 = OWLTypes.Instance().XSD_Typtes.Where(x => x.Value.NameSpace == nameSpace
+                && (x.Key == name || x.Key.EndsWith(":" + name))).Select(x => x.Value).FirstOrDefault();
             return obj2;
         }
 
