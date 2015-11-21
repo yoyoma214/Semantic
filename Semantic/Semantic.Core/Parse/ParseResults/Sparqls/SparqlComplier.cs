@@ -23,7 +23,7 @@ namespace CodeHelper.Core.Parse.ParseResults.Sparqls
             //lexer.AddErrorListener(new AntlrErrorListener<int>());            
 
             var tokens = new CommonTokenStream(lexer);
-            var parser = new NSparqlParser(tokens);
+            var parser = new SparqlParser(tokens);
             
             parser.BuildParseTree = true;
 
@@ -41,7 +41,7 @@ namespace CodeHelper.Core.Parse.ParseResults.Sparqls
             vis.Root.Errors.AddRange(listener_symbol.Errors);
             vis.Root.Errors.AddRange(listener.Errors);
 
-            var oo  = parser.GetMsg();
+            //var oo  = parser.GetMsg();
             return vis.Root;
         }
 

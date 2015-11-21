@@ -251,7 +251,7 @@ namespace CodeHelper.Domain.Controller.UI
             }
         }
 
-        public void SetData(string prevText, IParseModule module)
+        public void SetData(string prevText, IParseModule module, bool fake)
         {
             this.m_module = module;
             if (prevText == null)
@@ -271,7 +271,13 @@ namespace CodeHelper.Domain.Controller.UI
             //    data.Add(t);
             //}
 
-            if ( prevText.EndsWith("^^"))
+            var model = GlobalService.ModelManager.GetModel(module.FileId);
+            module.Fake = model.Fake;
+            if (model.Fake && module.Subject == null && module.Verb == null && module.Object == null)//对应虚拟输入并且为主键
+            {
+                this.data.AddRange(Sensor.SubjectSensor.Sensor(prevText.Trim(), module));
+            }
+            else if ( prevText.EndsWith("^^"))
             {
                 this.data.Clear();
 
@@ -280,22 +286,33 @@ namespace CodeHelper.Domain.Controller.UI
             else if (!string.IsNullOrWhiteSpace(module.Object))
             {
                 //this.data.AddRange(OWLTypes.Instance().Object_Types.Keys);
-
                 this.data.AddRange(Sensor.ObjectSensor.Sensor(prevText.Trim(), module));
             }
-            else if ( !string.IsNullOrWhiteSpace(module.Verb))
+            else if (!string.IsNullOrWhiteSpace(module.Verb))
             {
                 this.data.Clear();
 
-                this.data.AddRange(Sensor.VerbSensor.Sensor(prevText.Trim(), module));
+                if (!module.Fake)
+                {
+                    this.data.AddRange(Sensor.VerbSensor.Sensor(prevText.Trim(), module));
+                }
+                else
+                {
+                    this.data.AddRange(Sensor.ObjectSensor.Sensor(prevText.Trim(), module));
+                }
             }
             else if (!string.IsNullOrWhiteSpace(module.Subject))
             {
-
                 this.data.Clear();
 
-                this.data.AddRange(Sensor.SubjectSensor.Sensor(prevText.Trim(), module));
-
+                if (!module.Fake)
+                {
+                    this.data.AddRange(Sensor.SubjectSensor.Sensor(prevText.Trim(), module));
+                }
+                else
+                {
+                    this.data.AddRange(Sensor.VerbSensor.Sensor(prevText.Trim(), module));
+                }
                 //foreach (var ns in module.UsingNameSpaces)
                 //{
                 //    var ps = GlobalService.ModelManager.lis(ns.Value);
@@ -308,7 +325,8 @@ namespace CodeHelper.Domain.Controller.UI
             else            
             this.textBox1.Text = prevText.Trim();
             this.textBox1.SelectionStart = this.textBox1.Text.Length;
-            //textBox1_TextChanged(null, null);
+            if (prevText == "")
+                textBox1_TextChanged(null, null);
         }
 
         protected override void OnKeyDown(KeyEventArgs e)

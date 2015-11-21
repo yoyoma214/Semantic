@@ -9,14 +9,10 @@ namespace CodeHelper.Core.Parse.ParseResults.Sparqls
     class SparqlVisitor : SparqlBaseVisitor<int>
     {
         StackUtil stack = new StackUtil();
-
-        public QueryUnit Root { get; set; }
-
+        public QueryUnit Root = new QueryUnit();
         public override int VisitQueryUnit([NotNull] SparqlParser.QueryUnitContext context)
         {
-            var queryUnit = new QueryUnit();
-            Root = queryUnit;
-
+            var queryUnit = this.Root;
             queryUnit.Parse(context);
 
             var queryCtx = context.query();
@@ -143,6 +139,18 @@ namespace CodeHelper.Core.Parse.ParseResults.Sparqls
             var baseDecl = this.stack.PeekCtx<BaseDecl>();
             baseDecl.Parse(context);
 
+            var BASECtx = context.BASE();
+            if (BASECtx != null)
+            {
+                baseDecl.BASE = BASECtx.GetText();
+            }
+
+            var IRIREFCtx = context.IRIREF();
+            if (IRIREFCtx != null)
+            {
+                baseDecl.IRIREF = IRIREFCtx.GetText();
+            }
+
             return 0;
         }
 
@@ -151,57 +159,69 @@ namespace CodeHelper.Core.Parse.ParseResults.Sparqls
             var prefixDecl = this.stack.PeekCtx<PrefixDecl>();
             prefixDecl.Parse(context);
 
+            var PREFIXCtx = context.PREFIX();
+            if (PREFIXCtx != null)
+            {
+                prefixDecl.PREFIX = PREFIXCtx.GetText();
+            }
+
+            var PNAME_NSCtx = context.PNAME_NS();
+            if (PNAME_NSCtx != null)
+            {
+                prefixDecl.PNAMENS = PNAME_NSCtx.GetText();
+            }
+
+            var IRIREFCtx = context.IRIREF();
+            if (IRIREFCtx != null)
+            {
+                prefixDecl.IRIREF = IRIREFCtx.GetText();
+            }
+
             return 0;
         }
 
         public override int VisitSelectQuery([NotNull] SparqlParser.SelectQueryContext context)
         {
-            try
+            var selectQuery = this.stack.PeekCtx<SelectQuery>();
+            selectQuery.Parse(context);
+
+            var selectClauseCtx = context.selectClause();
+            if (selectClauseCtx != null)
             {
-                var selectQuery = this.stack.PeekCtx<SelectQuery>();
-                selectQuery.Parse(context);
-
-                var selectClauseCtx = context.selectClause();
-                if (selectClauseCtx != null)
-                {
-                    selectQuery.SelectClause = new SelectClause();
-                    this.stack.Push(selectQuery.SelectClause);
-                    this.Visit(selectClauseCtx);
-                    this.stack.Pop();
-                }
-
-                var datasetClauseCtxs = context.datasetClause();
-                foreach (var ctx in datasetClauseCtxs)
-                {
-                    var datasetClause = new DatasetClause();
-                    selectQuery.DatasetClauses.Add(datasetClause);
-                    this.stack.Push(datasetClause);
-                    this.Visit(ctx);
-                    this.stack.Pop();
-                }
-
-                var whereClauseCtx = context.whereClause();
-                if (whereClauseCtx != null)
-                {
-                    selectQuery.WhereClause = new WhereClause();
-                    this.stack.Push(selectQuery.WhereClause);
-                    this.Visit(whereClauseCtx);
-                    this.stack.Pop();
-                }
-
-                var solutionModifierCtx = context.solutionModifier();
-                if (solutionModifierCtx != null)
-                {
-                    selectQuery.SolutionModifier = new SolutionModifier();
-                    this.stack.Push(selectQuery.SolutionModifier);
-                    this.Visit(solutionModifierCtx);
-                    this.stack.Pop();
-                }
+                selectQuery.SelectClause = new SelectClause();
+                this.stack.Push(selectQuery.SelectClause);
+                this.Visit(selectClauseCtx);
+                this.stack.Pop();
             }
-            catch (Exception ex)
+
+            var datasetClauseCtxs = context.datasetClause();
+            foreach (var ctx in datasetClauseCtxs)
             {
-                Console.Out.WriteLine(ex.Message);
+                var datasetClause = new DatasetClause();
+                selectQuery.DatasetClauses.Add(datasetClause);
+                this.stack.Push(datasetClause);
+                this.Visit(ctx);
+                this.stack.Pop();
             }
+
+            var whereClauseCtx = context.whereClause();
+            if (whereClauseCtx != null)
+            {
+                selectQuery.WhereClause = new WhereClause();
+                this.stack.Push(selectQuery.WhereClause);
+                this.Visit(whereClauseCtx);
+                this.stack.Pop();
+            }
+
+            var solutionModifierCtx = context.solutionModifier();
+            if (solutionModifierCtx != null)
+            {
+                selectQuery.SolutionModifier = new SolutionModifier();
+                this.stack.Push(selectQuery.SolutionModifier);
+                this.Visit(solutionModifierCtx);
+                this.stack.Pop();
+            }
+
             return 0;
         }
 
@@ -254,6 +274,24 @@ namespace CodeHelper.Core.Parse.ParseResults.Sparqls
             var selectClause = this.stack.PeekCtx<SelectClause>();
             selectClause.Parse(context);
 
+            var SELECTCtx = context.SELECT();
+            if (SELECTCtx != null)
+            {
+                selectClause.SELECT = SELECTCtx.GetText();
+            }
+
+            var DISTINCTCtx = context.DISTINCT();
+            if (DISTINCTCtx != null)
+            {
+                selectClause.DISTINCT = DISTINCTCtx.GetText();
+            }
+
+            var REDUCEDCtx = context.REDUCED();
+            if (REDUCEDCtx != null)
+            {
+                selectClause.REDUCED = REDUCEDCtx.GetText();
+            }
+
             var varCtxs = context.var();
             foreach (var ctx in varCtxs)
             {
@@ -274,6 +312,18 @@ namespace CodeHelper.Core.Parse.ParseResults.Sparqls
                 this.stack.Pop();
             }
 
+            var ASCtxs = context.AS();
+            foreach (var ctx in ASCtxs)
+            {
+                selectClause.ASs.Add(ctx.GetText());
+            }
+
+            var ALLCtx = context.ALL();
+            if (ALLCtx != null)
+            {
+                selectClause.ALL = ALLCtx.GetText();
+            }
+
             return 0;
         }
 
@@ -281,6 +331,12 @@ namespace CodeHelper.Core.Parse.ParseResults.Sparqls
         {
             var constructQuery = this.stack.PeekCtx<ConstructQuery>();
             constructQuery.Parse(context);
+
+            var CONSTRUCTCtx = context.CONSTRUCT();
+            if (CONSTRUCTCtx != null)
+            {
+                constructQuery.CONSTRUCT = CONSTRUCTCtx.GetText();
+            }
 
             var constructTemplateCtx = context.constructTemplate();
             if (constructTemplateCtx != null)
@@ -310,13 +366,20 @@ namespace CodeHelper.Core.Parse.ParseResults.Sparqls
                 this.stack.Pop();
             }
 
-            var solutionModifierCtx = context.solutionModifier();
-            if ( solutionModifierCtx != null )
+            var solutionModifierCtxs = context.solutionModifier();
+            if ( solutionModifierCtxs != null )
             {
-                constructQuery.SolutionModifier = new SolutionModifier();
-                this.stack.Push(constructQuery.SolutionModifier);
-                this.Visit(solutionModifierCtx);
+                var solutionModifier = new SolutionModifier();
+                constructQuery.SolutionModifiers.Add(solutionModifier);
+                this.stack.Push(solutionModifier);
+                this.Visit(solutionModifierCtxs);
                 this.stack.Pop();
+            }
+
+            var WHERECtx = context.WHERE();
+            if (WHERECtx != null)
+            {
+                constructQuery.WHERE = WHERECtx.GetText();
             }
 
             var triplesTemplateCtx = context.triplesTemplate();
@@ -336,6 +399,12 @@ namespace CodeHelper.Core.Parse.ParseResults.Sparqls
             var describeQuery = this.stack.PeekCtx<DescribeQuery>();
             describeQuery.Parse(context);
 
+            var DESCRIBECtx = context.DESCRIBE();
+            if (DESCRIBECtx != null)
+            {
+                describeQuery.DESCRIBE = DESCRIBECtx.GetText();
+            }
+
             var varOrIriCtxs = context.varOrIri();
             foreach (var ctx in varOrIriCtxs)
             {
@@ -344,6 +413,12 @@ namespace CodeHelper.Core.Parse.ParseResults.Sparqls
                 this.stack.Push(varOrIri);
                 this.Visit(ctx);
                 this.stack.Pop();
+            }
+
+            var ALLCtx = context.ALL();
+            if (ALLCtx != null)
+            {
+                describeQuery.ALL = ALLCtx.GetText();
             }
 
             var datasetClauseCtxs = context.datasetClause();
@@ -382,6 +457,12 @@ namespace CodeHelper.Core.Parse.ParseResults.Sparqls
             var askQuery = this.stack.PeekCtx<AskQuery>();
             askQuery.Parse(context);
 
+            var ASKCtx = context.ASK();
+            if (ASKCtx != null)
+            {
+                askQuery.ASK = ASKCtx.GetText();
+            }
+
             var datasetClauseCtxs = context.datasetClause();
             foreach (var ctx in datasetClauseCtxs)
             {
@@ -417,6 +498,12 @@ namespace CodeHelper.Core.Parse.ParseResults.Sparqls
         {
             var datasetClause = this.stack.PeekCtx<DatasetClause>();
             datasetClause.Parse(context);
+
+            var FROMCtx = context.FROM();
+            if (FROMCtx != null)
+            {
+                datasetClause.FROM = FROMCtx.GetText();
+            }
 
             var defaultGraphClauseCtx = context.defaultGraphClause();
             if (defaultGraphClauseCtx != null)
@@ -461,6 +548,12 @@ namespace CodeHelper.Core.Parse.ParseResults.Sparqls
             var namedGraphClause = this.stack.PeekCtx<NamedGraphClause>();
             namedGraphClause.Parse(context);
 
+            var NAMEDCtx = context.NAMED();
+            if (NAMEDCtx != null)
+            {
+                namedGraphClause.NAMED = NAMEDCtx.GetText();
+            }
+
             var sourceSelectorCtx = context.sourceSelector();
             if (sourceSelectorCtx != null)
             {
@@ -494,6 +587,12 @@ namespace CodeHelper.Core.Parse.ParseResults.Sparqls
         {
             var whereClause = this.stack.PeekCtx<WhereClause>();
             whereClause.Parse(context);
+
+            var WHERECtx = context.WHERE();
+            if (WHERECtx != null)
+            {
+                whereClause.WHERE = WHERECtx.GetText();
+            }
 
             var groupGraphPatternCtx = context.groupGraphPattern();
             if (groupGraphPatternCtx != null)
@@ -556,6 +655,18 @@ namespace CodeHelper.Core.Parse.ParseResults.Sparqls
             var groupClause = this.stack.PeekCtx<GroupClause>();
             groupClause.Parse(context);
 
+            var GROUPCtx = context.GROUP();
+            if (GROUPCtx != null)
+            {
+                groupClause.GROUP = GROUPCtx.GetText();
+            }
+
+            var BYCtx = context.BY();
+            if (BYCtx != null)
+            {
+                groupClause.BY = BYCtx.GetText();
+            }
+
             var groupConditionCtxs = context.groupCondition();
             foreach (var ctx in groupConditionCtxs)
             {
@@ -601,12 +712,19 @@ namespace CodeHelper.Core.Parse.ParseResults.Sparqls
                 this.stack.Pop();
             }
 
-            var varCtx = context.var();
-            if ( varCtx != null )
+            var ASCtx = context.AS();
+            if (ASCtx != null)
             {
-                groupCondition.Var = new Var();
-                this.stack.Push(groupCondition.Var);
-                this.Visit(varCtx);
+                groupCondition.AS = ASCtx.GetText();
+            }
+
+            var varCtxs = context.var();
+            if ( varCtxs != null )
+            {
+                var var = new Var();
+                groupCondition.Vars.Add(var);
+                this.stack.Push(var);
+                this.Visit(varCtxs);
                 this.stack.Pop();
             }
 
@@ -617,6 +735,12 @@ namespace CodeHelper.Core.Parse.ParseResults.Sparqls
         {
             var havingClause = this.stack.PeekCtx<HavingClause>();
             havingClause.Parse(context);
+
+            var HAVINGCtx = context.HAVING();
+            if (HAVINGCtx != null)
+            {
+                havingClause.HAVING = HAVINGCtx.GetText();
+            }
 
             var havingConditionCtxs = context.havingCondition();
             foreach (var ctx in havingConditionCtxs)
@@ -653,6 +777,18 @@ namespace CodeHelper.Core.Parse.ParseResults.Sparqls
             var orderClause = this.stack.PeekCtx<OrderClause>();
             orderClause.Parse(context);
 
+            var ORDERCtx = context.ORDER();
+            if (ORDERCtx != null)
+            {
+                orderClause.ORDER = ORDERCtx.GetText();
+            }
+
+            var BYCtx = context.BY();
+            if (BYCtx != null)
+            {
+                orderClause.BY = BYCtx.GetText();
+            }
+
             var orderConditionCtxs = context.orderCondition();
             foreach (var ctx in orderConditionCtxs)
             {
@@ -670,6 +806,18 @@ namespace CodeHelper.Core.Parse.ParseResults.Sparqls
         {
             var orderCondition = this.stack.PeekCtx<OrderCondition>();
             orderCondition.Parse(context);
+
+            var ASCCtx = context.ASC();
+            if (ASCCtx != null)
+            {
+                orderCondition.ASC = ASCCtx.GetText();
+            }
+
+            var DESCCtx = context.DESC();
+            if (DESCCtx != null)
+            {
+                orderCondition.DESC = DESCCtx.GetText();
+            }
 
             var brackettedExpressionCtx = context.brackettedExpression();
             if (brackettedExpressionCtx != null)
@@ -706,21 +854,23 @@ namespace CodeHelper.Core.Parse.ParseResults.Sparqls
             var limitOffsetClauses = this.stack.PeekCtx<LimitOffsetClauses>();
             limitOffsetClauses.Parse(context);
 
-            var limitClauseCtx = context.limitClause();
-            if ( limitClauseCtx != null )
+            var limitClauseCtxs = context.limitClause();
+            if ( limitClauseCtxs != null )
             {
-                limitOffsetClauses.LimitClause = new LimitClause();
-                this.stack.Push(limitOffsetClauses.LimitClause);
-                this.Visit(limitClauseCtx);
+                var limitClause = new LimitClause();
+                limitOffsetClauses.LimitClauses.Add(limitClause);
+                this.stack.Push(limitClause);
+                this.Visit(limitClauseCtxs);
                 this.stack.Pop();
             }
 
-            var offsetClauseCtx = context.offsetClause();
-            if ( offsetClauseCtx != null)
+            var offsetClauseCtxs = context.offsetClause();
+            if ( offsetClauseCtxs != null )
             {
-                limitOffsetClauses.OffsetClause = new OffsetClause();
-                this.stack.Push(limitOffsetClauses.OffsetClause);
-                this.Visit(offsetClauseCtx);
+                var offsetClause = new OffsetClause();
+                limitOffsetClauses.OffsetClauses.Add(offsetClause);
+                this.stack.Push(offsetClause);
+                this.Visit(offsetClauseCtxs);
                 this.stack.Pop();
             }
 
@@ -732,6 +882,18 @@ namespace CodeHelper.Core.Parse.ParseResults.Sparqls
             var limitClause = this.stack.PeekCtx<LimitClause>();
             limitClause.Parse(context);
 
+            var LIMITCtx = context.LIMIT();
+            if (LIMITCtx != null)
+            {
+                limitClause.LIMIT = LIMITCtx.GetText();
+            }
+
+            var INTEGERCtx = context.INTEGER();
+            if (INTEGERCtx != null)
+            {
+                limitClause.INTEGER = INTEGERCtx.GetText();
+            }
+
             return 0;
         }
 
@@ -740,6 +902,18 @@ namespace CodeHelper.Core.Parse.ParseResults.Sparqls
             var offsetClause = this.stack.PeekCtx<OffsetClause>();
             offsetClause.Parse(context);
 
+            var OFFSETCtx = context.OFFSET();
+            if (OFFSETCtx != null)
+            {
+                offsetClause.OFFSET = OFFSETCtx.GetText();
+            }
+
+            var INTEGERCtx = context.INTEGER();
+            if (INTEGERCtx != null)
+            {
+                offsetClause.INTEGER = INTEGERCtx.GetText();
+            }
+
             return 0;
         }
 
@@ -747,6 +921,12 @@ namespace CodeHelper.Core.Parse.ParseResults.Sparqls
         {
             var valuesClause = this.stack.PeekCtx<ValuesClause>();
             valuesClause.Parse(context);
+
+            var VALUESCtx = context.VALUES();
+            if (VALUESCtx != null)
+            {
+                valuesClause.VALUES = VALUESCtx.GetText();
+            }
 
             var dataBlockCtx = context.dataBlock();
             if (dataBlockCtx != null)
@@ -907,6 +1087,18 @@ namespace CodeHelper.Core.Parse.ParseResults.Sparqls
             var load = this.stack.PeekCtx<Load>();
             load.Parse(context);
 
+            var LOADCtx = context.LOAD();
+            if (LOADCtx != null)
+            {
+                load.LOAD = LOADCtx.GetText();
+            }
+
+            var SILENTCtx = context.SILENT();
+            if (SILENTCtx != null)
+            {
+                load.SILENT = SILENTCtx.GetText();
+            }
+
             var iriCtx = context.iri();
             if (iriCtx != null)
             {
@@ -914,6 +1106,12 @@ namespace CodeHelper.Core.Parse.ParseResults.Sparqls
                 this.stack.Push(load.Iri);
                 this.Visit(iriCtx);
                 this.stack.Pop();
+            }
+
+            var INTOCtx = context.INTO();
+            if (INTOCtx != null)
+            {
+                load.INTO = INTOCtx.GetText();
             }
 
             var graphRefCtx = context.graphRef();
@@ -933,6 +1131,18 @@ namespace CodeHelper.Core.Parse.ParseResults.Sparqls
             var clear = this.stack.PeekCtx<Clear>();
             clear.Parse(context);
 
+            var CLEARCtx = context.CLEAR();
+            if (CLEARCtx != null)
+            {
+                clear.CLEAR = CLEARCtx.GetText();
+            }
+
+            var SILENTCtx = context.SILENT();
+            if (SILENTCtx != null)
+            {
+                clear.SILENT = SILENTCtx.GetText();
+            }
+
             var graphRefAllCtx = context.graphRefAll();
             if (graphRefAllCtx != null)
             {
@@ -949,6 +1159,18 @@ namespace CodeHelper.Core.Parse.ParseResults.Sparqls
         {
             var drop = this.stack.PeekCtx<Drop>();
             drop.Parse(context);
+
+            var DROPCtx = context.DROP();
+            if (DROPCtx != null)
+            {
+                drop.DROP = DROPCtx.GetText();
+            }
+
+            var SILENTCtx = context.SILENT();
+            if (SILENTCtx != null)
+            {
+                drop.SILENT = SILENTCtx.GetText();
+            }
 
             var graphRefAllCtx = context.graphRefAll();
             if (graphRefAllCtx != null)
@@ -967,6 +1189,18 @@ namespace CodeHelper.Core.Parse.ParseResults.Sparqls
             var create = this.stack.PeekCtx<Create>();
             create.Parse(context);
 
+            var CREATECtx = context.CREATE();
+            if (CREATECtx != null)
+            {
+                create.CREATE = CREATECtx.GetText();
+            }
+
+            var SILENTCtx = context.SILENT();
+            if (SILENTCtx != null)
+            {
+                create.SILENT = SILENTCtx.GetText();
+            }
+
             var graphRefCtx = context.graphRef();
             if (graphRefCtx != null)
             {
@@ -984,6 +1218,18 @@ namespace CodeHelper.Core.Parse.ParseResults.Sparqls
             var add = this.stack.PeekCtx<Add>();
             add.Parse(context);
 
+            var ADDCtx = context.ADD();
+            if (ADDCtx != null)
+            {
+                add.ADD = ADDCtx.GetText();
+            }
+
+            var SILENTCtx = context.SILENT();
+            if (SILENTCtx != null)
+            {
+                add.SILENT = SILENTCtx.GetText();
+            }
+
             var graphOrDefaultCtxs = context.graphOrDefault();
             foreach (var ctx in graphOrDefaultCtxs)
             {
@@ -994,6 +1240,12 @@ namespace CodeHelper.Core.Parse.ParseResults.Sparqls
                 this.stack.Pop();
             }
 
+            var TOCtx = context.TO();
+            if (TOCtx != null)
+            {
+                add.TO = TOCtx.GetText();
+            }
+
             return 0;
         }
 
@@ -1001,6 +1253,18 @@ namespace CodeHelper.Core.Parse.ParseResults.Sparqls
         {
             var move = this.stack.PeekCtx<Move>();
             move.Parse(context);
+
+            var MOVECtx = context.MOVE();
+            if (MOVECtx != null)
+            {
+                move.MOVE = MOVECtx.GetText();
+            }
+
+            var SILENTCtx = context.SILENT();
+            if (SILENTCtx != null)
+            {
+                move.SILENT = SILENTCtx.GetText();
+            }
 
             var graphOrDefaultCtxs = context.graphOrDefault();
             foreach (var ctx in graphOrDefaultCtxs)
@@ -1012,6 +1276,12 @@ namespace CodeHelper.Core.Parse.ParseResults.Sparqls
                 this.stack.Pop();
             }
 
+            var TOCtx = context.TO();
+            if (TOCtx != null)
+            {
+                move.TO = TOCtx.GetText();
+            }
+
             return 0;
         }
 
@@ -1019,6 +1289,18 @@ namespace CodeHelper.Core.Parse.ParseResults.Sparqls
         {
             var copy = this.stack.PeekCtx<Copy>();
             copy.Parse(context);
+
+            var COPYCtx = context.COPY();
+            if (COPYCtx != null)
+            {
+                copy.COPY = COPYCtx.GetText();
+            }
+
+            var SILENTCtx = context.SILENT();
+            if (SILENTCtx != null)
+            {
+                copy.SILENT = SILENTCtx.GetText();
+            }
 
             var graphOrDefaultCtxs = context.graphOrDefault();
             foreach (var ctx in graphOrDefaultCtxs)
@@ -1030,6 +1312,12 @@ namespace CodeHelper.Core.Parse.ParseResults.Sparqls
                 this.stack.Pop();
             }
 
+            var TOCtx = context.TO();
+            if (TOCtx != null)
+            {
+                copy.TO = TOCtx.GetText();
+            }
+
             return 0;
         }
 
@@ -1037,6 +1325,18 @@ namespace CodeHelper.Core.Parse.ParseResults.Sparqls
         {
             var insertData = this.stack.PeekCtx<InsertData>();
             insertData.Parse(context);
+
+            var INSERTCtx = context.INSERT();
+            if (INSERTCtx != null)
+            {
+                insertData.INSERT = INSERTCtx.GetText();
+            }
+
+            var DATACtx = context.DATA();
+            if (DATACtx != null)
+            {
+                insertData.DATA = DATACtx.GetText();
+            }
 
             var quadDataCtx = context.quadData();
             if (quadDataCtx != null)
@@ -1055,6 +1355,18 @@ namespace CodeHelper.Core.Parse.ParseResults.Sparqls
             var deleteData = this.stack.PeekCtx<DeleteData>();
             deleteData.Parse(context);
 
+            var DELETECtx = context.DELETE();
+            if (DELETECtx != null)
+            {
+                deleteData.DELETE = DELETECtx.GetText();
+            }
+
+            var DATACtx = context.DATA();
+            if (DATACtx != null)
+            {
+                deleteData.DATA = DATACtx.GetText();
+            }
+
             var quadDataCtx = context.quadData();
             if (quadDataCtx != null)
             {
@@ -1072,6 +1384,18 @@ namespace CodeHelper.Core.Parse.ParseResults.Sparqls
             var deleteWhere = this.stack.PeekCtx<DeleteWhere>();
             deleteWhere.Parse(context);
 
+            var DELETECtx = context.DELETE();
+            if (DELETECtx != null)
+            {
+                deleteWhere.DELETE = DELETECtx.GetText();
+            }
+
+            var WHERECtx = context.WHERE();
+            if (WHERECtx != null)
+            {
+                deleteWhere.WHERE = WHERECtx.GetText();
+            }
+
             var quadPatternCtx = context.quadPattern();
             if (quadPatternCtx != null)
             {
@@ -1088,6 +1412,12 @@ namespace CodeHelper.Core.Parse.ParseResults.Sparqls
         {
             var modify = this.stack.PeekCtx<Modify>();
             modify.Parse(context);
+
+            var WITHCtx = context.WITH();
+            if (WITHCtx != null)
+            {
+                modify.WITH = WITHCtx.GetText();
+            }
 
             var iriCtx = context.iri();
             if (iriCtx != null)
@@ -1107,12 +1437,13 @@ namespace CodeHelper.Core.Parse.ParseResults.Sparqls
                 this.stack.Pop();
             }
 
-            var insertClauseCtx = context.insertClause();
-            if ( insertClauseCtx != null )
+            var insertClauseCtxs = context.insertClause();
+            if ( insertClauseCtxs != null )
             {
-                modify.InsertClause = new InsertClause();
-                this.stack.Push(modify.InsertClause);
-                this.Visit(insertClauseCtx);
+                var insertClause = new InsertClause();
+                modify.InsertClauses.Add(insertClause);
+                this.stack.Push(insertClause);
+                this.Visit(insertClauseCtxs);
                 this.stack.Pop();
             }
 
@@ -1124,6 +1455,12 @@ namespace CodeHelper.Core.Parse.ParseResults.Sparqls
                 this.stack.Push(usingClause);
                 this.Visit(ctx);
                 this.stack.Pop();
+            }
+
+            var WHERECtx = context.WHERE();
+            if (WHERECtx != null)
+            {
+                modify.WHERE = WHERECtx.GetText();
             }
 
             var groupGraphPatternCtx = context.groupGraphPattern();
@@ -1143,6 +1480,12 @@ namespace CodeHelper.Core.Parse.ParseResults.Sparqls
             var deleteClause = this.stack.PeekCtx<DeleteClause>();
             deleteClause.Parse(context);
 
+            var DELETECtx = context.DELETE();
+            if (DELETECtx != null)
+            {
+                deleteClause.DELETE = DELETECtx.GetText();
+            }
+
             var quadPatternCtx = context.quadPattern();
             if (quadPatternCtx != null)
             {
@@ -1159,6 +1502,12 @@ namespace CodeHelper.Core.Parse.ParseResults.Sparqls
         {
             var insertClause = this.stack.PeekCtx<InsertClause>();
             insertClause.Parse(context);
+
+            var INSERTCtx = context.INSERT();
+            if (INSERTCtx != null)
+            {
+                insertClause.INSERT = INSERTCtx.GetText();
+            }
 
             var quadPatternCtx = context.quadPattern();
             if (quadPatternCtx != null)
@@ -1177,13 +1526,26 @@ namespace CodeHelper.Core.Parse.ParseResults.Sparqls
             var usingClause = this.stack.PeekCtx<UsingClause>();
             usingClause.Parse(context);
 
-            var iriCtx = context.iri();
-            if ( iriCtx != null)
+            var USINGCtx = context.USING();
+            if (USINGCtx != null)
             {
-                usingClause.Iri = new Iri();
-                this.stack.Push(usingClause.Iri);
-                this.Visit(iriCtx);
+                usingClause.USING = USINGCtx.GetText();
+            }
+
+            var iriCtxs = context.iri();
+            if ( iriCtxs != null )
+            {
+                var iri = new Iri();
+                usingClause.Iris.Add(iri);
+                this.stack.Push(iri);
+                this.Visit(iriCtxs);
                 this.stack.Pop();
+            }
+
+            var NAMEDCtx = context.NAMED();
+            if (NAMEDCtx != null)
+            {
+                usingClause.NAMED = NAMEDCtx.GetText();
             }
 
             return 0;
@@ -1193,6 +1555,18 @@ namespace CodeHelper.Core.Parse.ParseResults.Sparqls
         {
             var graphOrDefault = this.stack.PeekCtx<GraphOrDefault>();
             graphOrDefault.Parse(context);
+
+            var DEFAULTCtx = context.DEFAULT();
+            if (DEFAULTCtx != null)
+            {
+                graphOrDefault.DEFAULT = DEFAULTCtx.GetText();
+            }
+
+            var GRAPHCtx = context.GRAPH();
+            if (GRAPHCtx != null)
+            {
+                graphOrDefault.GRAPH = GRAPHCtx.GetText();
+            }
 
             var iriCtx = context.iri();
             if (iriCtx != null)
@@ -1210,6 +1584,12 @@ namespace CodeHelper.Core.Parse.ParseResults.Sparqls
         {
             var graphRef = this.stack.PeekCtx<GraphRef>();
             graphRef.Parse(context);
+
+            var GRAPHCtx = context.GRAPH();
+            if (GRAPHCtx != null)
+            {
+                graphRef.GRAPH = GRAPHCtx.GetText();
+            }
 
             var iriCtx = context.iri();
             if (iriCtx != null)
@@ -1235,6 +1615,24 @@ namespace CodeHelper.Core.Parse.ParseResults.Sparqls
                 this.stack.Push(graphRefAll.GraphRef);
                 this.Visit(graphRefCtx);
                 this.stack.Pop();
+            }
+
+            var DEFAULTCtx = context.DEFAULT();
+            if (DEFAULTCtx != null)
+            {
+                graphRefAll.DEFAULT = DEFAULTCtx.GetText();
+            }
+
+            var NAMEDCtx = context.NAMED();
+            if (NAMEDCtx != null)
+            {
+                graphRefAll.NAMED = NAMEDCtx.GetText();
+            }
+
+            var ALLFIELDCtx = context.ALLFIELD();
+            if (ALLFIELDCtx != null)
+            {
+                graphRefAll.ALLFIELD = ALLFIELDCtx.GetText();
             }
 
             return 0;
@@ -1293,7 +1691,7 @@ namespace CodeHelper.Core.Parse.ParseResults.Sparqls
             foreach (var ctx in quadsNotTriplesCtxs)
             {
                 var quadsNotTriples = new QuadsNotTriples();
-                quads.QuadsNotTripleses.Add(quadsNotTriples);
+                quads.QuadsNotTripless.Add(quadsNotTriples);
                 this.stack.Push(quadsNotTriples);
                 this.Visit(ctx);
                 this.stack.Pop();
@@ -1306,6 +1704,12 @@ namespace CodeHelper.Core.Parse.ParseResults.Sparqls
         {
             var quadsNotTriples = this.stack.PeekCtx<QuadsNotTriples>();
             quadsNotTriples.Parse(context);
+
+            var GRAPHCtx = context.GRAPH();
+            if (GRAPHCtx != null)
+            {
+                quadsNotTriples.GRAPH = GRAPHCtx.GetText();
+            }
 
             var varOrIriCtx = context.varOrIri();
             if (varOrIriCtx != null)
@@ -1399,7 +1803,7 @@ namespace CodeHelper.Core.Parse.ParseResults.Sparqls
             foreach (var ctx in graphPatternNotTriplesCtxs)
             {
                 var graphPatternNotTriples = new GraphPatternNotTriples();
-                groupGraphPatternSub.GraphPatternNotTripleses.Add(graphPatternNotTriples);
+                groupGraphPatternSub.GraphPatternNotTripless.Add(graphPatternNotTriples);
                 this.stack.Push(graphPatternNotTriples);
                 this.Visit(ctx);
                 this.stack.Pop();
@@ -1519,6 +1923,12 @@ namespace CodeHelper.Core.Parse.ParseResults.Sparqls
             var optionalGraphPattern = this.stack.PeekCtx<OptionalGraphPattern>();
             optionalGraphPattern.Parse(context);
 
+            var OPTIONALCtx = context.OPTIONAL();
+            if (OPTIONALCtx != null)
+            {
+                optionalGraphPattern.OPTIONAL = OPTIONALCtx.GetText();
+            }
+
             var groupGraphPatternCtx = context.groupGraphPattern();
             if (groupGraphPatternCtx != null)
             {
@@ -1535,6 +1945,12 @@ namespace CodeHelper.Core.Parse.ParseResults.Sparqls
         {
             var graphGraphPattern = this.stack.PeekCtx<GraphGraphPattern>();
             graphGraphPattern.Parse(context);
+
+            var GRAPHCtx = context.GRAPH();
+            if (GRAPHCtx != null)
+            {
+                graphGraphPattern.GRAPH = GRAPHCtx.GetText();
+            }
 
             var varOrIriCtx = context.varOrIri();
             if (varOrIriCtx != null)
@@ -1562,6 +1978,18 @@ namespace CodeHelper.Core.Parse.ParseResults.Sparqls
             var serviceGraphPattern = this.stack.PeekCtx<ServiceGraphPattern>();
             serviceGraphPattern.Parse(context);
 
+            var SERVICECtx = context.SERVICE();
+            if (SERVICECtx != null)
+            {
+                serviceGraphPattern.SERVICE = SERVICECtx.GetText();
+            }
+
+            var SILENTCtx = context.SILENT();
+            if (SILENTCtx != null)
+            {
+                serviceGraphPattern.SILENT = SILENTCtx.GetText();
+            }
+
             var varOrIriCtx = context.varOrIri();
             if (varOrIriCtx != null)
             {
@@ -1588,12 +2016,33 @@ namespace CodeHelper.Core.Parse.ParseResults.Sparqls
             var bind = this.stack.PeekCtx<Bind>();
             bind.Parse(context);
 
+            var BINDCtx = context.BIND();
+            if (BINDCtx != null)
+            {
+                bind.BIND = BINDCtx.GetText();
+            }
+
             var expressionCtx = context.expression();
             if (expressionCtx != null)
             {
                 bind.Expression = new Expression();
                 this.stack.Push(bind.Expression);
                 this.Visit(expressionCtx);
+                this.stack.Pop();
+            }
+
+            var ASCtx = context.AS();
+            if (ASCtx != null)
+            {
+                bind.AS = ASCtx.GetText();
+            }
+
+            var varCtx = context.var();
+            if (varCtx != null)
+            {
+                bind.Var = new Var();
+                this.stack.Push(bind.Var);
+                this.Visit(varCtx);
                 this.stack.Pop();
             }
 
@@ -1604,6 +2053,12 @@ namespace CodeHelper.Core.Parse.ParseResults.Sparqls
         {
             var inlineData = this.stack.PeekCtx<InlineData>();
             inlineData.Parse(context);
+
+            var VALUESCtx = context.VALUES();
+            if (VALUESCtx != null)
+            {
+                inlineData.VALUES = VALUESCtx.GetText();
+            }
 
             var dataBlockCtx = context.dataBlock();
             if (dataBlockCtx != null)
@@ -1648,6 +2103,15 @@ namespace CodeHelper.Core.Parse.ParseResults.Sparqls
             var inlineDataOneVar = this.stack.PeekCtx<InlineDataOneVar>();
             inlineDataOneVar.Parse(context);
 
+            var varCtx = context.var();
+            if (varCtx != null)
+            {
+                inlineDataOneVar.Var = new Var();
+                this.stack.Push(inlineDataOneVar.Var);
+                this.Visit(varCtx);
+                this.stack.Pop();
+            }
+
             var dataBlockValueCtxs = context.dataBlockValue();
             foreach (var ctx in dataBlockValueCtxs)
             {
@@ -1665,6 +2129,22 @@ namespace CodeHelper.Core.Parse.ParseResults.Sparqls
         {
             var inlineDataFull = this.stack.PeekCtx<InlineDataFull>();
             inlineDataFull.Parse(context);
+
+            var NILCtxs = context.NIL();
+            foreach (var ctx in NILCtxs)
+            {
+                inlineDataFull.NILs.Add(ctx.GetText());
+            }
+
+            var varCtxs = context.var();
+            foreach (var ctx in varCtxs)
+            {
+                var var = new Var();
+                inlineDataFull.Vars.Add(var);
+                this.stack.Push(var);
+                this.Visit(ctx);
+                this.stack.Pop();
+            }
 
             var dataBlockValueCtxs = context.dataBlockValue();
             foreach (var ctx in dataBlockValueCtxs)
@@ -1693,6 +2173,39 @@ namespace CodeHelper.Core.Parse.ParseResults.Sparqls
                 this.stack.Pop();
             }
 
+            var rDFLiteralCtx = context.rDFLiteral();
+            if (rDFLiteralCtx != null)
+            {
+                dataBlockValue.RDFLiteral = new RDFLiteral();
+                this.stack.Push(dataBlockValue.RDFLiteral);
+                this.Visit(rDFLiteralCtx);
+                this.stack.Pop();
+            }
+
+            var numericLiteralCtx = context.numericLiteral();
+            if (numericLiteralCtx != null)
+            {
+                dataBlockValue.NumericLiteral = new NumericLiteral();
+                this.stack.Push(dataBlockValue.NumericLiteral);
+                this.Visit(numericLiteralCtx);
+                this.stack.Pop();
+            }
+
+            var booleanLiteralCtx = context.booleanLiteral();
+            if (booleanLiteralCtx != null)
+            {
+                dataBlockValue.BooleanLiteral = new BooleanLiteral();
+                this.stack.Push(dataBlockValue.BooleanLiteral);
+                this.Visit(booleanLiteralCtx);
+                this.stack.Pop();
+            }
+
+            var UNDEFCtx = context.UNDEF();
+            if (UNDEFCtx != null)
+            {
+                dataBlockValue.UNDEF = UNDEFCtx.GetText();
+            }
+
             return 0;
         }
 
@@ -1700,6 +2213,12 @@ namespace CodeHelper.Core.Parse.ParseResults.Sparqls
         {
             var minusGraphPattern = this.stack.PeekCtx<MinusGraphPattern>();
             minusGraphPattern.Parse(context);
+
+            var MINUSCtx = context.MINUS();
+            if (MINUSCtx != null)
+            {
+                minusGraphPattern.MINUS = MINUSCtx.GetText();
+            }
 
             var groupGraphPatternCtx = context.groupGraphPattern();
             if (groupGraphPatternCtx != null)
@@ -1728,6 +2247,12 @@ namespace CodeHelper.Core.Parse.ParseResults.Sparqls
                 this.stack.Pop();
             }
 
+            var UNIONCtxs = context.UNION();
+            foreach (var ctx in UNIONCtxs)
+            {
+                groupOrUnionGraphPattern.UNIONs.Add(ctx.GetText());
+            }
+
             return 0;
         }
 
@@ -1735,6 +2260,12 @@ namespace CodeHelper.Core.Parse.ParseResults.Sparqls
         {
             var filter = this.stack.PeekCtx<Filter>();
             filter.Parse(context);
+
+            var FILTERCtx = context.FILTER();
+            if (FILTERCtx != null)
+            {
+                filter.FILTER = FILTERCtx.GetText();
+            }
 
             var constraintCtx = context.constraint();
             if (constraintCtx != null)
@@ -1797,6 +2328,15 @@ namespace CodeHelper.Core.Parse.ParseResults.Sparqls
                 this.stack.Pop();
             }
 
+            var argListCtx = context.argList();
+            if (argListCtx != null)
+            {
+                functionCall.ArgList = new ArgList();
+                this.stack.Push(functionCall.ArgList);
+                this.Visit(argListCtx);
+                this.stack.Pop();
+            }
+
             return 0;
         }
 
@@ -1804,6 +2344,18 @@ namespace CodeHelper.Core.Parse.ParseResults.Sparqls
         {
             var argList = this.stack.PeekCtx<ArgList>();
             argList.Parse(context);
+
+            var NILCtx = context.NIL();
+            if (NILCtx != null)
+            {
+                argList.NIL = NILCtx.GetText();
+            }
+
+            var DISTINCTCtx = context.DISTINCT();
+            if (DISTINCTCtx != null)
+            {
+                argList.DISTINCT = DISTINCTCtx.GetText();
+            }
 
             var expressionCtxs = context.expression();
             foreach (var ctx in expressionCtxs)
@@ -1822,6 +2374,12 @@ namespace CodeHelper.Core.Parse.ParseResults.Sparqls
         {
             var expressionList = this.stack.PeekCtx<ExpressionList>();
             expressionList.Parse(context);
+
+            var NILCtx = context.NIL();
+            if (NILCtx != null)
+            {
+                expressionList.NIL = NILCtx.GetText();
+            }
 
             var expressionCtxs = context.expression();
             foreach (var ctx in expressionCtxs)
@@ -1986,26 +2544,26 @@ namespace CodeHelper.Core.Parse.ParseResults.Sparqls
         }
 
         public override int VisitObjectList([NotNull] SparqlParser.ObjectListContext context)
-        {
-            var objectList = this.stack.PeekCtx<ObjectList>();
-            objectList.Parse(context);
+		{
+			var objectList = this.stack.PeekCtx<ObjectList>();
+			objectList.Parse(context);
 
-            var @objectCtxs = context.@object();
-            foreach (var ctx in @objectCtxs)
-            {
-                var @object = new @Object();
-                objectList.@Objects.Add(@object);
-                this.stack.Push(@object);
-                this.Visit(ctx);
-                this.stack.Pop();
-            }
+            var objectCtxs = context.@object();
+			foreach(var ctx in objectCtxs)
+			{
+				var @object = new @object();
+				objectList.@objects.Add(@object);
+				this.stack.Push(@object);
+				this.Visit(ctx);
+				this.stack.Pop();
+			}
 
-            return 0;
-        }
+			return 0;
+		}
 
         public override int VisitObject([NotNull] SparqlParser.ObjectContext context)
         {
-            var @object = this.stack.PeekCtx<@Object>();
+            var @object = this.stack.PeekCtx<@object>();
             @object.Parse(context);
 
             var graphNodeCtx = context.graphNode();
@@ -2281,12 +2839,13 @@ namespace CodeHelper.Core.Parse.ParseResults.Sparqls
             var pathEltOrInverse = this.stack.PeekCtx<PathEltOrInverse>();
             pathEltOrInverse.Parse(context);
 
-            var pathEltCtx = context.pathElt();
-            if ( pathEltCtx != null )
+            var pathEltCtxs = context.pathElt();
+            if ( pathEltCtxs != null )
             {
-                pathEltOrInverse.PathElt= new PathElt();
-                this.stack.Push(pathEltOrInverse.PathElt);
-                this.Visit(pathEltCtx);
+                var pathElt = new PathElt();
+                pathEltOrInverse.PathElts.Add(pathElt);
+                this.stack.Push(pathElt);
+                this.Visit(pathEltCtxs);
                 this.stack.Pop();
             }
 
@@ -2297,6 +2856,12 @@ namespace CodeHelper.Core.Parse.ParseResults.Sparqls
         {
             var pathMod = this.stack.PeekCtx<PathMod>();
             pathMod.Parse(context);
+
+            var ALLCtx = context.ALL();
+            if (ALLCtx != null)
+            {
+                pathMod.ALL = ALLCtx.GetText();
+            }
 
             return 0;
         }
@@ -2359,12 +2924,13 @@ namespace CodeHelper.Core.Parse.ParseResults.Sparqls
             var pathOneInPropertySet = this.stack.PeekCtx<PathOneInPropertySet>();
             pathOneInPropertySet.Parse(context);
 
-            var iriCtx = context.iri();
-            if ( iriCtx != null )
+            var iriCtxs = context.iri();
+            if ( iriCtxs != null )
             {
-                pathOneInPropertySet.Iri = new Iri();
-                this.stack.Push(pathOneInPropertySet.Iri);
-                this.Visit(iriCtx);
+                var iri = new Iri();
+                pathOneInPropertySet.Iris.Add(iri);
+                this.stack.Push(iri);
+                this.Visit(iriCtxs);
                 this.stack.Pop();
             }
 
@@ -2375,6 +2941,12 @@ namespace CodeHelper.Core.Parse.ParseResults.Sparqls
         {
             var integer = this.stack.PeekCtx<Integer>();
             integer.Parse(context);
+
+            var INTEGERCtx = context.INTEGER();
+            if (INTEGERCtx != null)
+            {
+                integer.INTEGER = INTEGERCtx.GetText();
+            }
 
             return 0;
         }
@@ -2610,6 +3182,18 @@ namespace CodeHelper.Core.Parse.ParseResults.Sparqls
             var var = this.stack.PeekCtx<Var>();
             var.Parse(context);
 
+            var VAR1Ctx = context.VAR1();
+            if (VAR1Ctx != null)
+            {
+                var.VAR1 = VAR1Ctx.GetText();
+            }
+
+            var VAR2Ctx = context.VAR2();
+            if (VAR2Ctx != null)
+            {
+                var.VAR2 = VAR2Ctx.GetText();
+            }
+
             return 0;
         }
 
@@ -2661,6 +3245,12 @@ namespace CodeHelper.Core.Parse.ParseResults.Sparqls
                 this.stack.Push(graphTerm.BlankNode);
                 this.Visit(blankNodeCtx);
                 this.stack.Pop();
+            }
+
+            var NILCtx = context.NIL();
+            if (NILCtx != null)
+            {
+                graphTerm.NIL = NILCtx.GetText();
             }
 
             return 0;
@@ -2751,13 +3341,62 @@ namespace CodeHelper.Core.Parse.ParseResults.Sparqls
                 this.stack.Pop();
             }
 
-            var expressionListCtx = context.expressionList();
-            if ( expressionListCtx != null)
+            var EQUALCtx = context.EQUAL();
+            if (EQUALCtx != null)
             {
-                relationalExpression.ExpressionList = new ExpressionList();
-                this.stack.Push(relationalExpression.ExpressionList);
-                this.Visit(expressionListCtx);
+                relationalExpression.EQUAL = EQUALCtx.GetText();
+            }
+
+            var NOT_EQUALCtx = context.NOT_EQUAL();
+            if (NOT_EQUALCtx != null)
+            {
+                relationalExpression.NOTEQUAL = NOT_EQUALCtx.GetText();
+            }
+
+            var LTCtx = context.LT();
+            if (LTCtx != null)
+            {
+                relationalExpression.LT = LTCtx.GetText();
+            }
+
+            var GTCtx = context.GT();
+            if (GTCtx != null)
+            {
+                relationalExpression.GT = GTCtx.GetText();
+            }
+
+            var LT_EQUALCtx = context.LT_EQUAL();
+            if (LT_EQUALCtx != null)
+            {
+                relationalExpression.LTEQUAL = LT_EQUALCtx.GetText();
+            }
+
+            var GT_EQUALCtx = context.GT_EQUAL();
+            if (GT_EQUALCtx != null)
+            {
+                relationalExpression.GTEQUAL = GT_EQUALCtx.GetText();
+            }
+
+            var INCtx = context.IN();
+            if (INCtx != null)
+            {
+                relationalExpression.IN = INCtx.GetText();
+            }
+
+            var expressionListCtxs = context.expressionList();
+            if ( expressionListCtxs != null )
+            {
+                var expressionList = new ExpressionList();
+                relationalExpression.ExpressionLists.Add(expressionList);
+                this.stack.Push(expressionList);
+                this.Visit(expressionListCtxs);
                 this.stack.Pop();
+            }
+
+            var NOT_INCtx = context.NOT_IN();
+            if (NOT_INCtx != null)
+            {
+                relationalExpression.NOTIN = NOT_INCtx.GetText();
             }
 
             return 0;
@@ -2795,6 +3434,18 @@ namespace CodeHelper.Core.Parse.ParseResults.Sparqls
                 this.stack.Pop();
             }
 
+            var ADDCtxs = context.ADD();
+            foreach (var ctx in ADDCtxs)
+            {
+                additiveExpression.ADDs.Add(ctx.GetText());
+            }
+
+            var SUBTRACTIONCtxs = context.SUBTRACTION();
+            foreach (var ctx in SUBTRACTIONCtxs)
+            {
+                additiveExpression.SUBTRACTIONs.Add(ctx.GetText());
+            }
+
             var additiveExpressionMultiCtxs = context.additiveExpressionMulti();
             foreach (var ctx in additiveExpressionMultiCtxs)
             {
@@ -2803,7 +3454,7 @@ namespace CodeHelper.Core.Parse.ParseResults.Sparqls
                 this.stack.Push(additiveExpressionMulti);
                 this.Visit(ctx);
                 this.stack.Pop();
-            }   
+            }
 
             return 0;
         }
@@ -2814,12 +3465,82 @@ namespace CodeHelper.Core.Parse.ParseResults.Sparqls
             multiplicativeExpression.Parse(context);
 
             var unaryExpressionCtx = context.unaryExpression();
-            if ( unaryExpressionCtx != null )
+            if (unaryExpressionCtx != null)
             {
-                multiplicativeExpression.UnaryExpression = new UnaryExpression();                
+                multiplicativeExpression.UnaryExpression = new UnaryExpression();
                 this.stack.Push(multiplicativeExpression.UnaryExpression);
                 this.Visit(unaryExpressionCtx);
                 this.stack.Pop();
+            }
+
+            var multiplicativeExpressionItemCtxs = context.multiplicativeExpressionItem();
+            foreach (var ctx in multiplicativeExpressionItemCtxs)
+            {
+                var multiplicativeExpressionItem = new MultiplicativeExpressionItem();
+                multiplicativeExpression.MultiplicativeExpressionItems.Add(multiplicativeExpressionItem);
+                this.stack.Push(multiplicativeExpressionItem);
+                this.Visit(ctx);
+                this.stack.Pop();
+            }
+
+            return 0;
+        }
+
+        public override int VisitAdditiveExpressionMulti([NotNull] SparqlParser.AdditiveExpressionMultiContext context)
+        {
+            var additiveExpressionMulti = this.stack.PeekCtx<AdditiveExpressionMulti>();
+            additiveExpressionMulti.Parse(context);
+
+            var numericLiteralPositiveCtx = context.numericLiteralPositive();
+            if (numericLiteralPositiveCtx != null)
+            {
+                additiveExpressionMulti.NumericLiteralPositive = new NumericLiteralPositive();
+                this.stack.Push(additiveExpressionMulti.NumericLiteralPositive);
+                this.Visit(numericLiteralPositiveCtx);
+                this.stack.Pop();
+            }
+
+            var numericLiteralNegativeCtx = context.numericLiteralNegative();
+            if (numericLiteralNegativeCtx != null)
+            {
+                additiveExpressionMulti.NumericLiteralNegative = new NumericLiteralNegative();
+                this.stack.Push(additiveExpressionMulti.NumericLiteralNegative);
+                this.Visit(numericLiteralNegativeCtx);
+                this.stack.Pop();
+            }
+
+            var multiplicativeExpressionItemCtxs = context.multiplicativeExpressionItem();
+            foreach (var ctx in multiplicativeExpressionItemCtxs)
+            {
+                var multiplicativeExpressionItem = new MultiplicativeExpressionItem();
+                additiveExpressionMulti.MultiplicativeExpressionItems.Add(multiplicativeExpressionItem);
+                this.stack.Push(multiplicativeExpressionItem);
+                this.Visit(ctx);
+                this.stack.Pop();
+            }
+
+            return 0;
+        }
+
+        public override int VisitMultiplicativeExpressionItem([NotNull] SparqlParser.MultiplicativeExpressionItemContext context)
+        {
+            var multiplicativeExpressionItem = this.stack.PeekCtx<MultiplicativeExpressionItem>();
+            multiplicativeExpressionItem.Parse(context);
+
+            var unaryExpressionCtxs = context.unaryExpression();
+            if ( unaryExpressionCtxs != null )
+            {
+                var unaryExpression = new UnaryExpression();
+                multiplicativeExpressionItem.UnaryExpressions.Add(unaryExpression);
+                this.stack.Push(unaryExpression);
+                this.Visit(unaryExpressionCtxs);
+                this.stack.Pop();
+            }
+
+            var DIVISIONCtx = context.DIVISION();
+            if (DIVISIONCtx != null)
+            {
+                multiplicativeExpressionItem.DIVISION = DIVISIONCtx.GetText();
             }
 
             return 0;
@@ -2830,13 +3551,32 @@ namespace CodeHelper.Core.Parse.ParseResults.Sparqls
             var unaryExpression = this.stack.PeekCtx<UnaryExpression>();
             unaryExpression.Parse(context);
 
-            var primaryExpressionCtx = context.primaryExpression();
-            if ( primaryExpressionCtx != null )
+            var NEGATECtx = context.NEGATE();
+            if (NEGATECtx != null)
             {
-                unaryExpression.PrimaryExpression = new PrimaryExpression();
-                this.stack.Push(unaryExpression.PrimaryExpression);
-                this.Visit(primaryExpressionCtx);
+                unaryExpression.NEGATE = NEGATECtx.GetText();
+            }
+
+            var primaryExpressionCtxs = context.primaryExpression();
+            if ( primaryExpressionCtxs != null )
+            {
+                var primaryExpression = new PrimaryExpression();
+                unaryExpression.PrimaryExpressions.Add(primaryExpression);
+                this.stack.Push(primaryExpression);
+                this.Visit(primaryExpressionCtxs);
                 this.stack.Pop();
+            }
+
+            var ADDCtx = context.ADD();
+            if (ADDCtx != null)
+            {
+                unaryExpression.ADD = ADDCtx.GetText();
+            }
+
+            var SUBTRACTIONCtx = context.SUBTRACTION();
+            if (SUBTRACTIONCtx != null)
+            {
+                unaryExpression.SUBTRACTION = SUBTRACTIONCtx.GetText();
             }
 
             return 0;
@@ -2944,6 +3684,12 @@ namespace CodeHelper.Core.Parse.ParseResults.Sparqls
                 this.stack.Pop();
             }
 
+            var STRCtx = context.STR();
+            if (STRCtx != null)
+            {
+                builtInCall.STR = STRCtx.GetText();
+            }
+
             var expressionCtxs = context.expression();
             foreach (var ctx in expressionCtxs)
             {
@@ -2952,6 +3698,30 @@ namespace CodeHelper.Core.Parse.ParseResults.Sparqls
                 this.stack.Push(expression);
                 this.Visit(ctx);
                 this.stack.Pop();
+            }
+
+            var LANGCtx = context.LANG();
+            if (LANGCtx != null)
+            {
+                builtInCall.LANG = LANGCtx.GetText();
+            }
+
+            var LANGMATCHESCtx = context.LANGMATCHES();
+            if (LANGMATCHESCtx != null)
+            {
+                builtInCall.LANGMATCHES = LANGMATCHESCtx.GetText();
+            }
+
+            var DATATYPECtx = context.DATATYPE();
+            if (DATATYPECtx != null)
+            {
+                builtInCall.DATATYPE = DATATYPECtx.GetText();
+            }
+
+            var BOUNDCtx = context.BOUND();
+            if (BOUNDCtx != null)
+            {
+                builtInCall.BOUND = BOUNDCtx.GetText();
             }
 
             var varCtx = context.var();
@@ -2963,12 +3733,73 @@ namespace CodeHelper.Core.Parse.ParseResults.Sparqls
                 this.stack.Pop();
             }
 
-            var expressionListCtx = context.expressionList();
-            if ( expressionListCtx != null )
+            var IRICtx = context.IRI();
+            if (IRICtx != null)
             {
-                builtInCall.ExpressionList = new ExpressionList();
-                this.stack.Push(builtInCall.ExpressionList);
-                this.Visit(expressionListCtx);
+                builtInCall.IRI = IRICtx.GetText();
+            }
+
+            var URICtx = context.URI();
+            if (URICtx != null)
+            {
+                builtInCall.URI = URICtx.GetText();
+            }
+
+            var BNODECtx = context.BNODE();
+            if (BNODECtx != null)
+            {
+                builtInCall.BNODE = BNODECtx.GetText();
+            }
+
+            //var NILCtxs = context.NIL();
+            //foreach (var ctx in NILCtxs)
+            //{
+            //    builtInCall.NILs.Add(ctx.GetText());
+            //}
+
+            var RANDCtx = context.RAND();
+            if (RANDCtx != null)
+            {
+                builtInCall.RAND = RANDCtx.GetText();
+            }
+
+            var ABSCtx = context.ABS();
+            if (ABSCtx != null)
+            {
+                builtInCall.ABS = ABSCtx.GetText();
+            }
+
+            var CEILCtx = context.CEIL();
+            if (CEILCtx != null)
+            {
+                builtInCall.CEIL = CEILCtx.GetText();
+            }
+
+            var FLOORCtx = context.FLOOR();
+            if (FLOORCtx != null)
+            {
+                builtInCall.FLOOR = FLOORCtx.GetText();
+            }
+
+            var ROUNDCtx = context.ROUND();
+            if (ROUNDCtx != null)
+            {
+                builtInCall.ROUND = ROUNDCtx.GetText();
+            }
+
+            var CONCATCtx = context.CONCAT();
+            if (CONCATCtx != null)
+            {
+                builtInCall.CONCAT = CONCATCtx.GetText();
+            }
+
+            var expressionListCtxs = context.expressionList();
+            if ( expressionListCtxs != null )
+            {
+                var expressionList = new ExpressionList();
+                builtInCall.ExpressionLists.Add(expressionList);
+                this.stack.Push(expressionList);
+                this.Visit(expressionListCtxs);
                 this.stack.Pop();
             }
 
@@ -2981,6 +3812,12 @@ namespace CodeHelper.Core.Parse.ParseResults.Sparqls
                 this.stack.Pop();
             }
 
+            var STRLENCtx = context.STRLEN();
+            if (STRLENCtx != null)
+            {
+                builtInCall.STRLEN = STRLENCtx.GetText();
+            }
+
             var strReplaceExpressionCtx = context.strReplaceExpression();
             if (strReplaceExpressionCtx != null)
             {
@@ -2988,6 +3825,210 @@ namespace CodeHelper.Core.Parse.ParseResults.Sparqls
                 this.stack.Push(builtInCall.StrReplaceExpression);
                 this.Visit(strReplaceExpressionCtx);
                 this.stack.Pop();
+            }
+
+            var UCASECtx = context.UCASE();
+            if (UCASECtx != null)
+            {
+                builtInCall.UCASE = UCASECtx.GetText();
+            }
+
+            var LCASECtx = context.LCASE();
+            if (LCASECtx != null)
+            {
+                builtInCall.LCASE = LCASECtx.GetText();
+            }
+
+            var ENCODE_FOR_URICtx = context.ENCODE_FOR_URI();
+            if (ENCODE_FOR_URICtx != null)
+            {
+                builtInCall.ENCODEFORURI = ENCODE_FOR_URICtx.GetText();
+            }
+
+            var CONTAINSCtx = context.CONTAINS();
+            if (CONTAINSCtx != null)
+            {
+                builtInCall.CONTAINS = CONTAINSCtx.GetText();
+            }
+
+            var STRSTARTSCtx = context.STRSTARTS();
+            if (STRSTARTSCtx != null)
+            {
+                builtInCall.STRSTARTS = STRSTARTSCtx.GetText();
+            }
+
+            var STRENDSCtx = context.STRENDS();
+            if (STRENDSCtx != null)
+            {
+                builtInCall.STRENDS = STRENDSCtx.GetText();
+            }
+
+            var STRBEFORECtx = context.STRBEFORE();
+            if (STRBEFORECtx != null)
+            {
+                builtInCall.STRBEFORE = STRBEFORECtx.GetText();
+            }
+
+            var STRAFTERCtx = context.STRAFTER();
+            if (STRAFTERCtx != null)
+            {
+                builtInCall.STRAFTER = STRAFTERCtx.GetText();
+            }
+
+            var YEARCtx = context.YEAR();
+            if (YEARCtx != null)
+            {
+                builtInCall.YEAR = YEARCtx.GetText();
+            }
+
+            var MONTHCtx = context.MONTH();
+            if (MONTHCtx != null)
+            {
+                builtInCall.MONTH = MONTHCtx.GetText();
+            }
+
+            var DAYCtx = context.DAY();
+            if (DAYCtx != null)
+            {
+                builtInCall.DAY = DAYCtx.GetText();
+            }
+
+            var HOURSCtx = context.HOURS();
+            if (HOURSCtx != null)
+            {
+                builtInCall.HOURS = HOURSCtx.GetText();
+            }
+
+            var MINUTESCtx = context.MINUTES();
+            if (MINUTESCtx != null)
+            {
+                builtInCall.MINUTES = MINUTESCtx.GetText();
+            }
+
+            var SECONDSCtx = context.SECONDS();
+            if (SECONDSCtx != null)
+            {
+                builtInCall.SECONDS = SECONDSCtx.GetText();
+            }
+
+            var TIMEZONECtx = context.TIMEZONE();
+            if (TIMEZONECtx != null)
+            {
+                builtInCall.TIMEZONE = TIMEZONECtx.GetText();
+            }
+
+            var TZCtx = context.TZ();
+            if (TZCtx != null)
+            {
+                builtInCall.TZ = TZCtx.GetText();
+            }
+
+            var NOWCtx = context.NOW();
+            if (NOWCtx != null)
+            {
+                builtInCall.NOW = NOWCtx.GetText();
+            }
+
+            var UUIDCtx = context.UUID();
+            if (UUIDCtx != null)
+            {
+                builtInCall.UUID = UUIDCtx.GetText();
+            }
+
+            var STRUUIDCtx = context.STRUUID();
+            if (STRUUIDCtx != null)
+            {
+                builtInCall.STRUUID = STRUUIDCtx.GetText();
+            }
+
+            var MD5Ctx = context.MD5();
+            if (MD5Ctx != null)
+            {
+                builtInCall.MD5 = MD5Ctx.GetText();
+            }
+
+            var SHA1Ctx = context.SHA1();
+            if (SHA1Ctx != null)
+            {
+                builtInCall.SHA1 = SHA1Ctx.GetText();
+            }
+
+            var SHA256Ctx = context.SHA256();
+            if (SHA256Ctx != null)
+            {
+                builtInCall.SHA256 = SHA256Ctx.GetText();
+            }
+
+            var SHA384Ctx = context.SHA384();
+            if (SHA384Ctx != null)
+            {
+                builtInCall.SHA384 = SHA384Ctx.GetText();
+            }
+
+            var SHA512Ctx = context.SHA512();
+            if (SHA512Ctx != null)
+            {
+                builtInCall.SHA512 = SHA512Ctx.GetText();
+            }
+
+            var COALESCECtx = context.COALESCE();
+            if (COALESCECtx != null)
+            {
+                builtInCall.COALESCE = COALESCECtx.GetText();
+            }
+
+            var IFCtx = context.IF();
+            if (IFCtx != null)
+            {
+                builtInCall.IF = IFCtx.GetText();
+            }
+
+            var STRLANGCtx = context.STRLANG();
+            if (STRLANGCtx != null)
+            {
+                builtInCall.STRLANG = STRLANGCtx.GetText();
+            }
+
+            var STRDTCtx = context.STRDT();
+            if (STRDTCtx != null)
+            {
+                builtInCall.STRDT = STRDTCtx.GetText();
+            }
+
+            var SameTermCtx = context.SameTerm();
+            if (SameTermCtx != null)
+            {
+                builtInCall.SameTerm = SameTermCtx.GetText();
+            }
+
+            var IsIRICtx = context.IsIRI();
+            if (IsIRICtx != null)
+            {
+                builtInCall.IsIRI = IsIRICtx.GetText();
+            }
+
+            var IsURICtx = context.IsURI();
+            if (IsURICtx != null)
+            {
+                builtInCall.IsURI = IsURICtx.GetText();
+            }
+
+            var IsBLANKCtx = context.IsBLANK();
+            if (IsBLANKCtx != null)
+            {
+                builtInCall.IsBLANK = IsBLANKCtx.GetText();
+            }
+
+            var IsLITERALCtx = context.IsLITERAL();
+            if (IsLITERALCtx != null)
+            {
+                builtInCall.IsLITERAL = IsLITERALCtx.GetText();
+            }
+
+            var IsNUMERICCtx = context.IsNUMERIC();
+            if (IsNUMERICCtx != null)
+            {
+                builtInCall.IsNUMERIC = IsNUMERICCtx.GetText();
             }
 
             var regexExpressionCtx = context.regexExpression();
@@ -3025,6 +4066,12 @@ namespace CodeHelper.Core.Parse.ParseResults.Sparqls
             var regexExpression = this.stack.PeekCtx<RegexExpression>();
             regexExpression.Parse(context);
 
+            var REGEXCtx = context.REGEX();
+            if (REGEXCtx != null)
+            {
+                regexExpression.REGEX = REGEXCtx.GetText();
+            }
+
             var expressionCtxs = context.expression();
             foreach (var ctx in expressionCtxs)
             {
@@ -3042,6 +4089,12 @@ namespace CodeHelper.Core.Parse.ParseResults.Sparqls
         {
             var substringExpression = this.stack.PeekCtx<SubstringExpression>();
             substringExpression.Parse(context);
+
+            var SUBSTRCtx = context.SUBSTR();
+            if (SUBSTRCtx != null)
+            {
+                substringExpression.SUBSTR = SUBSTRCtx.GetText();
+            }
 
             var expressionCtxs = context.expression();
             foreach (var ctx in expressionCtxs)
@@ -3061,6 +4114,12 @@ namespace CodeHelper.Core.Parse.ParseResults.Sparqls
             var strReplaceExpression = this.stack.PeekCtx<StrReplaceExpression>();
             strReplaceExpression.Parse(context);
 
+            var REPLACECtx = context.REPLACE();
+            if (REPLACECtx != null)
+            {
+                strReplaceExpression.REPLACE = REPLACECtx.GetText();
+            }
+
             var expressionCtxs = context.expression();
             foreach (var ctx in expressionCtxs)
             {
@@ -3079,6 +4138,12 @@ namespace CodeHelper.Core.Parse.ParseResults.Sparqls
             var existsFunc = this.stack.PeekCtx<ExistsFunc>();
             existsFunc.Parse(context);
 
+            var EXISTSCtx = context.EXISTS();
+            if (EXISTSCtx != null)
+            {
+                existsFunc.EXISTS = EXISTSCtx.GetText();
+            }
+
             var groupGraphPatternCtx = context.groupGraphPattern();
             if (groupGraphPatternCtx != null)
             {
@@ -3095,6 +4160,18 @@ namespace CodeHelper.Core.Parse.ParseResults.Sparqls
         {
             var notExistsFunc = this.stack.PeekCtx<NotExistsFunc>();
             notExistsFunc.Parse(context);
+
+            var NOTCtx = context.NOT();
+            if (NOTCtx != null)
+            {
+                notExistsFunc.NOT = NOTCtx.GetText();
+            }
+
+            var EXISTSCtx = context.EXISTS();
+            if (EXISTSCtx != null)
+            {
+                notExistsFunc.EXISTS = EXISTSCtx.GetText();
+            }
 
             var groupGraphPatternCtx = context.groupGraphPattern();
             if (groupGraphPatternCtx != null)
@@ -3113,21 +4190,80 @@ namespace CodeHelper.Core.Parse.ParseResults.Sparqls
             var aggregate = this.stack.PeekCtx<Aggregate>();
             aggregate.Parse(context);
 
+            var COUNTCtx = context.COUNT();
+            if (COUNTCtx != null)
+            {
+                aggregate.COUNT = COUNTCtx.GetText();
+            }
+
+            var DISTINCTCtxs = context.DISTINCT();
+            if ( DISTINCTCtxs != null )
+            {
+                aggregate.DISTINCTs.Add(DISTINCTCtxs.GetText());
+            }
+
+            var ALLCtx = context.ALL();
+            if (ALLCtx != null)
+            {
+                aggregate.ALL = ALLCtx.GetText();
+            }
+
             var expressionCtxs = context.expression();
-            if ( expressionCtxs != null ){
-                aggregate.Expression = new Expression();
-                this.stack.Push(aggregate.Expression);
+            if ( expressionCtxs != null )
+            {
+                var expression = new Expression();
+                aggregate.Expressions.Add(expression);
+                this.stack.Push(expression);
                 this.Visit(expressionCtxs);
                 this.stack.Pop();
             }
 
-            var @stringCtx = context.String();
-            if (@stringCtx != null)
+            var SUMCtx = context.SUM();
+            if (SUMCtx != null)
             {
-                aggregate.@String = @stringCtx.GetText();
-                this.stack.Push(aggregate.@String);
-                this.Visit(@stringCtx);
-                this.stack.Pop();
+                aggregate.SUM = SUMCtx.GetText();
+            }
+
+            var MINCtx = context.MIN();
+            if (MINCtx != null)
+            {
+                aggregate.MIN = MINCtx.GetText();
+            }
+
+            var MAXCtx = context.MAX();
+            if (MAXCtx != null)
+            {
+                aggregate.MAX = MAXCtx.GetText();
+            }
+
+            var AVGCtx = context.AVG();
+            if (AVGCtx != null)
+            {
+                aggregate.AVG = AVGCtx.GetText();
+            }
+
+            var SAMPLECtx = context.SAMPLE();
+            if (SAMPLECtx != null)
+            {
+                aggregate.SAMPLE = SAMPLECtx.GetText();
+            }
+
+            var GROUP_CONCATCtx = context.GROUP_CONCAT();
+            if (GROUP_CONCATCtx != null)
+            {
+                aggregate.GROUPCONCAT = GROUP_CONCATCtx.GetText();
+            }
+
+            var SEPARATORCtx = context.SEPARATOR();
+            if (SEPARATORCtx != null)
+            {
+                aggregate.SEPARATOR = SEPARATORCtx.GetText();
+            }
+
+            var StringCtx = context.String();
+            if (StringCtx != null)
+            {
+                aggregate.@string = StringCtx.GetText();
             }
 
             return 0;
@@ -3164,21 +4300,24 @@ namespace CodeHelper.Core.Parse.ParseResults.Sparqls
             var rDFLiteral = this.stack.PeekCtx<RDFLiteral>();
             rDFLiteral.Parse(context);
 
-            var @stringCtx = context.String();
-            if (@stringCtx != null)
+            var StringCtx = context.String();
+            if (StringCtx != null)
             {
-                rDFLiteral.@String = @stringCtx.GetText();
-                this.stack.Push(rDFLiteral.@String);
-                this.Visit(@stringCtx);
-                this.stack.Pop();
+                rDFLiteral.@string = StringCtx.GetText();
             }
 
-            var iriCtx = context.xsdIri();
-            if (iriCtx != null)
+            var LANGTAGCtx = context.LANGTAG();
+            if (LANGTAGCtx != null)
             {
-                rDFLiteral.Iri = new Iri();
-                this.stack.Push(rDFLiteral.Iri);
-                this.Visit(iriCtx);
+                rDFLiteral.LANGTAG = LANGTAGCtx.GetText();
+            }
+
+            var xsdIriCtx = context.xsdIri();
+            if (xsdIriCtx != null)
+            {
+                rDFLiteral.XsdIri = new XsdIri();
+                this.stack.Push(rDFLiteral.XsdIri);
+                this.Visit(xsdIriCtx);
                 this.stack.Pop();
             }
 
@@ -3225,6 +4364,24 @@ namespace CodeHelper.Core.Parse.ParseResults.Sparqls
             var numericLiteralUnsigned = this.stack.PeekCtx<NumericLiteralUnsigned>();
             numericLiteralUnsigned.Parse(context);
 
+            var INTEGERCtx = context.INTEGER();
+            if (INTEGERCtx != null)
+            {
+                numericLiteralUnsigned.INTEGER = INTEGERCtx.GetText();
+            }
+
+            var DECIMALCtx = context.DECIMAL();
+            if (DECIMALCtx != null)
+            {
+                numericLiteralUnsigned.DECIMAL = DECIMALCtx.GetText();
+            }
+
+            var DOUBLECtx = context.DOUBLE();
+            if (DOUBLECtx != null)
+            {
+                numericLiteralUnsigned.@dOUBLE = DOUBLECtx.GetText();
+            }
+
             return 0;
         }
 
@@ -3233,6 +4390,24 @@ namespace CodeHelper.Core.Parse.ParseResults.Sparqls
             var numericLiteralPositive = this.stack.PeekCtx<NumericLiteralPositive>();
             numericLiteralPositive.Parse(context);
 
+            var INTEGER_POSITIVECtx = context.INTEGER_POSITIVE();
+            if (INTEGER_POSITIVECtx != null)
+            {
+                numericLiteralPositive.INTEGERPOSITIVE = INTEGER_POSITIVECtx.GetText();
+            }
+
+            var DECIMAL_POSITIVECtx = context.DECIMAL_POSITIVE();
+            if (DECIMAL_POSITIVECtx != null)
+            {
+                numericLiteralPositive.DECIMALPOSITIVE = DECIMAL_POSITIVECtx.GetText();
+            }
+
+            var DOUBLE_POSITIVECtx = context.DOUBLE_POSITIVE();
+            if (DOUBLE_POSITIVECtx != null)
+            {
+                numericLiteralPositive.DOUBLEPOSITIVE = DOUBLE_POSITIVECtx.GetText();
+            }
+
             return 0;
         }
 
@@ -3240,6 +4415,24 @@ namespace CodeHelper.Core.Parse.ParseResults.Sparqls
         {
             var numericLiteralNegative = this.stack.PeekCtx<NumericLiteralNegative>();
             numericLiteralNegative.Parse(context);
+
+            var INTEGER_NEGATIVECtx = context.INTEGER_NEGATIVE();
+            if (INTEGER_NEGATIVECtx != null)
+            {
+                numericLiteralNegative.INTEGERNEGATIVE = INTEGER_NEGATIVECtx.GetText();
+            }
+
+            var DECIMAL_NEGATIVECtx = context.DECIMAL_NEGATIVE();
+            if (DECIMAL_NEGATIVECtx != null)
+            {
+                numericLiteralNegative.DECIMALNEGATIVE = DECIMAL_NEGATIVECtx.GetText();
+            }
+
+            var DOUBLE_NEGATIVECtx = context.DOUBLE_NEGATIVE();
+            if (DOUBLE_NEGATIVECtx != null)
+            {
+                numericLiteralNegative.DOUBLENEGATIVE = DOUBLE_NEGATIVECtx.GetText();
+            }
 
             return 0;
         }
@@ -3252,18 +4445,16 @@ namespace CodeHelper.Core.Parse.ParseResults.Sparqls
             return 0;
         }
 
-        //public override int VisitString([NotNull] SparqlParser.StringContext context)
-        //{
-        //    var @string = this.stack.PeekCtx<NString>();
-        //    @string.Parse(context);
-
-        //    return 0;
-        //}
-
         public override int VisitIri([NotNull] SparqlParser.IriContext context)
         {
             var iri = this.stack.PeekCtx<Iri>();
             iri.Parse(context);
+
+            var IRIREFCtx = context.IRIREF();
+            if (IRIREFCtx != null)
+            {
+                iri.IRIREF = IRIREFCtx.GetText();
+            }
 
             var prefixedNameCtx = context.prefixedName();
             if (prefixedNameCtx != null)
@@ -3282,6 +4473,18 @@ namespace CodeHelper.Core.Parse.ParseResults.Sparqls
             var prefixedName = this.stack.PeekCtx<PrefixedName>();
             prefixedName.Parse(context);
 
+            var PNAME_LNCtx = context.PNAME_LN();
+            if (PNAME_LNCtx != null)
+            {
+                prefixedName.PNAMELN = PNAME_LNCtx.GetText();
+            }
+
+            var PNAME_NSCtx = context.PNAME_NS();
+            if (PNAME_NSCtx != null)
+            {
+                prefixedName.PNAMENS = PNAME_NSCtx.GetText();
+            }
+
             return 0;
         }
 
@@ -3289,6 +4492,44 @@ namespace CodeHelper.Core.Parse.ParseResults.Sparqls
         {
             var blankNode = this.stack.PeekCtx<BlankNode>();
             blankNode.Parse(context);
+
+            var BLANK_NODE_LABELCtx = context.BLANK_NODE_LABEL();
+            if (BLANK_NODE_LABELCtx != null)
+            {
+                blankNode.BLANKNODELABEL = BLANK_NODE_LABELCtx.GetText();
+            }
+
+            var ANONCtx = context.ANON();
+            if (ANONCtx != null)
+            {
+                blankNode.ANON = ANONCtx.GetText();
+            }
+
+            return 0;
+        }
+
+        public override int VisitXsdIri([NotNull] SparqlParser.XsdIriContext context)
+        {
+            var xsdIri = this.stack.PeekCtx<XsdIri>();
+            xsdIri.Parse(context);
+
+            var IRIREFCtx = context.IRIREF();
+            if (IRIREFCtx != null)
+            {
+                xsdIri.IRIREF = IRIREFCtx.GetText();
+            }
+
+            var PNAME_LNCtx = context.PNAME_LN();
+            if (PNAME_LNCtx != null)
+            {
+                xsdIri.PNAMELN = PNAME_LNCtx.GetText();
+            }
+
+            var PNAME_NSCtx = context.PNAME_NS();
+            if (PNAME_NSCtx != null)
+            {
+                xsdIri.PNAMENS = PNAME_NSCtx.GetText();
+            }
 
             return 0;
         }

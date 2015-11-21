@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using CodeHelper.Core.Types.Base;
 using CodeHelper.Core.Parser;
+using CodeHelper.Core.Services;
 
 namespace CodeHelper.Core.Types.OWL.Verbs
 {
@@ -51,8 +52,22 @@ namespace CodeHelper.Core.Types.OWL.Verbs
 
         public override List<string> AllowVerb(Parser.IParseModule module)
         {
-            return base.AllowVerb(module);
-        }
+            var rslt = new List<string>();
 
+            var types = GlobalService.ModelManager.ListType(module.UsingNameSpaces.Values.ToList(), null, true);
+            foreach (var item in types)
+            {
+                foreach (var ns in module.UsingNameSpaces)
+                {
+                    if (ns.Value.Equals(item.NameSpace) && item.IsPrimitive)
+                        rslt.Add(ns.Key + item.Name);
+                }
+
+                //rslt.Add(item.Name);
+            }
+
+            rslt.AddRange(OWLTypes.Instance().Object_Types.Keys);
+            return rslt;
+        }
     }
 }

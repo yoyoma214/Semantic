@@ -3,7 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using CodeHelper.Core.Error;
-using CodeHelper.Core.Parser;          
+using CodeHelper.Core.Parser;
+using CodeHelper.Core.Editor;          
 namespace CodeHelper.Core.Infrastructure.Model
 {
     public delegate void OnChanged(IModel model);
@@ -58,6 +59,8 @@ namespace CodeHelper.Core.Infrastructure.Model
         //char InputChar { get; set; }
 
 
-        ICSharpCode.TextEditor.Caret Caret { get; set; }
+        MyCaret Caret { get; set; }
+
+        bool Fake { get; set; }
     }
 }

@@ -350,5 +350,11 @@ namespace CodeHelper.Core.Parse
             get;
             set;
         }
+
+        public bool Fake
+        {
+            get;
+            set;
+        }
     }
 }

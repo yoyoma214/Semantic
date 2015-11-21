@@ -11,6 +11,7 @@ using System.IO;
 using System.Threading;
 using CodeHelper.Core.Error;
 using CodeHelper.Core.Services;
+using ICSharpCode.TextEditor;
 
 namespace CodeHelper.Core.EditorController
 {
@@ -57,7 +58,7 @@ namespace CodeHelper.Core.EditorController
 
             editorContainer.Editor.TextChanged += new EventHandler(Editor_TextChanged);
             editorContainer.Editor.InputChar += new Editors.OnInputChar(Editor_InputChar);
-            editorContainer.Editor.KeyPreview += new Editors.OnKeyPreview(Editor_KeyPreview);
+            editorContainer.Editor.KeyPreview += new Editors.OnKeyPreview(Editor_KeyPreview);            
 
             GlobalService.ModelManager.ParseError += new OnParseError(ModelManager_ParseError);
         }
@@ -104,14 +105,18 @@ namespace CodeHelper.Core.EditorController
 
             location.X += (int)this.editorContainer.Editor.Font.Size;
         }
-   
+
+
+        protected virtual void OnTextChanged(object sender, EventArgs e)
+        {
+            this.model.Content = this.editorContainer.Text;
+
+            model.Modifed = true;
+        }
 
         void Editor_TextChanged(object sender, EventArgs e)
         {
-            var args = ((ICSharpCode.TextEditor.Document.DocumentEventArgs)(e));
-            this.model.Content = this.editorContainer.Text;
-            this.model.Caret = this.editorContainer.Editor.ActiveTextAreaControl.Caret; 
-            model.Modifed = true;
+            this.OnTextChanged(sender, e);          
         }
 
         public virtual void Comments()
@@ -164,7 +169,7 @@ namespace CodeHelper.Core.EditorController
             //throw new NotImplementedException();
             //this.model.Modifed
             //this.editorContainer.Text
-
+            this.model.Content = this.editorContainer.Text;
             this.model.Save();
 
             //StreamWriter w = null;

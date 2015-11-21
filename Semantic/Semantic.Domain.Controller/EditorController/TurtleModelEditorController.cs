@@ -17,6 +17,7 @@ using CodeHelper.Domain.Controller.UI;
 using ICSharpCode.TextEditor;
 using CodeHelper.Core.Parser;
 using CodeHelper.Core.Services;
+using CodeHelper.Core.Editor;
 
 namespace CodeHelper.Domain.EditorController
 {
@@ -31,8 +32,15 @@ namespace CodeHelper.Domain.EditorController
 
         protected override void OnInputChar(char c, int offset, System.Drawing.Point location)
         {
-            if (c == ':' || c == '@' || c == '^')
+            if (Char.IsWhiteSpace(c) || ".#;".Contains(c))
+                return;
+
+            if (c == ':' || c == '@' || c == '^')// || (c != ' ' && c !='\t' && c != '\n' ))
             {
+                this.model.Fake = false;
+                var module = ModelManager.Instance().GetParseModule(this.model.FileId);
+                module.Fake = false;
+
                 if (c == '^')
                 {
                     if (offset > 1 && this.editorContainer.Text[offset - 1] != '^')
@@ -40,18 +48,33 @@ namespace CodeHelper.Domain.EditorController
 
                 }
 
+                if (c == ' ')
+                {
+                    var line = this.editorContainer.Editor.Document.GetLineSegmentForOffset(offset);
+                    var ss = this.editorContainer.Editor.Document.GetText(line.Offset, offset - line.Offset);
+
+                    foreach (var ch in ss)
+                    {
+                        if (ch == '#') return;//如果是注释则返回
+                        if (ch == '.') return;//如果是.后则返回
+                    }
+                }
+
                 //call to parse file     
                 location.X += (int)this.editorContainer.Editor.Font.Size;
                 location.Y += (int)this.editorContainer.Editor.Font.Height;
                 var text = this.editorContainer.Text;
                 //var index = this.editorContainer.Editor.Document
-
+                var caret = this.editorContainer.Editor.ActiveTextAreaControl.Caret;
+                this.model.Caret = new MyCaret() { Line = caret.Line, Column = caret.Column + 1, Offset = caret.Offset };
                 var prevText = "";
                 int count = 0;
                 while (count < 100)
                 {
                     var ch = text[offset - count];
-                    if (ch == '\r' || ch == '\n' || ch == ' ' || ch == ';' || ch == '\t')
+                    if (ch == '\r' || ch == '\n' || ch == ' ' || ch == ';' || ch == '\t' || ch == '(' || ch == ')'
+                        || ch == '{' || ch == '}' || ch == '<' || ch == '>'
+                        )
                     {
                         break;
                     }
@@ -59,42 +82,56 @@ namespace CodeHelper.Domain.EditorController
                     count++;
                 }
 
-                OnParsed d = null;
+                OnIntelligence(location, offset, prevText, false);
+            }
+            else
+            {
+                this.model.Content = this.editorContainer.Text;
+                var caret = this.editorContainer.Editor.ActiveTextAreaControl.Caret;
+                this.model.Caret = new MyCaret() { Line = caret.Line, Column = caret.Column + 1, Offset = caret.Offset };
 
-                d = new OnParsed((m, sucess) =>
+                this.model.Caret.Column -= 1;
+
+                //前面可以是换行符或者制表符
+                if (this.model.Content.Length < 1) return;
+
+                var line = this.editorContainer.Editor.Document.GetLineSegmentForOffset(offset);
+                var ss = this.editorContainer.Editor.Document.GetText(line.Offset, offset - line.Offset);
+
+                for (var i = ss.Length - 1; i > 0; i--)
                 {
-                    GlobalService.ModelManager.OnParsed -= d;
+                    var ch = ss[i];
+                    if (ch == '#') return;//如果是注释则返回
+                    if (ch == '.') return;//如果是.后则返回                    
+                }
 
-                    if (m.FileId != this.model.FileId)
-                        return;
+                for (var i = ss.Length - 1; i > 0; i--)
+                {
+                    var ch = ss[i];
+                    this.model.Caret.Offset -= 1;
+                    this.model.Caret.Column -= 1;
 
-                    var module = ModelManager.Instance().GetParseModule(this.model.FileId);
+                    if (char.IsWhiteSpace(ch))
+                        break; ;
+                }
 
-                    if (module.ParseCrashed)
-                        return;
-
-                    if (this.editorContainer.Editor.InvokeRequired)
-                    {
-                        this.editorContainer.Editor.Invoke(new DoSenseDelegate(this.DoSense), location, offset, prevText, module);
-                    }
-                });
-
-                GlobalService.ModelManager.OnParsed += d;
+                model.Fake = true;
+                OnIntelligence(location, offset, c.ToString(), false);
             }
         }
 
-        private delegate void DoSenseDelegate(Point location, int offset, string prevText, IParseModule module);
+        private delegate void DoSenseDelegate(Point location, int offset, string prevText, IParseModule module, bool fake);
 
         void ModelManager_OnParsed(IModel model, bool success)
         {
             
         }
 
-        void DoSense(Point location, int offset, string prevText, IParseModule module )
+        void DoSense(Point location, int offset, string prevText, IParseModule module, bool fake)
         {
             SenseMenu m = new SenseMenu();
 
-            m.SetData(prevText, module);
+            m.SetData(prevText, module,fake);
             var l = this.editorContainer.Editor.PointToScreen(new Point(0, 0));
 
             m.Location = new Point(location.X + l.X, location.Y + l.Y);
@@ -160,14 +197,57 @@ namespace CodeHelper.Domain.EditorController
             return menu;
         }
 
+        private void OnIntelligence(Point location, int offset, string prevText, bool fake)
+        {
+            OnParsed d = null;
+
+            d = new OnParsed((m, sucess) =>
+            {
+                GlobalService.ModelManager.OnParsed -= d;
+
+                if (m.FileId != this.model.FileId)
+                    return;
+
+                var module = ModelManager.Instance().GetParseModule(this.model.FileId);
+
+                if (module.ParseCrashed)
+                    return;
+
+                if (this.editorContainer.Editor.InvokeRequired)
+                {
+                    this.editorContainer.Editor.Invoke(new DoSenseDelegate(this.DoSense), location, offset, prevText, module,fake);
+                }
+            });
+
+            GlobalService.ModelManager.OnParsed += d;
+        }
+
+        protected override void OnTextChanged(object sender, EventArgs e)
+        {           
+            base.OnTextChanged(sender, e);            
+        }
+
         protected override void OnKeyPreview(KeyEventArgs e, Point location)
         {
             if (e.KeyData == (Keys.Control | Keys.S))
             {
                 this.SaveFile();
             }
+            //if (e.KeyData == (Keys.Control | Keys.J))
+            //{
+            //    var model = ModelManager.Instance().GetModel(this.model.FileId);
+            //    if (model == null)
+            //        return;
+
+            //    model.Modifed = true;
+
+            //    var offset = this.editorContainer.Editor.ActiveTextAreaControl.Caret.Offset;
+
+            //    OnIntelligence(location, offset, "");
+            //}
             base.OnKeyPreview(e, location);
         }
+
         protected override void OnBind()
         {
             //base.OnBind();

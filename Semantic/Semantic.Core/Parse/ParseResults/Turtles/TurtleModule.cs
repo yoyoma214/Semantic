@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using ICSharpCode.TextEditor;
+using CodeHelper.Core.Editor;
 
 namespace CodeHelper.Core.Parse.ParseResults.Turtles
 {
@@ -18,7 +19,7 @@ namespace CodeHelper.Core.Parse.ParseResults.Turtles
 
         public TurtleDoc Root { get; set; }
 
-        public Caret Caret { get; set; }
+        public MyCaret Caret { get; set; }
 
         public override void Initialize()
         {
@@ -29,7 +30,7 @@ namespace CodeHelper.Core.Parse.ParseResults.Turtles
             }
 
             var context = new TurtleContext();
-            context.Caret = Caret;
+            context.Caret = this.Caret;
             this.Root.Parse(context);
 
             this.PrevSubject = context.PrevSubject;

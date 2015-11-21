@@ -93,6 +93,7 @@
     <Compile Include="Editor\EditorControl.cs">
       <SubType>UserControl</SubType>
     </Compile>
+    <Compile Include="Editor\MyCaret.cs" />
     <Compile Include="Enums.cs" />
     <Compile Include="Error\ErrorType.cs" />
     <Compile Include="Error\ParseErrorInfo.cs" />
@@ -140,6 +141,7 @@
     <Compile Include="Parse\ParseResults\OWLProperty.cs" />
     <Compile Include="Parse\ParseResults\Sparqls\NSparqlParser.cs" />
     <Compile Include="Parse\ParseResults\Sparqls\SparqlComplier.cs" />
+    <Compile Include="Parse\ParseResults\Sparqls\SparqlContext.cs" />
     <Compile Include="Parse\ParseResults\Sparqls\SparqlModule.cs" />
     <Compile Include="Parse\ParseResults\Sparqls\SparqlVisitor.cs">
       <SubType>Code</SubType>

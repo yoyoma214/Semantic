@@ -5,6 +5,7 @@ using System.Text;
 using CodeHelper.Core.Error;
 using ICSharpCode.TextEditor;
 using CodeHelper.Core.Parser;
+using CodeHelper.Core.Editor;
 
 namespace CodeHelper.Core.Parse.ParseResults.Turtles
 {
@@ -70,7 +71,7 @@ namespace CodeHelper.Core.Parse.ParseResults.Turtles
         /// </summary>
         public VisitType Visit { get; set; }
 
-        public Caret Caret { get; set; }
+        public MyCaret Caret { get; set; }
 
         public TurtleContext()
         {
@@ -266,6 +267,7 @@ namespace CodeHelper.Core.Parse.ParseResults.Turtles
                 }
 
                 this.Subject = null;
+                this.Verb = null;
                 this.CurrentVerb = null;                
             }
 

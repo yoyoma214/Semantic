@@ -48,7 +48,14 @@ namespace CodeHelper.Core.Types.OWL.Verbs
 
         public override List<string> AllowObject(Parser.IParseModule module)
         {
-            return base.AllowObject(module);
+            var rslt = new List<string>();
+            rslt.Add("\"1\"^^xsd:nonNegativeInteger");
+            rslt.Add("\"2\"^^xsd:nonNegativeInteger");
+            rslt.Add("\"3\"^^xsd:nonNegativeInteger");
+            rslt.Add("\"4\"^^xsd:nonNegativeInteger");
+            rslt.Add("\"10\"^^xsd:nonNegativeInteger");
+            rslt.Add("\"100\"^^xsd:nonNegativeInteger");
+            return rslt;
         }
     }
 }

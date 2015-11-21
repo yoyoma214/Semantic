@@ -222,7 +222,7 @@ namespace CodeHelper.Domain.Model
                 {
                     var waitingForParseModels = this.Models.Values.Where(x =>
 
-                        !x.IsParsed && x.Content.Count(c => c == '\n') > 2)//至少有3行
+                        !x.IsParsed )// && x.Content.Count(c => c == '\n') > 2)//至少有3行
 
                         .ToList();
 

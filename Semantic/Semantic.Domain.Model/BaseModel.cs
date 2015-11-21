@@ -9,6 +9,7 @@ using System.Threading;
 using CodeHelper.Core.Services;
 using CodeHelper.Core.Parser;
 using System.IO;
+using CodeHelper.Core.Editor;
 
 namespace CodeHelper.Domain.Model
 {
@@ -200,7 +201,13 @@ namespace CodeHelper.Domain.Model
         }
 
 
-        public ICSharpCode.TextEditor.Caret Caret
+        public MyCaret Caret
+        {
+            get;
+            set;
+        }
+
+        public bool Fake
         {
             get;
             set;

@@ -48,7 +48,12 @@ namespace CodeHelper.Core.Types.OWL.Verbs
 
         public override List<string> AllowObject(Parser.IParseModule module)
         {
-            return base.AllowObject(module);
+            var rslt = new List<string>();
+
+            rslt.Add("\"true\"^^xsd:boolean");
+            rslt.Add("\"false\"^^xsd:boolean");
+
+            return rslt;
         }
     }
 }

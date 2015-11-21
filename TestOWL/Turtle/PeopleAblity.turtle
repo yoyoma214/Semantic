@@ -10,7 +10,7 @@
 #region 类--开始 
  
 :Leader rdf:type rdfs:Class .
-:Employee rdf:type rdfs:Class .
+:Employee rdf:type rdfs:Class . 
 :Skill rdf:type rdfs:Class .
 :SexType rdf:type rdfs:Datatype ;
 	owl:unionOf ([
@@ -24,14 +24,20 @@
 				]
 				[]			
 		).
-	
+		
 #endregion类--结束
 
 #region 属性--开始
 :Name rdf:type owl:DatatypeProperty .
 :Name rdfs:range xsd:string .
 :Sex rdf:type owl:DatatypeProperty .
-:Sex rdfs:range :SexType .
+:SexType owl:equivalentClass [
+	rdf:type rdfs:Datatype ;
+	#owl:oneOf ( 
+	owl:oneOf ("man"^^xsd:string "women"^^xsd:string )
+].
+:Name owl:equivalentProperty :Sex .
+
 #endregion 属性--结束
 
 #region 类属性--开始
@@ -40,5 +46,7 @@
 
 #region 实例--开始
 :tom rdf:type :Employee .
+:tom :Name "cuiqingyong".
+:tom :Sex "man"^^xsd:string .
 #endregion 实例--结束
 

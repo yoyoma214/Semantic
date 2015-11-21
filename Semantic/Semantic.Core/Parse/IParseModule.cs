@@ -129,5 +129,10 @@ namespace CodeHelper.Core.Parser
         /// 遇到解析崩溃性错误,无法继续往下进行处理
         /// </summary>
         bool ParseCrashed { get; set; }
+
+        /// <summary>
+        /// 用于表明当前是否虚拟输入（当智能提示谓语时，实际应智能提示宾语；智能提示主语时，实际应智能提示谓语）
+        /// </summary>
+        bool Fake { get; set; }
     }
 }

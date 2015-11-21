@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using CodeHelper.Core.Types.Base;
+using CodeHelper.Core.Services;
 
 namespace CodeHelper.Core.Types.OWL.Verbs
 {
@@ -48,7 +49,19 @@ namespace CodeHelper.Core.Types.OWL.Verbs
 
         public override List<string> AllowObject(Parser.IParseModule module)
         {
-            return base.AllowObject(module);
+            var rslt = new List<string>();
+          
+            var props = GlobalService.ModelManager.ListProperty(module.UsingNameSpaces.Values.ToList(), null, true);
+            foreach (var item in props)
+            {
+                foreach (var ns in module.UsingNameSpaces)
+                {
+                    if (ns.Value.Equals(item.NameSpace))
+                        rslt.Add(ns.Key + item.Name);
+                }
+            }
+
+            return rslt;
         }
     }
 }

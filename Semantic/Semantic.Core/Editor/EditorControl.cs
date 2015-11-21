@@ -118,7 +118,7 @@ namespace CodeHelper.Editors
         void EditorControl_TextChanged(object sender, EventArgs e)
         {
             DocumentEventArgs arg = e as DocumentEventArgs;
-            if (arg != null && !string.IsNullOrWhiteSpace(arg.Text) && arg.Text.Length == 1)
+            if (arg != null && arg.Text != null && arg.Text.Length == 1)// && !string.IsNullOrWhiteSpace(arg.Text)
             {
                 Point location = this.ActiveTextAreaControl.Caret.ScreenPosition;
                 if (InputChar != null)
