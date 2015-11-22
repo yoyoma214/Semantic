@@ -87,11 +87,17 @@
     <Compile Include="EditorController\Antlr4ModelEditorController.cs" />
     <Compile Include="EditorController\SparqlModelEditorController.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="UI\SenseMenu.cs">
+    <Compile Include="UI\TurtleSenseMenu.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="UI\SenseMenu.Designer.cs">
-      <DependentUpon>SenseMenu.cs</DependentUpon>
+    <Compile Include="UI\TurtleSenseMenu.Designer.cs">
+      <DependentUpon>TurtleSenseMenu.cs</DependentUpon>
+    </Compile>
+    <Compile Include="UI\SparqlSenseMenu.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="UI\SparqlSenseMenu.Designer.cs">
+      <DependentUpon>SparqlSenseMenu.cs</DependentUpon>
     </Compile>
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
@@ -103,8 +109,11 @@
       <DependentUpon>Resources.resx</DependentUpon>
       <DesignTime>True</DesignTime>
     </Compile>
-    <EmbeddedResource Include="UI\SenseMenu.resx">
-      <DependentUpon>SenseMenu.cs</DependentUpon>
+    <EmbeddedResource Include="UI\TurtleSenseMenu.resx">
+      <DependentUpon>TurtleSenseMenu.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="UI\SparqlSenseMenu.resx">
+      <DependentUpon>SparqlSenseMenu.cs</DependentUpon>
     </EmbeddedResource>
     <None Include="packages.config" />
     <None Include="Properties\Settings.settings">

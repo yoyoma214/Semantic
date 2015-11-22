@@ -13,7 +13,7 @@ using CodeHelper.Core.Parse.ParseResults;
 
 namespace CodeHelper.Domain.Controller.UI
 {
-    public partial class SenseMenu : Form
+    public partial class SparqlSenseMenu : Form
     {
         private List<string> data = new List<string>();
 
@@ -25,7 +25,7 @@ namespace CodeHelper.Domain.Controller.UI
 
         IParseModule m_module { get; set; }
 
-        public SenseMenu()
+        public SparqlSenseMenu()
         {
             InitializeComponent();
             
@@ -257,25 +257,11 @@ namespace CodeHelper.Domain.Controller.UI
             if (prevText == null)
                 return;
 
-            //prevText = prevText.Trim();
-            //foreach (var t in module.Types.Keys)
-            //{
-            //    data.Add(t);
-            //}
-            //foreach (var t in module.Properties.Keys)
-            //{
-            //    data.Add(t);
-            //}
-            //foreach (var t in module.Instances.Keys)
-            //{
-            //    data.Add(t);
-            //}
-
             var model = GlobalService.ModelManager.GetModel(module.FileId);
             module.Fake = model.Fake;
             if (model.Fake && module.Subject == null && module.Verb == null && module.Object == null)//对应虚拟输入并且为主键
             {
-                this.data.AddRange(Sensor.SubjectSensor.Sensor(prevText.Trim(), module));
+                this.data.AddRange(SparqlSensor.SubjectSensor.Sensor(prevText.Trim(), module));
             }
             else if ( prevText.EndsWith("^^"))
             {
@@ -286,7 +272,7 @@ namespace CodeHelper.Domain.Controller.UI
             else if (!string.IsNullOrWhiteSpace(module.Object))
             {
                 //this.data.AddRange(OWLTypes.Instance().Object_Types.Keys);
-                this.data.AddRange(Sensor.ObjectSensor.Sensor(prevText.Trim(), module));
+                this.data.AddRange(SparqlSensor.ObjectSensor.Sensor(prevText.Trim(), module));
             }
             else if (!string.IsNullOrWhiteSpace(module.Verb))
             {
@@ -294,11 +280,11 @@ namespace CodeHelper.Domain.Controller.UI
 
                 if (!module.Fake)
                 {
-                    this.data.AddRange(Sensor.VerbSensor.Sensor(prevText.Trim(), module));
+                    this.data.AddRange(SparqlSensor.VerbSensor.Sensor(prevText.Trim(), module));
                 }
                 else
                 {
-                    this.data.AddRange(Sensor.ObjectSensor.Sensor(prevText.Trim(), module));
+                    this.data.AddRange(SparqlSensor.ObjectSensor.Sensor(prevText.Trim(), module));
                 }
             }
             else if (!string.IsNullOrWhiteSpace(module.Subject))
@@ -307,11 +293,11 @@ namespace CodeHelper.Domain.Controller.UI
 
                 if (!module.Fake)
                 {
-                    this.data.AddRange(Sensor.SubjectSensor.Sensor(prevText.Trim(), module));
+                    this.data.AddRange(SparqlSensor.SubjectSensor.Sensor(prevText.Trim(), module));
                 }
                 else
                 {
-                    this.data.AddRange(Sensor.VerbSensor.Sensor(prevText.Trim(), module));
+                    this.data.AddRange(SparqlSensor.VerbSensor.Sensor(prevText.Trim(), module));
                 }
                 //foreach (var ns in module.UsingNameSpaces)
                 //{
@@ -377,16 +363,13 @@ namespace CodeHelper.Domain.Controller.UI
         }
     }
 
-    public class Sensor
+    public class SparqlSensor
     {
         public class SubjectSensor
         {
             public static List<String> Sensor(string prevText, IParseModule module)
             {
-                var data = new List<String>();
-                //data.AddRange(module.Types.Keys);
-                //data.AddRange(module.Properties.Keys);
-                //data.AddRange(module.Instances.Keys);
+                var data = new List<String>();               
 
                 foreach (var ns in module.UsingNameSpaces)
                 {

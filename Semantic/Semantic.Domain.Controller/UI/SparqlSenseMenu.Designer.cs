@@ -1,6 +1,6 @@
 ﻿namespace CodeHelper.Domain.Controller.UI
 {
-    partial class SenseMenu
+    partial class SparqlSenseMenu
     {
         /// <summary>
         /// Required designer variable.

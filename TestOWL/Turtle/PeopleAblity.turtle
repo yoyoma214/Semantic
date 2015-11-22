@@ -50,3 +50,4 @@
 :tom :Sex "man"^^xsd:string .
 #endregion 实例--结束
 
+

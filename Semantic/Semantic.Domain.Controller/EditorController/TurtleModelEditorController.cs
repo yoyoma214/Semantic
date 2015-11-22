@@ -45,19 +45,6 @@ namespace CodeHelper.Domain.EditorController
                 {
                     if (offset > 1 && this.editorContainer.Text[offset - 1] != '^')
                         return;
-
-                }
-
-                if (c == ' ')
-                {
-                    var line = this.editorContainer.Editor.Document.GetLineSegmentForOffset(offset);
-                    var ss = this.editorContainer.Editor.Document.GetText(line.Offset, offset - line.Offset);
-
-                    foreach (var ch in ss)
-                    {
-                        if (ch == '#') return;//如果是注释则返回
-                        if (ch == '.') return;//如果是.后则返回
-                    }
                 }
 
                 //call to parse file     
@@ -129,7 +116,7 @@ namespace CodeHelper.Domain.EditorController
 
         void DoSense(Point location, int offset, string prevText, IParseModule module, bool fake)
         {
-            SenseMenu m = new SenseMenu();
+            TurtleSenseMenu m = new TurtleSenseMenu();
 
             m.SetData(prevText, module,fake);
             var l = this.editorContainer.Editor.PointToScreen(new Point(0, 0));
@@ -137,7 +124,7 @@ namespace CodeHelper.Domain.EditorController
             m.Location = new Point(location.X + l.X, location.Y + l.Y);
             m.Show();
 
-            m.OnCompleteInput += new SenseMenu.CompleteInput((s) =>
+            m.OnCompleteInput += new TurtleSenseMenu.CompleteInput((s) =>
             {
                 DoInput(prevText,offset, s);
             });

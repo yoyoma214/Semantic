@@ -356,5 +356,11 @@ namespace CodeHelper.Core.Parse
             get;
             set;
         }
+
+        public string Base
+        {
+            get;
+            set;
+        }
     }
 }

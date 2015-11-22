@@ -13,16 +13,32 @@ namespace CodeHelper.Core.Parse.ParseResults.Sparqls
         {
             //this.Mapings = new List<MappingInfo>();
             this.UsingNameSpaces = new Dictionary<string, string>();
+            this.Variables = new List<string>();
             //this.Models = new Dictionary<string, ModelInfo>();
         }
 
         public QueryUnit Root { get; set; }
 
+        public List<String> Variables { get; set; }
+
         public override void Initialize()
         {
-            //this.Root.Parse();
-            //this.Root.Wise();
+            var context = new SparqlContext();
+            context.File = this.File;
+            context.FileId = this.FileId;
+            this.Root.Parse(context);
+            this.Root.Wise(context);
             this.Errors.AddRange(Root.Errors);
+            this.Errors.AddRange(context.Errors);
+
+            if ( context.Base != null )
+                this.Base = context.Base.Value;
+
+            foreach (var pre in context.Prefixs)
+                this.UsingNameSpaces.Add(pre.Name, pre.Value);
+
+            this.Variables.AddRange(context.Variables);
+
         }
 
         public void GenCSharp(IndentStringBuilder builder)

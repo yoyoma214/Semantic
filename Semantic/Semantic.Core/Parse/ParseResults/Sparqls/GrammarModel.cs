@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using CodeHelper.Core.Error;
 using CodeHelper.Common;
+using CodeHelper.Core.Services;
 
 namespace CodeHelper.Core.Parse.ParseResults.Sparqls
 {
@@ -497,7 +498,13 @@ namespace CodeHelper.Core.Parse.ParseResults.Sparqls
 
         public void Parse(SparqlContext context)
         {
+            if (context.Base != null)
+            {
+                context.AddError(this, "Base已经重复");
+                return;
+            }
 
+            context.Base = new Base() { Value = this.IRIREF };
         }
 
         public void Wise(SparqlContext context)
@@ -540,7 +547,18 @@ namespace CodeHelper.Core.Parse.ParseResults.Sparqls
 
         public void Parse(SparqlContext context)
         {
+            var prefix = new Prefix() { Name = this.PNAMENS, Value = this.IRIREF };
 
+            foreach (var pre in context.Prefixs)
+            {
+                if (pre.EqualWith(prefix))
+                {
+                    context.AddError(this, "重复:" + this.PNAMENS);
+                    return;
+                }
+            }
+
+            context.Prefixs.Add(prefix);
         }
 
         public void Wise(SparqlContext context)
@@ -7606,7 +7624,7 @@ namespace CodeHelper.Core.Parse.ParseResults.Sparqls
         public TriplesNode TriplesNode
         { get; set; }
         public PropertyList PropertyList
-        { get; set; }
+        { get; set; }       
 
         public void Parse(SparqlContext context)
         {
@@ -7639,23 +7657,24 @@ namespace CodeHelper.Core.Parse.ParseResults.Sparqls
             if (this.VarOrTerm != null)
             {
                 this.VarOrTerm.Wise(context);
-            }
 
-            if (this.PropertyListNotEmpty != null)
-            {
-                this.PropertyListNotEmpty.Wise(context);
+                if (this.PropertyListNotEmpty != null)
+                {
+                    this.PropertyListNotEmpty.Wise(context);
+                }
+
+                context.AddTriple(this.VarOrTerm.Text, this.VarOrTerm);
             }
 
             if (this.TriplesNode != null)
             {
                 this.TriplesNode.Wise(context);
-            }
 
-            if (this.PropertyList != null)
-            {
-                this.PropertyList.Wise(context);
+                if (this.PropertyList != null)
+                {
+                    this.PropertyList.Wise(context);
+                }
             }
-
         }
 
         public void Format(SparqlContext context, IndentStringBuilder builder)
@@ -7941,7 +7960,6 @@ namespace CodeHelper.Core.Parse.ParseResults.Sparqls
 
         public void Parse(SparqlContext context)
         {
-
             if (this.VarOrIri != null)
             {
                 this.VarOrIri.Parse(context);
@@ -10240,18 +10258,22 @@ namespace CodeHelper.Core.Parse.ParseResults.Sparqls
         { get; set; }
         public GraphTerm GraphTerm
         { get; set; }
+        public String Text { get; set; }
 
         public void Parse(SparqlContext context)
         {
-
             if (this.Var != null)
             {
                 this.Var.Parse(context);
+
+                this.Text = this.Var.Text;
             }
 
             if (this.GraphTerm != null)
             {
                 this.GraphTerm.Parse(context);
+
+                this.Text = this.GraphTerm.Text;
             }
 
         }
@@ -10445,7 +10467,15 @@ namespace CodeHelper.Core.Parse.ParseResults.Sparqls
 
         public void Parse(SparqlContext context)
         {
+            var var = this.VAR1 == null ? this.VAR2 : this.VAR1;
+            //if (context.Variables.Contains(var))
+            //{
+            //    context.AddError(this, "变量重复:" + var);
+            //    return;
+            //}
 
+            this.Text = var;
+            context.AddVariable(var, this);
         }
 
         public void Wise(SparqlContext context)
@@ -10472,6 +10502,8 @@ namespace CodeHelper.Core.Parse.ParseResults.Sparqls
         {
 
         }
+
+        public string Text { get; set; }
     }
 
     public class GraphTerm : TokenPair
@@ -10498,26 +10530,31 @@ namespace CodeHelper.Core.Parse.ParseResults.Sparqls
             if (this.Iri != null)
             {
                 this.Iri.Parse(context);
+                this.Text = this.Iri.Text;
             }
 
             if (this.RDFLiteral != null)
             {
                 this.RDFLiteral.Parse(context);
+                this.Text = this.RDFLiteral.Text;
             }
 
             if (this.NumericLiteral != null)
             {
                 this.NumericLiteral.Parse(context);
+                this.Text = this.NumericLiteral.Text;
             }
 
             if (this.BooleanLiteral != null)
             {
                 this.BooleanLiteral.Parse(context);
+                this.Text = this.BooleanLiteral.Text;
             }
 
             if (this.BlankNode != null)
             {
                 this.BlankNode.Parse(context);
+                this.Text = this.BlankNode.Text;
             }
 
         }
@@ -10671,6 +10708,8 @@ namespace CodeHelper.Core.Parse.ParseResults.Sparqls
             }
 
         }
+
+        public string Text { get; set; }
     }
 
     public class Expression : TokenPair
@@ -12958,10 +12997,16 @@ namespace CodeHelper.Core.Parse.ParseResults.Sparqls
 
         public void Parse(SparqlContext context)
         {
+            this.Text = this.@string;
 
             if (this.XsdIri != null)
             {
                 this.XsdIri.Parse(context);
+                this.Text += this.XsdIri.Text;
+            }
+            else
+            {
+                this.Text += this.LANGTAG;
             }
 
         }
@@ -13015,6 +13060,8 @@ namespace CodeHelper.Core.Parse.ParseResults.Sparqls
             }
 
         }
+
+        public string Text { get; set; }
     }
 
     public class NumericLiteral : TokenPair
@@ -13035,16 +13082,19 @@ namespace CodeHelper.Core.Parse.ParseResults.Sparqls
             if (this.NumericLiteralUnsigned != null)
             {
                 this.NumericLiteralUnsigned.Parse(context);
+                this.Text = this.NumericLiteralUnsigned.Text;
             }
 
             if (this.NumericLiteralPositive != null)
             {
                 this.NumericLiteralPositive.Parse(context);
+                this.Text = this.NumericLiteralPositive.Text;
             }
 
             if (this.NumericLiteralNegative != null)
             {
                 this.NumericLiteralNegative.Parse(context);
+                this.Text = this.NumericLiteralNegative.Text;
             }
 
         }
@@ -13148,6 +13198,8 @@ namespace CodeHelper.Core.Parse.ParseResults.Sparqls
             }
 
         }
+
+        public string Text { get; set; }
     }
 
     public class NumericLiteralUnsigned : TokenPair
@@ -13164,7 +13216,7 @@ namespace CodeHelper.Core.Parse.ParseResults.Sparqls
 
         public void Parse(SparqlContext context)
         {
-
+            this.Text = (this.INTEGER ?? this.DECIMAL) ?? this.dOUBLE;
         }
 
         public void Wise(SparqlContext context)
@@ -13191,6 +13243,8 @@ namespace CodeHelper.Core.Parse.ParseResults.Sparqls
         {
 
         }
+
+        public string Text { get; set; }
     }
 
     public class NumericLiteralPositive : TokenPair
@@ -13207,7 +13261,7 @@ namespace CodeHelper.Core.Parse.ParseResults.Sparqls
 
         public void Parse(SparqlContext context)
         {
-
+            this.Text = (this.INTEGERPOSITIVE ?? this.DECIMALPOSITIVE) ?? this.DOUBLEPOSITIVE;
         }
 
         public void Wise(SparqlContext context)
@@ -13234,6 +13288,8 @@ namespace CodeHelper.Core.Parse.ParseResults.Sparqls
         {
 
         }
+
+        public string Text { get; set; }
     }
 
     public class NumericLiteralNegative : TokenPair
@@ -13250,7 +13306,7 @@ namespace CodeHelper.Core.Parse.ParseResults.Sparqls
 
         public void Parse(SparqlContext context)
         {
-
+            this.Text = this.INTEGERNEGATIVE ?? this.DECIMALNEGATIVE ?? this.DOUBLENEGATIVE;
         }
 
         public void Wise(SparqlContext context)
@@ -13277,17 +13333,20 @@ namespace CodeHelper.Core.Parse.ParseResults.Sparqls
         {
 
         }
+
+        public string Text { get; set; }
     }
 
     public class BooleanLiteral : TokenPair
     {
         public BooleanLiteral()
         {
+            
         }
 
         public void Parse(SparqlContext context)
         {
-
+            this.Text = this.BeginToken.Text;
         }
 
         public void Wise(SparqlContext context)
@@ -13314,6 +13373,8 @@ namespace CodeHelper.Core.Parse.ParseResults.Sparqls
         {
 
         }
+
+        public string Text { get; set; }
     }
 
     public class Iri : TokenPair
@@ -13329,15 +13390,35 @@ namespace CodeHelper.Core.Parse.ParseResults.Sparqls
         public void Parse(SparqlContext context)
         {
 
+            if (this.IRIREF != null)
+                this.Text = this.IRIREF;
+
             if (this.PrefixedName != null)
             {
                 this.PrefixedName.Parse(context);
+                this.Text = this.PrefixedName.Text;
             }
 
         }
 
         public void Wise(SparqlContext context)
         {
+            if (this.IRIREF != null)
+            {
+                var owlName = context.ResloveName(this.IRIREF);
+                if (owlName == null)
+                {
+                    context.AddError(this, "找不到名称：" + this.IRIREF);
+                    return;
+                }
+
+                var obj = GlobalService.ModelManager.Reslove(owlName.Value.NameSpace, owlName.Value.LocalName);
+                if (obj == null)
+                {
+                    context.AddError(this, "找不到RDF对象：" + this.IRIREF);
+                    return;
+                }
+            }
 
             if (this.PrefixedName != null)
             {
@@ -13385,6 +13466,8 @@ namespace CodeHelper.Core.Parse.ParseResults.Sparqls
             }
 
         }
+
+        public string Text { get; set; }
     }
 
     public class PrefixedName : TokenPair
@@ -13399,12 +13482,34 @@ namespace CodeHelper.Core.Parse.ParseResults.Sparqls
 
         public void Parse(SparqlContext context)
         {
-
+            this.Text = this.PNAMELN ?? this.PNAMENS;
         }
 
         public void Wise(SparqlContext context)
         {
+            if (this.PNAMENS != null)
+            {
+                context.AddError(this, "暂不支持分析:" + this.PNAMENS);
+            }
+            else if (this.PNAMELN != null)
+            {
+                if (this.PNAMELN.StartsWith("rdf"))
+                {
+                }
+                var owlName = context.ResloveName(this.PNAMELN);
+                if (owlName == null)
+                {
+                    context.AddError(this, "找不到名称：" + this.PNAMELN);
+                    return;
+                }
 
+                var obj = GlobalService.ModelManager.Reslove(owlName.Value.NameSpace, owlName.Value.LocalName);
+                if (obj == null)
+                {
+                    context.AddError(this, "找不到RDF对象：" + this.PNAMELN);
+                    return;
+                }
+            }
         }
 
         public void Format(SparqlContext context, IndentStringBuilder builder)
@@ -13426,6 +13531,8 @@ namespace CodeHelper.Core.Parse.ParseResults.Sparqls
         {
 
         }
+
+        public string Text { get; set; }
     }
 
     public class BlankNode : TokenPair
@@ -13440,7 +13547,7 @@ namespace CodeHelper.Core.Parse.ParseResults.Sparqls
 
         public void Parse(SparqlContext context)
         {
-
+            this.Text = this.BLANKNODELABEL ?? this.ANON;
         }
 
         public void Wise(SparqlContext context)
@@ -13467,6 +13574,8 @@ namespace CodeHelper.Core.Parse.ParseResults.Sparqls
         {
 
         }
+
+        public string Text { get; set; }
     }
 
     public class XsdIri : TokenPair
@@ -13483,7 +13592,12 @@ namespace CodeHelper.Core.Parse.ParseResults.Sparqls
 
         public void Parse(SparqlContext context)
         {
-
+            if ( this.IRIREF != null )
+                this.Text = "^^" + this.IRIREF;
+            if (this.PNAMELN != null)
+                this.Text = this.PNAMELN;
+            if (this.PNAMENS != null)
+                this.Text = this.PNAMENS;
         }
 
         public void Wise(SparqlContext context)
@@ -13510,6 +13624,8 @@ namespace CodeHelper.Core.Parse.ParseResults.Sparqls
         {
 
         }
+
+        public string Text { get; set; }
     }
 
 }
