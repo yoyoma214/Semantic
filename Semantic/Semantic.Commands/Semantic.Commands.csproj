@@ -71,6 +71,8 @@
     <Compile Include="Antlr4Model\OpenAntlr4ModelCommand.cs" />
     <Compile Include="SparqlModel\NewSparqlModelCommand.cs" />
     <Compile Include="SparqlModel\OpenSparqlModelCommand.cs" />
+    <Compile Include="SwrlModel\NewSwrlModelCommand.cs" />
+    <Compile Include="SwrlModel\OpenSwrlModelCommand.cs" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="NewProjectCommand.cs" />

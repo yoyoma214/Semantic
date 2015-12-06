@@ -107,8 +107,10 @@
     <Compile Include="Items\Antlr4\DirectoryNode.cs" />
     <Compile Include="Items\Antlr4\FileNode.cs" />
     <Compile Include="Items\ProjectNode.cs" />
+    <Compile Include="Items\Swrl\SwrlDirectoryNode.cs" />
+    <Compile Include="Items\Swrl\SwrlFileNode.cs" />
     <Compile Include="Items\Turtle\DirectoryNode.cs" />
-    <Compile Include="Items\Turtle\FileNode.cs" />
+    <Compile Include="Items\FileNode.cs" />
     <Compile Include="Items\Sparql\SparqlDirectoryNode.cs" />
     <Compile Include="Items\Sparql\SparqlFileNode.cs" />
     <Compile Include="Items\Turtle\TurtleFileNode.cs" />

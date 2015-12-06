@@ -8,7 +8,7 @@ namespace CodeHelper.Core.Parser
     public enum ParseType
     {
 
-        XmlModel = 1, DataModel = 2, DataView = 3, ViewModel = 4, WorkFlow = 5, TurtleModel = 6, Antlr4Model, SparqlModel
+        XmlModel = 1, DataModel = 2, DataView = 3, ViewModel = 4, WorkFlow = 5, TurtleModel = 6, Antlr4Model, SparqlModel,SwrlModel
 
     }
 }
