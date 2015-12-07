@@ -3,13 +3,16 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using CodeHelper.Common;
+using CodeHelper.Core.Error;
 
 namespace CodeHelper.Core.Parse.ParseResults.Swrls
 {
     public class Axioms : TokenPair
     {
+        public List<ParseErrorInfo> Errors { get; set; }
         public Axioms()
         {
+            this.Errors = new List<ParseErrorInfo>();
             this.AxiomList = new List<Axiom>();
             this.RuleNs = new List<RuleN>();
             this.DGAxioms = new List<DGAxiom>();

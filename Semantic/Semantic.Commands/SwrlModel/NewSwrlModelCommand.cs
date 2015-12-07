@@ -15,7 +15,7 @@ namespace CodeHelper.Commands.Swrl
         {
             get
             {
-                return Dict.Commands.NewSparqlModel;
+                return Dict.Commands.NewSwrlModel;
             }
         }
 

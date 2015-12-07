@@ -58,6 +58,7 @@
     <Compile Include="TurtleModelEditor.cs" />
     <Compile Include="Antlr4ModelEditor.cs" />
     <Compile Include="SparqlModelEditor.cs" />
+    <Compile Include="SwrlModelEditor.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

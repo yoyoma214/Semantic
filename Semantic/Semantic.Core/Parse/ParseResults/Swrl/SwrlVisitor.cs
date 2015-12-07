@@ -5,15 +5,17 @@ using System.Text;
 using Antlr4.Runtime.Misc;
 using CodeHelper.Core.Parse.ParseResults.Swrl;
 using CodeHelper.Core.Parse.ParseResults.Swrls;
+using CodeHelper.Core.Error;
 
 namespace CodeHelper.Core.Parse.ParseResults.HermitRules
 {
     class HermitRuleVisitor : HermitRuleBaseVisitor<int>
     {
+        public Axioms Root = new Axioms();
         StackUtil stack = new StackUtil();
         public override int VisitAxioms([NotNull] HermitRuleParser.AxiomsContext context)
         {
-            var axioms = this.stack.PeekCtx<Axioms>();
+            var axioms = this.Root;// this.stack.PeekCtx<Axioms>();
             axioms.Parse(context);
 
             var axiomCtxs = context.axiom();

@@ -85,6 +85,12 @@ namespace CodeHelper.AssembleLayer
                 editor = new SparqlModelEditor();
                 model.File = file;
                 controller = new SparqlModelEditorController();
+            } 
+            if (extension == Dict.Extenstions.Swrl_Extension)
+            {
+                editor = new SwrlModelEditor();
+                model.File = file;
+                controller = new SwrlModelEditorController();
             }
             var context = new EditorContext();
             context.EditorContainer = editor;

@@ -9,13 +9,14 @@ using CodeHelper.Core.Command;
 using CodeHelper.Core.Services;
 using CodeHelper.Commands.TurtleModel;
 using CodeHelper.Commands.SparqlModel;
+using CodeHelper.Commands.Swrl;
 
 namespace CodeHelper.Items.Swrl
 {
     class SwrlDirectoryNode : FolderNode
     {
         public SwrlDirectoryNode()
-            : base("Sparql", "Sparql")
+            : base("Swrl", "Swrl")
         {
             this.TreeNode.Name = this.TreeNode.Text = "文件夹";
         }
@@ -26,7 +27,7 @@ namespace CodeHelper.Items.Swrl
 
             var menu = base.GetPopMenu();
 
-            menu.MenuItems.Add("新建Sparql文件", this.OnNewDataModel);
+            menu.MenuItems.Add("新建Swrl文件", this.OnNewDataModel);
        
 
             return menu;
@@ -48,7 +49,7 @@ namespace CodeHelper.Items.Swrl
                 return;
             }
 
-            var fileName = System.IO.Path.Combine(this.Path, newName) + ".sparql";
+            var fileName = System.IO.Path.Combine(this.Path, newName) + ".swrl";
             if (File.Exists(fileName))
             {
                 MessageBox.Show("文件已经存在");
@@ -69,13 +70,13 @@ namespace CodeHelper.Items.Swrl
 
             var cmdHost = CommandHostManager.Instance().Get(
                 CommandHostManager.HostType.OWL);
-            var cmd = cmdHost.GetCommand(Dict.Commands.NewSparqlModel)
-                as NewSparqlModelCommand;
+            var cmd = cmdHost.GetCommand(Dict.Commands.NewSwrlModel)
+                as NewSwrlModelCommand;
 
             cmd.File = dataModel.FullName;
             dataModel.FileId = Guid.NewGuid();
 
-            cmdHost.RunCommand(Dict.Commands.NewSparqlModel);
+            cmdHost.RunCommand(Dict.Commands.NewSwrlModel);
         }
 
         //public override bool IsFolder
@@ -102,7 +103,7 @@ namespace CodeHelper.Items.Swrl
 
         public override void Save()
         {
-            var dir = System.IO.Path.Combine(GlobalService.CurrentPrj_Dir, "Sparql");
+            var dir = System.IO.Path.Combine(GlobalService.CurrentPrj_Dir, "Swrl");
 
             if (!Directory.Exists(dir))
             {
@@ -114,7 +115,7 @@ namespace CodeHelper.Items.Swrl
 
         public override void Load()
         {
-            var dir = System.IO.Path.Combine(GlobalService.CurrentPrj_Dir, "Sparql");
+            var dir = System.IO.Path.Combine(GlobalService.CurrentPrj_Dir, "Swrl");
 
             if (!Directory.Exists(dir))
             {
@@ -135,7 +136,7 @@ namespace CodeHelper.Items.Swrl
         {
             var directory = new DirectoryInfo(Path);
 
-            foreach (var dm in directory.GetFiles("*" + Dict.Extenstions.Sparql_Extension))
+            foreach (var dm in directory.GetFiles("*" + Dict.Extenstions.Swrl_Extension))
             {
                 var dmNode = new SwrlFileNode();
                 dmNode.FullName = dm.FullName;

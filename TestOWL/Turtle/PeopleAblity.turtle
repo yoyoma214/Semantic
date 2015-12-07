@@ -15,7 +15,6 @@
 #
 #################################################################
 
-
 ###  http://www.6starhome.com/company/#sexType
 
 :sexType rdf:type rdfs:Datatype .

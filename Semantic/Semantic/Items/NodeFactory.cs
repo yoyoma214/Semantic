@@ -6,6 +6,7 @@ using CodeHelper.Core.Services;
 using CodeHelper.Items.Semantic;
 using CodeHelper.Items.Antlr4;
 using CodeHelper.Items.Sparql;
+using CodeHelper.Items.Swrl;
 //using CodeHelper.Items.DataModel;
 //using CodeHelper.Items.ViewModel;
 //using CodeHelper.Items.WorkFlow;
@@ -78,6 +79,9 @@ namespace CodeHelper.Items
 
             if (nodeType == Dict.NodeType.Sparql)
                 node = new SparqlDirectoryNode();
+
+            if (nodeType == Dict.NodeType.Swrl)
+                node = new SwrlDirectoryNode();
 
             //if (nodeType == Dict.NodeType.XmlModelSet)
             //    node = new XmlModelSetNode();

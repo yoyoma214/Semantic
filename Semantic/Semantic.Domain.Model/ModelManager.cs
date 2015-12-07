@@ -199,6 +199,10 @@ namespace CodeHelper.Domain.Model
             {
                 model = new Domain.Model.SparqlModels.SparqlModel();
             }
+            else if (extension == Dict.Extenstions.Swrl_Extension)
+            {
+                model = new Domain.Model.SwrlModels.SwrlModel();
+            }
             model.FileId = Guid.NewGuid();
 
             model.File = file;

@@ -139,11 +139,15 @@ namespace CodeHelper.Domain.EditorController
             {
                 //如果插入点行后面空白则插入空格
                 var line = this.editorContainer.Editor.Document.GetLineSegmentForOffset(offset);
-                
-                var ss = this.editorContainer.Editor.Document.GetText(offset + 1 , line.Offset - offset + line.Length);
-                
-                if ( String.IsNullOrWhiteSpace(ss))
-                    text += " ";
+
+                var ss = this.editorContainer.Editor.Document.GetText(line);
+
+                if (ss.EndsWith(" "))
+                {
+                    ss = this.editorContainer.Editor.Document.GetText(offset + 1, line.Offset - offset + line.Length);
+                    if (String.IsNullOrWhiteSpace(ss))
+                        text += " ";
+                }
             }
 
             TextLocation tl =

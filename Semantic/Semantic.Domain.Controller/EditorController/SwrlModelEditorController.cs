@@ -13,35 +13,27 @@ using System.Threading;
 using CodeHelper.Core.EditorController;
 using CodeHelper.Domain.Model;
 using CodeHelper.Editors;
-using CodeHelper.Domain.Controller.UI;
+using CodeHelper.Core.Services;
 using ICSharpCode.TextEditor;
 using CodeHelper.Core.Parser;
-using CodeHelper.Core.Services;
+using CodeHelper.Domain.Controller.UI;
 using CodeHelper.Core.Editor;
 
 namespace CodeHelper.Domain.EditorController
 {
-    public class TurtleModelEditorController : BaseEditorController
+    public class SwrlModelEditorController : BaseEditorController
     {
-        public TurtleModelEditorController()
-            : base()
-        {            
-        }
-
         public string Text { get; set; }
 
         protected override void OnInputChar(char c, int offset, System.Drawing.Point location)
         {
-            if (Char.IsWhiteSpace(c) || ".#;".Contains(c))
+            if (Char.IsWhiteSpace(c) || ".#;{}\"',;/\\".Contains(c))
                 return;
 
-            if (c == ':' || c == '@' || c == '^')// || (c != ' ' && c !='\t' && c != '\n' ))
+            if (c == '?' || c == '$' || c == '^' || c == '@')
             {
                 this.model.Fake = false;
                 var module = ModelManager.Instance().GetParseModule(this.model.FileId);
-                if (module == null)
-                    return;
-
                 module.Fake = false;
 
                 if (c == '^')
@@ -79,9 +71,9 @@ namespace CodeHelper.Domain.EditorController
                 this.model.Content = this.editorContainer.Text;
                 var caret = this.editorContainer.Editor.ActiveTextAreaControl.Caret;
                 this.model.Caret = new MyCaret() { Line = caret.Line, Column = caret.Column + 1, Offset = caret.Offset };
-
                 this.model.Caret.Column -= 1;
-
+                this.model.Caret.FakeColumn = this.model.Caret.Column;
+                var prevText = c.ToString();
                 //前面可以是换行符或者制表符
                 if (this.model.Content.Length < 1) return;
 
@@ -98,15 +90,16 @@ namespace CodeHelper.Domain.EditorController
                 for (var i = ss.Length - 1; i > 0; i--)
                 {
                     var ch = ss[i];
-                    this.model.Caret.Offset -= 1;
-                    this.model.Caret.Column -= 1;
+                    if (char.IsWhiteSpace(ch) || ",;".Contains(ch))
+                        break;
 
-                    if (char.IsWhiteSpace(ch))
-                        break; ;
+                    //this.model.Caret.Offset -= 1;
+                    this.model.Caret.FakeColumn -= 1;
+                    prevText = ch + prevText;
                 }
 
                 model.Fake = true;
-                OnIntelligence(location, offset, c.ToString(), false);
+                OnIntelligence(location, offset, prevText, false);
             }
         }
 
@@ -119,7 +112,7 @@ namespace CodeHelper.Domain.EditorController
 
         void DoSense(Point location, int offset, string prevText, IParseModule module, bool fake)
         {
-            TurtleSenseMenu m = new TurtleSenseMenu();
+            SwrlSenseMenu m = new SwrlSenseMenu();
 
             m.SetData(prevText, module,fake);
             var l = this.editorContainer.Editor.PointToScreen(new Point(0, 0));
@@ -127,7 +120,7 @@ namespace CodeHelper.Domain.EditorController
             m.Location = new Point(location.X + l.X, location.Y + l.Y);
             m.Show();
 
-            m.OnCompleteInput += new TurtleSenseMenu.CompleteInput((s) =>
+            m.OnCompleteInput += new SwrlSenseMenu.CompleteInput((s) =>
             {
                 DoInput(prevText,offset, s);
             });
@@ -149,7 +142,7 @@ namespace CodeHelper.Domain.EditorController
 
                 var ss = this.editorContainer.Editor.Document.GetText(line);
 
-                if (this.editorContainer.Editor.Document.TextLength > line.Offset - offset + line.Length)
+                if (ss.EndsWith(" "))
                 {
                     ss = this.editorContainer.Editor.Document.GetText(offset + 1, line.Offset - offset + line.Length);
                     if (String.IsNullOrWhiteSpace(ss))
@@ -222,38 +215,20 @@ namespace CodeHelper.Domain.EditorController
             GlobalService.ModelManager.OnParsed += d;
         }
 
-        protected override void OnTextChanged(object sender, EventArgs e)
-        {           
-            base.OnTextChanged(sender, e);            
-        }
-
         protected override void OnKeyPreview(KeyEventArgs e, Point location)
         {
             if (e.KeyData == (Keys.Control | Keys.S))
             {
                 this.SaveFile();
             }
-            //if (e.KeyData == (Keys.Control | Keys.J))
-            //{
-            //    var model = ModelManager.Instance().GetModel(this.model.FileId);
-            //    if (model == null)
-            //        return;
-
-            //    model.Modifed = true;
-
-            //    var offset = this.editorContainer.Editor.ActiveTextAreaControl.Caret.Offset;
-
-            //    OnIntelligence(location, offset, "");
-            //}
             base.OnKeyPreview(e, location);
         }
-
         protected override void OnBind()
         {
             //base.OnBind();
 
             this.editorContainer.Editor.Document.HighlightingStrategy =
-                HighlightingStrategyFactory.CreateHighlightingStrategy("DataModel");
+                HighlightingStrategyFactory.CreateHighlightingStrategy("SparQL");
 
             this.editorContainer.Editor.Document.FoldingManager.FoldingStrategy =
                 new XM_ParserFoldingStrategy();           

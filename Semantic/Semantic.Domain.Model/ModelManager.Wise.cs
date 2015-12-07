@@ -20,6 +20,7 @@ using CodeHelper.Core.Parse.ParseResults.Turtles;
 using CodeHelper.Core.Parse.ParseResults.Antlrs;
 using CodeHelper.Core.Parse.ParseResults.Sparqls;
 using CodeHelper.Core.Infrastructure.Command;
+using CodeHelper.Core.Parse.ParseResults.Swrls;
 //using CodeHelper.Core.Parse.ParseResults.DataViews;
 //using CodeHelper.Core.Parse.ParseResults.ViewModels;
 //using CodeHelper.Core.Parse.ParseResults.Workflows;
@@ -288,6 +289,15 @@ namespace CodeHelper.Domain.Model
                                     module = new SparqlModule();
                                     ((SparqlModule)module).Root = complier.Parse(model.Content);
                                     ((SparqlModule)module).Caret = model.Caret;
+                                    module.Name = System.IO.Path.GetFileNameWithoutExtension(model.File);
+                                }
+                                else if (model.ParseType == Core.Parser.ParseType.SwrlModel)
+                                {
+                                    var complier = new SwrlComplier();
+
+                                    module = new SwrlModule();
+                                    ((SwrlModule)module).Root = complier.Parse(model.Content);
+                                    ((SwrlModule)module).Caret = model.Caret;
                                     module.Name = System.IO.Path.GetFileNameWithoutExtension(model.File);
                                 }
                             }
