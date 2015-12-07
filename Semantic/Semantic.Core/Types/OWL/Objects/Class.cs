@@ -5,7 +5,7 @@ using System.Text;
 using CodeHelper.Core.Types.Base;
 using CodeHelper.Core.Types.RDF.Verbs;
 
-namespace CodeHelper.Core.Types.RDF.Objects
+namespace CodeHelper.Core.Types.OWL.Objects
 {
     class Class : BaseObject
     {
@@ -21,7 +21,7 @@ namespace CodeHelper.Core.Types.RDF.Objects
         {
             get
             {
-                return "rdfs:Class";
+                return "owl:Class";
                 //return "Class";
             }
         }

@@ -111,9 +111,9 @@ namespace CodeHelper.Core.Parse.ParseResults.Turtles
     {
         public string IRIREF { get; set; }
 
-        internal void Parse(TurtleContext context)
-        {
-            context.Imports.Add(":", this.IRIREF);
+        internal void Parse(TurtleContext context)        
+        {           
+            //context.Imports.Add(":", this.IRIREF);
         }
     }
 

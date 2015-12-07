@@ -81,7 +81,7 @@ namespace CodeHelper.Core.Types.RDF.Verbs
                 {
                     var ns = module.GetLocalNameSpace(ob.NameSpace);
                     if (ns == null) ns = ":";
-                    rslt.Add(ns + ob.Name);
+                    rslt.Add(ob.Name);
                 }
             }
 

@@ -391,6 +391,9 @@ namespace CodeHelper.Domain.Model
             //        return OWLTypes.Instance().XSD_Typtes[name];
             //}
 
+            if (string.IsNullOrWhiteSpace(nameSpace) || string.IsNullOrWhiteSpace(name))
+                return null;
+
             var obj = ResloveBuildinItem(nameSpace, name);
             if (obj != null)
                 return obj;

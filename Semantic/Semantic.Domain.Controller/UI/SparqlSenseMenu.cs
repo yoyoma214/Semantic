@@ -10,6 +10,7 @@ using CodeHelper.Core.Types;
 using CodeHelper.Core.Services;
 using CodeHelper.Core.Parser;
 using CodeHelper.Core.Parse.ParseResults;
+using CodeHelper.Core.Parse.ParseResults.Sparqls;
 
 namespace CodeHelper.Domain.Controller.UI
 {
@@ -258,12 +259,12 @@ namespace CodeHelper.Domain.Controller.UI
                 return;
 
             var model = GlobalService.ModelManager.GetModel(module.FileId);
-            module.Fake = model.Fake;
+            //module.Fake = model.Fake;
             if (model.Fake && module.Subject == null && module.Verb == null && module.Object == null)//对应虚拟输入并且为主键
             {
                 this.data.AddRange(SparqlSensor.SubjectSensor.Sensor(prevText.Trim(), module));
             }
-            else if ( prevText.EndsWith("^^"))
+            else if (prevText.EndsWith("^^"))
             {
                 this.data.Clear();
 
@@ -299,20 +300,30 @@ namespace CodeHelper.Domain.Controller.UI
                 {
                     this.data.AddRange(SparqlSensor.VerbSensor.Sensor(prevText.Trim(), module));
                 }
-                //foreach (var ns in module.UsingNameSpaces)
-                //{
-                //    var ps = GlobalService.ModelManager.lis(ns.Value);
-                //    foreach (var property in ps)
-                //        this.data.Add(property.Name);
-                //}
-            }          
-            if ( prevText.EndsWith("^^"))
+            }
+            else
+            {
+            }
+
+            #region 对关键字和函数的提示
+            if (!prevText.Contains("?:") && module.Subject == null && module.Verb == null && module.Object == null)
+            {
+                this.data.AddRange(QLTypes.Instance().AllKeyWords());
+                this.data.AddRange(QLTypes.Instance().AllFunctions());
+            }
+
+            #endregion
+
+            if (prevText.EndsWith("^^"))
                 this.textBox1.Text = ":";
-            else            
-            this.textBox1.Text = prevText.Trim();
+            else
+                this.textBox1.Text = prevText.Trim();
+
             this.textBox1.SelectionStart = this.textBox1.Text.Length;
             if (prevText == "")
                 textBox1_TextChanged(null, null);
+
+
         }
 
         protected override void OnKeyDown(KeyEventArgs e)
@@ -345,6 +356,8 @@ namespace CodeHelper.Domain.Controller.UI
 
             m_selectIndex = -1;
 
+            this.data.Sort();
+
             foreach (var t in this.data)
             {
                 if (t.ToLower().Contains(this.textBox1.Text.Trim().ToLower()))
@@ -361,6 +374,7 @@ namespace CodeHelper.Domain.Controller.UI
 
             this.OnSelect(null);  
         }
+        
     }
 
     public class SparqlSensor
@@ -541,6 +555,9 @@ namespace CodeHelper.Domain.Controller.UI
             public static List<String> Sensor(string prevText, IParseModule module)
             {
                OWLName owlName = module.ResloveName(module.Verb);
+
+               if (String.IsNullOrWhiteSpace(owlName.NameSpace) || String.IsNullOrWhiteSpace(owlName.LocalName))
+                   return new List<string>();
 
                 foreach (var ns in module.UsingNameSpaces)
                 {

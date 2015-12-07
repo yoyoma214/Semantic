@@ -61,7 +61,7 @@ ECHAR :'\\' [tbnrf"\'\\] ;
 //WS :#x20 |  #x9 |  #xD |  #xA ;/* #x20=space #x9=character tabulation #xD=carriage return #xA=new line */ 
 WS :('\u0020' |  '\u0009' |  '\u000D' |  '\u000A') {Skip();};/* #x20=space #x9=character tabulation #xD=carriage return #xA=new line */ 
 COMMENT:
-            ('#'  .*? ('\r'| '\r\n')) {Skip();}
+            ('#'  ~['\r''\n']*) {Skip();}
        ;
 ANON :'[' WS* ']' ;
 //PN_CHARS_BASE :[A-Z] |  [a-z] |  [#x00C0-#x00D6] |  [#x00D8-#x00F6] |  [#x00F8-#x02FF] |  [#x0370-#x037D] |  [#x037F-#x1FFF] |  [#x200C-#x200D] |  [#x2070-#x218F] |  [#x2C00-#x2FEF] |  [#x3001-#xD7FF] |  [#xF900-#xFDCF] |  [#xFDF0-#xFFFD] |  [#x10000-#xEFFFF] ;

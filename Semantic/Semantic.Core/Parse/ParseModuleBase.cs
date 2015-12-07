@@ -146,7 +146,21 @@ namespace CodeHelper.Core.Parse
         public OWLName ResloveName(string mixedName)
         {
             if (mixedName.StartsWith(":"))
-                return new OWLName() { NameSpace = this.NameSpace, LocalName = mixedName.Substring(1) };
+            {
+                if (this.NameSpace != null)
+                    return new OWLName() { NameSpace = this.NameSpace, LocalName = mixedName.Substring(1) };
+                else
+                {
+
+                    foreach (var ns in this.UsingNameSpaces)
+                    {
+                        if (ns.Key == ":")
+                        {
+                            return new OWLName() { NameSpace = ns.Value, LocalName = mixedName.Substring(1) };
+                        }
+                    }
+                }
+            }
 
             var ss = mixedName.Split(new char[]{':'}, StringSplitOptions.RemoveEmptyEntries);
 

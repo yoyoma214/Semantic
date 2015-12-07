@@ -108,7 +108,9 @@ namespace CodeHelper.Core.Parse.ParseResults.Turtles
                 {
                     if (tokenPair.BeginToken.Line == this.Caret.Line + 1)
                     {
-                        if (tokenPair.EndToken.EndCharPositionInLine == this.Caret.Column)
+                        //if (tokenPair.EndToken.EndCharPositionInLine == this.Caret.Column)
+                        if (tokenPair.EndToken.CharPositionInLine <= this.Caret.Column &&
+                            tokenPair.EndToken.EndCharPositionInLine >= this.Caret.Column)
                         {
                             m_matchCaret = true;
                             Console.WriteLine("matched");
@@ -188,7 +190,7 @@ namespace CodeHelper.Core.Parse.ParseResults.Turtles
                             break;
                         }
 
-                        if (obj == "rdfs:Class" || obj == "rdfs:Datatype")//|| obj == "rdfs:subClassOf" || obj == "owl:equivalentClass")
+                        if (obj == "owl:Class" || obj == "rdfs:Datatype")//|| obj == "rdfs:subClassOf" || obj == "owl:equivalentClass")
                         {
 
                             foreach (var subject in this.CurrentSubjects)

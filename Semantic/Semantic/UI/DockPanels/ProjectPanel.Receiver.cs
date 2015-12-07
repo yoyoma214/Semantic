@@ -168,7 +168,7 @@ namespace CodeHelper.UI.DockPanels
         
         bool receiver_OnOpenFile(string file)
         {
-            //var model = GlobalService.ModelManager.MakeSureModel(file);
+            var model = GlobalService.ModelManager.MakeSureModel(file);
             //if ( model != null )
             //{
             //DocumentViewManager.Instance().

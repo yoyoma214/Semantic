@@ -54,9 +54,10 @@ namespace CodeHelper.Core.Types.OWL.Verbs
             var types = GlobalService.ModelManager.ListType(module.UsingNameSpaces.Values.ToList(), null, true);
             foreach (var item in types)
             {
+                var ns2 = module.GetFullNameSpace(item.NameSpace);
                 foreach (var ns in module.UsingNameSpaces)
                 {
-                    if (ns.Value.Equals(item.NameSpace))
+                    if (ns.Value.Equals(ns2))
                         rslt.Add(ns.Key + item.Name);
                 }
 

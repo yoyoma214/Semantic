@@ -27,7 +27,7 @@ namespace CodeHelper.Domain.EditorController
 
         protected override void OnInputChar(char c, int offset, System.Drawing.Point location)
         {
-            if (Char.IsWhiteSpace(c) || ".#;".Contains(c))
+            if (Char.IsWhiteSpace(c) || ".#;{}\"',;/\\".Contains(c))
                 return;
 
             if (c == '?' || c == '$' || c == '^' || c == '@')
@@ -71,9 +71,9 @@ namespace CodeHelper.Domain.EditorController
                 this.model.Content = this.editorContainer.Text;
                 var caret = this.editorContainer.Editor.ActiveTextAreaControl.Caret;
                 this.model.Caret = new MyCaret() { Line = caret.Line, Column = caret.Column + 1, Offset = caret.Offset };
-
                 this.model.Caret.Column -= 1;
-
+                this.model.Caret.FakeColumn = this.model.Caret.Column;
+                var prevText = c.ToString();
                 //前面可以是换行符或者制表符
                 if (this.model.Content.Length < 1) return;
 
@@ -90,15 +90,16 @@ namespace CodeHelper.Domain.EditorController
                 for (var i = ss.Length - 1; i > 0; i--)
                 {
                     var ch = ss[i];
-                    this.model.Caret.Offset -= 1;
-                    this.model.Caret.Column -= 1;
+                    if (char.IsWhiteSpace(ch) || ",;".Contains(ch))
+                        break;
 
-                    if (char.IsWhiteSpace(ch))
-                        break; ;
+                    //this.model.Caret.Offset -= 1;
+                    this.model.Caret.FakeColumn -= 1;
+                    prevText = ch + prevText;
                 }
 
                 model.Fake = true;
-                OnIntelligence(location, offset, c.ToString(), false);
+                OnIntelligence(location, offset, prevText, false);
             }
         }
 
@@ -136,7 +137,13 @@ namespace CodeHelper.Domain.EditorController
             
             if (!text.EndsWith(" "))
             {
-                text += " ";
+                //如果插入点行后面空白则插入空格
+                var line = this.editorContainer.Editor.Document.GetLineSegmentForOffset(offset);
+                
+                var ss = this.editorContainer.Editor.Document.GetText(offset + 1 , line.Offset - offset + line.Length);
+                
+                if ( String.IsNullOrWhiteSpace(ss))
+                    text += " ";
             }
 
             TextLocation tl =

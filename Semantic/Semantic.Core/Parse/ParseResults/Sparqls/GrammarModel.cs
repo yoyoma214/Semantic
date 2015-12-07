@@ -504,7 +504,7 @@ namespace CodeHelper.Core.Parse.ParseResults.Sparqls
                 return;
             }
 
-            context.Base = new Base() { Value = this.IRIREF };
+            context.Base = new BaseUrl() { Value = this.IRIREF };
         }
 
         public void Wise(SparqlContext context)
@@ -7960,6 +7960,8 @@ namespace CodeHelper.Core.Parse.ParseResults.Sparqls
 
         public void Parse(SparqlContext context)
         {
+            context.Visit = VisitType.Verb;
+
             if (this.VarOrIri != null)
             {
                 this.VarOrIri.Parse(context);
@@ -8029,6 +8031,7 @@ namespace CodeHelper.Core.Parse.ParseResults.Sparqls
 
         public void Parse(SparqlContext context)
         {
+            context.Visit = VisitType.Object;
 
             for (int i = 0; i < this.@objects.Count(); i++)
             {
@@ -8098,7 +8101,7 @@ namespace CodeHelper.Core.Parse.ParseResults.Sparqls
 
         public void Parse(SparqlContext context)
         {
-
+            context.Visit = VisitType.Object;
             if (this.GraphNode != null)
             {
                 this.GraphNode.Parse(context);
@@ -8176,6 +8179,7 @@ namespace CodeHelper.Core.Parse.ParseResults.Sparqls
 
             if (this.VarOrTerm != null)
             {
+                context.Visit = VisitType.Subject;
                 this.VarOrTerm.Parse(context);
             }
 
@@ -8194,6 +8198,7 @@ namespace CodeHelper.Core.Parse.ParseResults.Sparqls
                 this.PropertyListPath.Parse(context);
             }
 
+            context.FlushTriple(this);
         }
 
         public void Wise(SparqlContext context)
@@ -8569,7 +8574,7 @@ namespace CodeHelper.Core.Parse.ParseResults.Sparqls
 
         public void Parse(SparqlContext context)
         {
-
+            context.Visit = VisitType.Verb;
             if (this.Path != null)
             {
                 this.Path.Parse(context);
@@ -8638,6 +8643,7 @@ namespace CodeHelper.Core.Parse.ParseResults.Sparqls
 
         public void Parse(SparqlContext context)
         {
+            context.Visit = VisitType.Verb;
 
             if (this.Var != null)
             {
@@ -8708,6 +8714,7 @@ namespace CodeHelper.Core.Parse.ParseResults.Sparqls
 
         public void Parse(SparqlContext context)
         {
+            context.Visit = VisitType.Object;
 
             for (int i = 0; i < this.ObjectPaths.Count(); i++)
             {
@@ -8777,6 +8784,7 @@ namespace CodeHelper.Core.Parse.ParseResults.Sparqls
 
         public void Parse(SparqlContext context)
         {
+            context.Visit = VisitType.Object;
 
             if (this.GraphNodePath != null)
             {
@@ -10262,6 +10270,8 @@ namespace CodeHelper.Core.Parse.ParseResults.Sparqls
 
         public void Parse(SparqlContext context)
         {
+            //context.Visit = VisitType.Subject;
+
             if (this.Var != null)
             {
                 this.Var.Parse(context);
@@ -10476,6 +10486,8 @@ namespace CodeHelper.Core.Parse.ParseResults.Sparqls
 
             this.Text = var;
             context.AddVariable(var, this);
+
+            context.AddTriple(this.Text, this);
         }
 
         public void Wise(SparqlContext context)
@@ -13483,6 +13495,8 @@ namespace CodeHelper.Core.Parse.ParseResults.Sparqls
         public void Parse(SparqlContext context)
         {
             this.Text = this.PNAMELN ?? this.PNAMENS;
+
+            context.AddTriple(this.Text, this);
         }
 
         public void Wise(SparqlContext context)
@@ -13510,6 +13524,8 @@ namespace CodeHelper.Core.Parse.ParseResults.Sparqls
                     return;
                 }
             }
+
+            //context.AddTriple(this.Text, this);
         }
 
         public void Format(SparqlContext context, IndentStringBuilder builder)

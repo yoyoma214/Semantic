@@ -12,6 +12,13 @@ namespace CodeHelper.Core.Editor
     {
         public int Offset { get; set; }
         public int Line { get; set; }
+        /// <summary>
+        /// 用于提示的优先考虑
+        /// </summary>
         public int Column { get; set; }
+        /// <summary>
+        /// 用于提示的次要考虑
+        /// </summary>
+        public int FakeColumn { get; set; }
     }
 }

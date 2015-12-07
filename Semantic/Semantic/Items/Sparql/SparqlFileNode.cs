@@ -11,6 +11,7 @@ using CodeHelper.UI;
 using CodeHelper.Domain.Model;
 using CodeHelper.Common;
 using CodeHelper.Core.Parse.ParseResults.Antlrs;
+using CodeHelper.Commands.SparqlModel;
 
 namespace CodeHelper.Items.Sparql
 {
@@ -167,12 +168,12 @@ namespace CodeHelper.Items.Sparql
         {
             var cmdHost = CommandHostManager.Instance().Get(
                 CommandHostManager.HostType.OWL);
-            var cmd = cmdHost.GetCommand(Dict.Commands.OpenTurtleModel)
-                as OpenTurtleModelCommand;
+            var cmd = cmdHost.GetCommand(Dict.Commands.OpenSparqlModel)
+                as OpenSparqlModelCommand;
 
             cmd.File = this.FullName;
 
-            cmdHost.RunCommand(Dict.Commands.OpenTurtleModel);
+            cmdHost.RunCommand(Dict.Commands.OpenSparqlModel);
 
             base.OnDoubleClick();
         }

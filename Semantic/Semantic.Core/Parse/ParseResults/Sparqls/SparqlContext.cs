@@ -19,7 +19,7 @@ namespace CodeHelper.Core.Parse.ParseResults.Sparqls
         }
     }
 
-    public class Base
+    public class BaseUrl
     {
         public String Value { get; set; }
     }
@@ -74,8 +74,9 @@ namespace CodeHelper.Core.Parse.ParseResults.Sparqls
         public VisitType Visit { get; set; }
 
         public MyCaret Caret { get; set; }
+        public Boolean MatchByFake { get; set; }
 
-        public Base Base{get;set;}
+        public BaseUrl Base{get;set;}
         public List<Prefix> Prefixs { get; set; }
         public List<String> Variables { get; set; }
         public List<ParseErrorInfo> Errors { get; set; }
@@ -153,9 +154,17 @@ namespace CodeHelper.Core.Parse.ParseResults.Sparqls
                 {
                     if (tokenPair.BeginToken.Line == this.Caret.Line + 1)
                     {
-                        if (tokenPair.EndToken.EndCharPositionInLine == this.Caret.Column)
+                        if (tokenPair.EndToken.CharPositionInLine <= this.Caret.Column &&
+                            tokenPair.EndToken.EndCharPositionInLine >= this.Caret.Column)
                         {
                             m_matchCaret = true;
+                            Console.WriteLine("matched");
+                        }
+                        else if (tokenPair.EndToken.CharPositionInLine <= this.Caret.FakeColumn &&
+                            tokenPair.EndToken.EndCharPositionInLine >= this.Caret.FakeColumn)
+                        {
+                            m_matchCaret = true;
+                            MatchByFake = true;
                             Console.WriteLine("matched");
                         }
                     }

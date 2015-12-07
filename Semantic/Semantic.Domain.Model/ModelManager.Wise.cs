@@ -287,6 +287,7 @@ namespace CodeHelper.Domain.Model
 
                                     module = new SparqlModule();
                                     ((SparqlModule)module).Root = complier.Parse(model.Content);
+                                    ((SparqlModule)module).Caret = model.Caret;
                                     module.Name = System.IO.Path.GetFileNameWithoutExtension(model.File);
                                 }
                             }
