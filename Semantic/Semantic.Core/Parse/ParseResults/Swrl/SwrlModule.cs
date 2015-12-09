@@ -24,9 +24,11 @@ namespace CodeHelper.Core.Parse.ParseResults.Swrls
 
         public MyCaret Caret { get; set; }
 
+        private SwrlContext context { get; set; }
+
         public override void Initialize()
         {
-            var context = new SwrlContext();
+            context = new SwrlContext();
             context.File = this.File;
             context.FileId = this.FileId;
             this.Root.Parse(context);
@@ -52,6 +54,11 @@ namespace CodeHelper.Core.Parse.ParseResults.Swrls
         public void GenVisitCSharp(IndentStringBuilder builder)
         {
             //this.Root.GenVisitCSharp(builder);
+        }
+
+        public void Format(IndentStringBuilder builder)
+        {
+            this.Root.Format(context, builder);
         }
 
         public override Parser.ParseType ParseType

@@ -98,7 +98,7 @@ namespace CodeHelper.Core.Parse.ParseResults.Turtles
             if (context.Imports.ContainsKey(this.PNAME_NS))
             {
                 context.Errors.Add(new ParseErrorInfo() { 
-                 ErrorType = ErrorType.Error, Line = this.BeginToken.Line, CharPositionInLine = this.BeginToken.CharPositionInLine,
+                 ErrorType = ErrorType.Wise, Line = this.BeginToken.Line, CharPositionInLine = this.BeginToken.CharPositionInLine,
                   Message = "名字重复"
                 });
                 return;

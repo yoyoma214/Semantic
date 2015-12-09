@@ -308,7 +308,7 @@ namespace CodeHelper.Domain.Model
                             {
                                 FileId = model.FileId,
                                 File = model.File,
-                                ErrorType = Core.Error.ErrorType.Error,
+                                ErrorType = Core.Error.ErrorType.Wise,
                                 Message = "模块解析错误: " + e.Message
                             });
                         }
@@ -361,7 +361,7 @@ namespace CodeHelper.Domain.Model
                         {
                             FileId = model.FileId,
                             File = model.File,
-                            ErrorType = Core.Error.ErrorType.Error,
+                            ErrorType = Core.Error.ErrorType.Wise,
                             Message = "模块解析错误: " + e.Message
                         });
                         Console.Out.WriteLine(e.StackTrace);
@@ -420,7 +420,7 @@ namespace CodeHelper.Domain.Model
                             {
                                 FileId = x.FileId,
                                 File = x.File,
-                                ErrorType = Core.Error.ErrorType.Error,
+                                ErrorType = Core.Error.ErrorType.Wise,
                                 Message = "模块语义错误: " + e.Message
                             });
                         }
@@ -432,7 +432,7 @@ namespace CodeHelper.Domain.Model
                     this.AddError(new Core.Error.ParseErrorInfo()
                     {
                         File = null,
-                        ErrorType = Core.Error.ErrorType.Error,
+                        ErrorType = Core.Error.ErrorType.Wise,
                         Message = "语义分析系统错误" + e.Message
                     });
                 }
@@ -461,7 +461,7 @@ namespace CodeHelper.Domain.Model
                         File = file,
                         Line = type.Line,
                         CharPositionInLine = type.CharPositionInLine,
-                        ErrorType = ErrorType.Error,
+                        ErrorType = ErrorType.Wise,
                         Message = string.Format("类型重复:{0}", type.FullName)
                     });
                 }));
@@ -644,7 +644,7 @@ namespace CodeHelper.Domain.Model
                         this.AddError(new ParseErrorInfo()
                         {
                             CharPositionInLine = x.TokenPair.BeginToken.CharPositionInLine,
-                            ErrorType = ErrorType.Error,
+                            ErrorType = ErrorType.Wise,
                             File = module.File,
                             FileId = module.FileId,
                             Line = x.TokenPair.BeginToken.Line,
@@ -941,7 +941,7 @@ namespace CodeHelper.Domain.Model
                             FileId = module.FileId,
                             File = module.File,
                             CharPositionInLine = p.Position.BeginToken.CharPositionInLine,
-                            ErrorType = ErrorType.Error,
+                            ErrorType = ErrorType.Wise,
                             Line = p.Position.BeginToken.Line,
                             Message = error
                         });
@@ -953,7 +953,7 @@ namespace CodeHelper.Domain.Model
                             FileId = module.FileId,
                             File = module.File,
                             CharPositionInLine = p.Position.BeginToken.CharPositionInLine,
-                            ErrorType = ErrorType.Error,
+                            ErrorType = ErrorType.Wise,
                             Line = p.Position.BeginToken.Line,
                             Message = string.Format("当前上下文无此类型{0}", p.Type)
                         });
@@ -965,7 +965,7 @@ namespace CodeHelper.Domain.Model
                             FileId = module.FileId,
                             File = module.File,
                             CharPositionInLine = p.Position.BeginToken.CharPositionInLine,
-                            ErrorType = ErrorType.Error,
+                            ErrorType = ErrorType.Wise,
                             Line = p.Position.BeginToken.Line,
                             Message = string.Format("当前上下文有多个此类型{0}:{1}"
                             , p.Type

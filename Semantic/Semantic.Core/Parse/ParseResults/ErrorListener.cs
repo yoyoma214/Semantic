@@ -157,7 +157,7 @@ namespace CodeHelper.Core.Parse.ParseResults
             {
                 Line = node.Symbol.Line,
                 CharPositionInLine = node.Symbol.StartIndex,
-                ErrorType = ErrorType.Error,
+                ErrorType = ErrorType.Wise,
                  Message = "无法识别:" + node.GetText()
             });            
         }

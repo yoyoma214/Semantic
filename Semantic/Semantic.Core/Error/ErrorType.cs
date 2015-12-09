@@ -7,6 +7,6 @@ namespace CodeHelper.Core.Error
 {
     public enum ErrorType
     {
-        Info,Error
+        Info, Wise, Syntax
     }
 }

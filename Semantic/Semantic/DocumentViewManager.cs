@@ -14,6 +14,9 @@ using System.Diagnostics;
 using CodeHelper.Core.Command;
 using CodeHelper.Commands.DataModel;
 using CodeHelper.Core.Parser;
+using CodeHelper.Core.Parse.ParseResults.Swrls;
+using CodeHelper.Common;
+using CodeHelper.Core.Error;
 
 namespace CodeHelper
 {
@@ -89,6 +92,10 @@ namespace CodeHelper
             docView.TabPageContextMenu.MenuItems.Add(new MenuItem("除此之外全关闭", menuCloseOther_Click));
             docView.TabPageContextMenu.MenuItems.Add(new MenuItem("复制完整路径", menuCopyPath_Click));
             docView.TabPageContextMenu.MenuItems.Add(new MenuItem("打开所在的文件夹", menuOpenFolder_Click));
+            if (docView.FileName.EndsWith(Dict.Extenstions.Swrl_Extension))
+            {
+                docView.TabPageContextMenu.MenuItems.Add(new MenuItem("格式美化", menuFormat_Click));
+            }
             foreach (MenuItem menu in docView.TabPageContextMenu.MenuItems)
             {
                 menu.Tag = docView;
@@ -350,6 +357,31 @@ namespace CodeHelper
             var psi = new ProcessStartInfo("Explorer.exe");
             psi.Arguments = "/e," + Path.GetDirectoryName(model.File);
             System.Diagnostics.Process.Start(psi);
+        }
+
+        public void menuFormat_Click(object sender, EventArgs args)
+        {
+            var docView = ((MenuItem)sender).Tag as FileTabPanel;
+            var model = GlobalService.ModelManager.GetModel((Guid)docView.Tag);
+            if (model == null)
+            {
+                MessageBox.Show("不能解析当前文档");
+                return;
+            }
+
+            var module = GlobalService.ModelManager.GetParseModule(model.FileId) as SwrlModule;
+            foreach (var error in module.Errors)
+            {
+                if (error.ErrorType == ErrorType.Syntax)
+                {
+                    MessageBox.Show("语法有问题，请先解决");
+                    return;
+                }
+            }
+ 
+            var builder = new IndentStringBuilder();
+            module.Format(builder);
+            GlobalService.EditorContextManager.CurrentContext.EditorContainer.Text = builder.ToString();          
         }
     }
 }

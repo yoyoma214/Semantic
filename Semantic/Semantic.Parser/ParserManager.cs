@@ -100,7 +100,7 @@ namespace CodeHelper.Parser
                     {
                         FileId = model.FileId,
                         File = model.File,
-                        ErrorType = Core.Error.ErrorType.Error,
+                        ErrorType = Core.Error.ErrorType.Wise,
                         Message = "模块解析错误: " + e.Message
                     });
                 }
@@ -136,7 +136,7 @@ namespace CodeHelper.Parser
                 {
                     FileId = model.FileId,
                     File = model.File,
-                    ErrorType = Core.Error.ErrorType.Error,
+                    ErrorType = Core.Error.ErrorType.Wise,
                     Message = "模块解析错误: " + e.Message
                 });
                 Console.Out.WriteLine(e.StackTrace);

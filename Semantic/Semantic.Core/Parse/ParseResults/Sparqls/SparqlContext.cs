@@ -89,7 +89,7 @@ namespace CodeHelper.Core.Parse.ParseResults.Sparqls
                 {
                     CharPositionInLine = token.BeginToken.CharPositionInLine,
                     Line = token.BeginToken.Line,
-                    ErrorType = ErrorType.Error,
+                    ErrorType = ErrorType.Wise,
                     FileId = this.FileId,
                     File = File,
                     Message = msg
