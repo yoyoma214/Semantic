@@ -66,7 +66,6 @@ namespace CodeHelper.Core.Parse.ParseResults.Swrls
 
         public void Format(SwrlContext context, IndentStringBuilder builder)
         {
-
             for (int i = 0; i < this.AxiomList.Count(); i++)
             {
                 this.AxiomList[i].Format(context, builder);
@@ -263,6 +262,8 @@ namespace CodeHelper.Core.Parse.ParseResults.Swrls
         { get; set; }
         public String HEAD
         { get; set; }
+        public Head Head
+        { get; set; }
 
         public void Parse(SwrlContext context)
         {
@@ -277,6 +278,10 @@ namespace CodeHelper.Core.Parse.ParseResults.Swrls
                 this.Atoms[i].Parse(context);
             }
 
+            if (this.Head != null)
+            {
+                this.Head.Parse(context);
+            }
         }
 
         public void Wise(SwrlContext context)
@@ -292,21 +297,32 @@ namespace CodeHelper.Core.Parse.ParseResults.Swrls
                 this.Atoms[i].Wise(context);
             }
 
+            if (this.Head != null)
+            {
+                this.Head.Wise(context);
+            }
+
         }
 
         public void Format(SwrlContext context, IndentStringBuilder builder)
         {
-
+            builder.AppendFormatLine(DLSAFERULE + "(");
             for (int i = 0; i < this.Annotations.Count(); i++)
             {
                 this.Annotations[i].Format(context, builder);
             }
-
+            builder.IncreaseIndentLine(BODY + "(");
             for (int i = 0; i < this.Atoms.Count(); i++)
             {
                 this.Atoms[i].Format(context, builder);
             }
-
+            builder.AppendLine(HEAD + "(");
+            if (this.Head != null)
+            {
+                this.Head.Format(context, builder);
+            }
+            builder.AppendLine(")");
+            builder.DecreaseIndentLine(")");
         }
 
         public void BuildQuery(SwrlContext context, IndentStringBuilder builder)
@@ -320,6 +336,11 @@ namespace CodeHelper.Core.Parse.ParseResults.Swrls
             for (int i = 0; i < this.Atoms.Count(); i++)
             {
                 this.Atoms[i].BuildQuery(context, builder);
+            }
+
+            if (this.Head != null)
+            {
+                this.Head.BuildQuery(context, builder);
             }
 
         }
@@ -337,6 +358,11 @@ namespace CodeHelper.Core.Parse.ParseResults.Swrls
                 this.Atoms[i].BuildMock(context, builder);
             }
 
+            if (this.Head != null)
+            {
+                this.Head.BuildMock(context, builder);
+            }
+
         }
 
         public void BuildOther(SwrlContext context, IndentStringBuilder builder)
@@ -346,6 +372,82 @@ namespace CodeHelper.Core.Parse.ParseResults.Swrls
             {
                 this.Annotations[i].BuildOther(context, builder);
             }
+
+            for (int i = 0; i < this.Atoms.Count(); i++)
+            {
+                this.Atoms[i].BuildOther(context, builder);
+            }
+
+            if (this.Head != null)
+            {
+                this.Head.BuildOther(context, builder);
+            }
+
+        }
+    }
+
+
+    public class Head : TokenPair
+    {
+        public Head()
+        {
+            this.Atoms = new List<Atom>();
+        }
+        public List<Atom> Atoms
+        { get; set; }
+
+        public void Parse(SwrlContext context)
+        {
+
+            for (int i = 0; i < this.Atoms.Count(); i++)
+            {
+                this.Atoms[i].Parse(context);
+            }
+
+        }
+
+        public void Wise(SwrlContext context)
+        {
+
+            for (int i = 0; i < this.Atoms.Count(); i++)
+            {
+                this.Atoms[i].Wise(context);
+            }
+
+        }
+
+        public void Format(SwrlContext context, IndentStringBuilder builder)
+        {
+
+            for (int i = 0; i < this.Atoms.Count(); i++)
+            {
+                this.Atoms[i].Format(context, builder);
+            }
+
+        }
+
+        public void BuildQuery(SwrlContext context, IndentStringBuilder builder)
+        {
+
+            for (int i = 0; i < this.Atoms.Count(); i++)
+            {
+                this.Atoms[i].BuildQuery(context, builder);
+            }
+
+        }
+
+        public void BuildMock(SwrlContext context, IndentStringBuilder builder)
+        {
+
+            for (int i = 0; i < this.Atoms.Count(); i++)
+            {
+                this.Atoms[i].BuildMock(context, builder);
+            }
+
+        }
+
+        public void BuildOther(SwrlContext context, IndentStringBuilder builder)
+        {
 
             for (int i = 0; i < this.Atoms.Count(); i++)
             {
@@ -692,7 +794,7 @@ namespace CodeHelper.Core.Parse.ParseResults.Swrls
 
         public void Format(SwrlContext context, IndentStringBuilder builder)
         {
-
+            builder.IncreaseIndentLine(DECLARATION + "(");
             if (this.AxiomAnnotations != null)
             {
                 this.AxiomAnnotations.Format(context, builder);
@@ -702,6 +804,7 @@ namespace CodeHelper.Core.Parse.ParseResults.Swrls
             {
                 this.Entity.Format(context, builder);
             }
+            builder.DecreaseIndentLine(")");
 
         }
 
@@ -756,29 +859,238 @@ namespace CodeHelper.Core.Parse.ParseResults.Swrls
         public Entity()
         {
         }
+        public ClassEntity ClassEntity
+        { get; set; }
+        public DataTypeEntity DataTypeEntity
+        { get; set; }
+        public ObjectPropertyEntity ObjectPropertyEntity
+        { get; set; }
+        public DataPropertyEntity DataPropertyEntity
+        { get; set; }
+        public AnnotationPropertyEntity AnnotationPropertyEntity
+        { get; set; }
+        public NamedIndividualEntity NamedIndividualEntity
+        { get; set; }
+
+        public void Parse(SwrlContext context)
+        {
+
+            if (this.ClassEntity != null)
+            {
+                this.ClassEntity.Parse(context);
+            }
+
+            if (this.DataTypeEntity != null)
+            {
+                this.DataTypeEntity.Parse(context);
+            }
+
+            if (this.ObjectPropertyEntity != null)
+            {
+                this.ObjectPropertyEntity.Parse(context);
+            }
+
+            if (this.DataPropertyEntity != null)
+            {
+                this.DataPropertyEntity.Parse(context);
+            }
+
+            if (this.AnnotationPropertyEntity != null)
+            {
+                this.AnnotationPropertyEntity.Parse(context);
+            }
+
+            if (this.NamedIndividualEntity != null)
+            {
+                this.NamedIndividualEntity.Parse(context);
+            }
+
+        }
+
+        public void Wise(SwrlContext context)
+        {
+
+            if (this.ClassEntity != null)
+            {
+                this.ClassEntity.Wise(context);
+            }
+
+            if (this.DataTypeEntity != null)
+            {
+                this.DataTypeEntity.Wise(context);
+            }
+
+            if (this.ObjectPropertyEntity != null)
+            {
+                this.ObjectPropertyEntity.Wise(context);
+            }
+
+            if (this.DataPropertyEntity != null)
+            {
+                this.DataPropertyEntity.Wise(context);
+            }
+
+            if (this.AnnotationPropertyEntity != null)
+            {
+                this.AnnotationPropertyEntity.Wise(context);
+            }
+
+            if (this.NamedIndividualEntity != null)
+            {
+                this.NamedIndividualEntity.Wise(context);
+            }
+
+        }
+
+        public void Format(SwrlContext context, IndentStringBuilder builder)
+        {
+
+            if (this.ClassEntity != null)
+            {
+                this.ClassEntity.Format(context, builder);
+            }
+
+            if (this.DataTypeEntity != null)
+            {
+                this.DataTypeEntity.Format(context, builder);
+            }
+
+            if (this.ObjectPropertyEntity != null)
+            {
+                this.ObjectPropertyEntity.Format(context, builder);
+            }
+
+            if (this.DataPropertyEntity != null)
+            {
+                this.DataPropertyEntity.Format(context, builder);
+            }
+
+            if (this.AnnotationPropertyEntity != null)
+            {
+                this.AnnotationPropertyEntity.Format(context, builder);
+            }
+
+            if (this.NamedIndividualEntity != null)
+            {
+                this.NamedIndividualEntity.Format(context, builder);
+            }
+
+        }
+
+        public void BuildQuery(SwrlContext context, IndentStringBuilder builder)
+        {
+
+            if (this.ClassEntity != null)
+            {
+                this.ClassEntity.BuildQuery(context, builder);
+            }
+
+            if (this.DataTypeEntity != null)
+            {
+                this.DataTypeEntity.BuildQuery(context, builder);
+            }
+
+            if (this.ObjectPropertyEntity != null)
+            {
+                this.ObjectPropertyEntity.BuildQuery(context, builder);
+            }
+
+            if (this.DataPropertyEntity != null)
+            {
+                this.DataPropertyEntity.BuildQuery(context, builder);
+            }
+
+            if (this.AnnotationPropertyEntity != null)
+            {
+                this.AnnotationPropertyEntity.BuildQuery(context, builder);
+            }
+
+            if (this.NamedIndividualEntity != null)
+            {
+                this.NamedIndividualEntity.BuildQuery(context, builder);
+            }
+
+        }
+
+        public void BuildMock(SwrlContext context, IndentStringBuilder builder)
+        {
+
+            if (this.ClassEntity != null)
+            {
+                this.ClassEntity.BuildMock(context, builder);
+            }
+
+            if (this.DataTypeEntity != null)
+            {
+                this.DataTypeEntity.BuildMock(context, builder);
+            }
+
+            if (this.ObjectPropertyEntity != null)
+            {
+                this.ObjectPropertyEntity.BuildMock(context, builder);
+            }
+
+            if (this.DataPropertyEntity != null)
+            {
+                this.DataPropertyEntity.BuildMock(context, builder);
+            }
+
+            if (this.AnnotationPropertyEntity != null)
+            {
+                this.AnnotationPropertyEntity.BuildMock(context, builder);
+            }
+
+            if (this.NamedIndividualEntity != null)
+            {
+                this.NamedIndividualEntity.BuildMock(context, builder);
+            }
+
+        }
+
+        public void BuildOther(SwrlContext context, IndentStringBuilder builder)
+        {
+
+            if (this.ClassEntity != null)
+            {
+                this.ClassEntity.BuildOther(context, builder);
+            }
+
+            if (this.DataTypeEntity != null)
+            {
+                this.DataTypeEntity.BuildOther(context, builder);
+            }
+
+            if (this.ObjectPropertyEntity != null)
+            {
+                this.ObjectPropertyEntity.BuildOther(context, builder);
+            }
+
+            if (this.DataPropertyEntity != null)
+            {
+                this.DataPropertyEntity.BuildOther(context, builder);
+            }
+
+            if (this.AnnotationPropertyEntity != null)
+            {
+                this.AnnotationPropertyEntity.BuildOther(context, builder);
+            }
+
+            if (this.NamedIndividualEntity != null)
+            {
+                this.NamedIndividualEntity.BuildOther(context, builder);
+            }
+
+        }
+    }
+
+    public class ClassEntity : TokenPair
+    {
+        public ClassEntity()
+        {
+        }
         public String CLASS
         { get; set; }
         public ClassN ClassN
-        { get; set; }
-        public String DATATYPE
-        { get; set; }
-        public Datatype Datatype
-        { get; set; }
-        public String OBJECTPROPERTY
-        { get; set; }
-        public ObjectProperty ObjectProperty
-        { get; set; }
-        public String DATAPROPERTY
-        { get; set; }
-        public DataProperty DataProperty
-        { get; set; }
-        public String ANNOTATIONPROPERTY
-        { get; set; }
-        public AnnotationProperty AnnotationProperty
-        { get; set; }
-        public String NAMEDINDIVIDUAL
-        { get; set; }
-        public NamedIndividual NamedIndividual
         { get; set; }
 
         public void Parse(SwrlContext context)
@@ -787,31 +1099,6 @@ namespace CodeHelper.Core.Parse.ParseResults.Swrls
             if (this.ClassN != null)
             {
                 this.ClassN.Parse(context);
-            }
-
-            if (this.Datatype != null)
-            {
-                this.Datatype.Parse(context);
-            }
-
-            if (this.ObjectProperty != null)
-            {
-                this.ObjectProperty.Parse(context);
-            }
-
-            if (this.DataProperty != null)
-            {
-                this.DataProperty.Parse(context);
-            }
-
-            if (this.AnnotationProperty != null)
-            {
-                this.AnnotationProperty.Parse(context);
-            }
-
-            if (this.NamedIndividual != null)
-            {
-                this.NamedIndividual.Parse(context);
             }
 
         }
@@ -824,31 +1111,6 @@ namespace CodeHelper.Core.Parse.ParseResults.Swrls
                 this.ClassN.Wise(context);
             }
 
-            if (this.Datatype != null)
-            {
-                this.Datatype.Wise(context);
-            }
-
-            if (this.ObjectProperty != null)
-            {
-                this.ObjectProperty.Wise(context);
-            }
-
-            if (this.DataProperty != null)
-            {
-                this.DataProperty.Wise(context);
-            }
-
-            if (this.AnnotationProperty != null)
-            {
-                this.AnnotationProperty.Wise(context);
-            }
-
-            if (this.NamedIndividual != null)
-            {
-                this.NamedIndividual.Wise(context);
-            }
-
         }
 
         public void Format(SwrlContext context, IndentStringBuilder builder)
@@ -857,31 +1119,6 @@ namespace CodeHelper.Core.Parse.ParseResults.Swrls
             if (this.ClassN != null)
             {
                 this.ClassN.Format(context, builder);
-            }
-
-            if (this.Datatype != null)
-            {
-                this.Datatype.Format(context, builder);
-            }
-
-            if (this.ObjectProperty != null)
-            {
-                this.ObjectProperty.Format(context, builder);
-            }
-
-            if (this.DataProperty != null)
-            {
-                this.DataProperty.Format(context, builder);
-            }
-
-            if (this.AnnotationProperty != null)
-            {
-                this.AnnotationProperty.Format(context, builder);
-            }
-
-            if (this.NamedIndividual != null)
-            {
-                this.NamedIndividual.Format(context, builder);
             }
 
         }
@@ -894,31 +1131,6 @@ namespace CodeHelper.Core.Parse.ParseResults.Swrls
                 this.ClassN.BuildQuery(context, builder);
             }
 
-            if (this.Datatype != null)
-            {
-                this.Datatype.BuildQuery(context, builder);
-            }
-
-            if (this.ObjectProperty != null)
-            {
-                this.ObjectProperty.BuildQuery(context, builder);
-            }
-
-            if (this.DataProperty != null)
-            {
-                this.DataProperty.BuildQuery(context, builder);
-            }
-
-            if (this.AnnotationProperty != null)
-            {
-                this.AnnotationProperty.BuildQuery(context, builder);
-            }
-
-            if (this.NamedIndividual != null)
-            {
-                this.NamedIndividual.BuildQuery(context, builder);
-            }
-
         }
 
         public void BuildMock(SwrlContext context, IndentStringBuilder builder)
@@ -927,31 +1139,6 @@ namespace CodeHelper.Core.Parse.ParseResults.Swrls
             if (this.ClassN != null)
             {
                 this.ClassN.BuildMock(context, builder);
-            }
-
-            if (this.Datatype != null)
-            {
-                this.Datatype.BuildMock(context, builder);
-            }
-
-            if (this.ObjectProperty != null)
-            {
-                this.ObjectProperty.BuildMock(context, builder);
-            }
-
-            if (this.DataProperty != null)
-            {
-                this.DataProperty.BuildMock(context, builder);
-            }
-
-            if (this.AnnotationProperty != null)
-            {
-                this.AnnotationProperty.BuildMock(context, builder);
-            }
-
-            if (this.NamedIndividual != null)
-            {
-                this.NamedIndividual.BuildMock(context, builder);
             }
 
         }
@@ -964,25 +1151,355 @@ namespace CodeHelper.Core.Parse.ParseResults.Swrls
                 this.ClassN.BuildOther(context, builder);
             }
 
+        }
+    }
+
+    public class DataTypeEntity : TokenPair
+    {
+        public DataTypeEntity()
+        {
+        }
+        public String DATATYPE
+        { get; set; }
+        public Datatype Datatype
+        { get; set; }
+
+        public void Parse(SwrlContext context)
+        {
+
+            if (this.Datatype != null)
+            {
+                this.Datatype.Parse(context);
+            }
+
+        }
+
+        public void Wise(SwrlContext context)
+        {
+
+            if (this.Datatype != null)
+            {
+                this.Datatype.Wise(context);
+            }
+
+        }
+
+        public void Format(SwrlContext context, IndentStringBuilder builder)
+        {
+
+            if (this.Datatype != null)
+            {
+                this.Datatype.Format(context, builder);
+            }
+
+        }
+
+        public void BuildQuery(SwrlContext context, IndentStringBuilder builder)
+        {
+
+            if (this.Datatype != null)
+            {
+                this.Datatype.BuildQuery(context, builder);
+            }
+
+        }
+
+        public void BuildMock(SwrlContext context, IndentStringBuilder builder)
+        {
+
+            if (this.Datatype != null)
+            {
+                this.Datatype.BuildMock(context, builder);
+            }
+
+        }
+
+        public void BuildOther(SwrlContext context, IndentStringBuilder builder)
+        {
+
             if (this.Datatype != null)
             {
                 this.Datatype.BuildOther(context, builder);
             }
+
+        }
+    }
+
+    public class ObjectPropertyEntity : TokenPair
+    {
+        public ObjectPropertyEntity()
+        {
+        }
+        public String OBJECTPROPERTY
+        { get; set; }
+        public ObjectProperty ObjectProperty
+        { get; set; }
+
+        public void Parse(SwrlContext context)
+        {
+
+            if (this.ObjectProperty != null)
+            {
+                this.ObjectProperty.Parse(context);
+            }
+
+        }
+
+        public void Wise(SwrlContext context)
+        {
+
+            if (this.ObjectProperty != null)
+            {
+                this.ObjectProperty.Wise(context);
+            }
+
+        }
+
+        public void Format(SwrlContext context, IndentStringBuilder builder)
+        {
+
+            if (this.ObjectProperty != null)
+            {
+                this.ObjectProperty.Format(context, builder);
+            }
+
+        }
+
+        public void BuildQuery(SwrlContext context, IndentStringBuilder builder)
+        {
+
+            if (this.ObjectProperty != null)
+            {
+                this.ObjectProperty.BuildQuery(context, builder);
+            }
+
+        }
+
+        public void BuildMock(SwrlContext context, IndentStringBuilder builder)
+        {
+
+            if (this.ObjectProperty != null)
+            {
+                this.ObjectProperty.BuildMock(context, builder);
+            }
+
+        }
+
+        public void BuildOther(SwrlContext context, IndentStringBuilder builder)
+        {
 
             if (this.ObjectProperty != null)
             {
                 this.ObjectProperty.BuildOther(context, builder);
             }
 
+        }
+    }
+
+    public class DataPropertyEntity : TokenPair
+    {
+        public DataPropertyEntity()
+        {
+        }
+        public String DATAPROPERTY
+        { get; set; }
+        public DataProperty DataProperty
+        { get; set; }
+
+        public void Parse(SwrlContext context)
+        {
+
+            if (this.DataProperty != null)
+            {
+                this.DataProperty.Parse(context);
+            }
+
+        }
+
+        public void Wise(SwrlContext context)
+        {
+
+            if (this.DataProperty != null)
+            {
+                this.DataProperty.Wise(context);
+            }
+
+        }
+
+        public void Format(SwrlContext context, IndentStringBuilder builder)
+        {
+
+            if (this.DataProperty != null)
+            {
+                this.DataProperty.Format(context, builder);
+            }
+
+        }
+
+        public void BuildQuery(SwrlContext context, IndentStringBuilder builder)
+        {
+
+            if (this.DataProperty != null)
+            {
+                this.DataProperty.BuildQuery(context, builder);
+            }
+
+        }
+
+        public void BuildMock(SwrlContext context, IndentStringBuilder builder)
+        {
+
+            if (this.DataProperty != null)
+            {
+                this.DataProperty.BuildMock(context, builder);
+            }
+
+        }
+
+        public void BuildOther(SwrlContext context, IndentStringBuilder builder)
+        {
+
             if (this.DataProperty != null)
             {
                 this.DataProperty.BuildOther(context, builder);
             }
 
+        }
+    }
+
+    public class AnnotationPropertyEntity : TokenPair
+    {
+        public AnnotationPropertyEntity()
+        {
+        }
+        public String ANNOTATIONPROPERTY
+        { get; set; }
+        public AnnotationProperty AnnotationProperty
+        { get; set; }
+
+        public void Parse(SwrlContext context)
+        {
+
+            if (this.AnnotationProperty != null)
+            {
+                this.AnnotationProperty.Parse(context);
+            }
+
+        }
+
+        public void Wise(SwrlContext context)
+        {
+
+            if (this.AnnotationProperty != null)
+            {
+                this.AnnotationProperty.Wise(context);
+            }
+
+        }
+
+        public void Format(SwrlContext context, IndentStringBuilder builder)
+        {
+
+            if (this.AnnotationProperty != null)
+            {
+                this.AnnotationProperty.Format(context, builder);
+            }
+
+        }
+
+        public void BuildQuery(SwrlContext context, IndentStringBuilder builder)
+        {
+
+            if (this.AnnotationProperty != null)
+            {
+                this.AnnotationProperty.BuildQuery(context, builder);
+            }
+
+        }
+
+        public void BuildMock(SwrlContext context, IndentStringBuilder builder)
+        {
+
+            if (this.AnnotationProperty != null)
+            {
+                this.AnnotationProperty.BuildMock(context, builder);
+            }
+
+        }
+
+        public void BuildOther(SwrlContext context, IndentStringBuilder builder)
+        {
+
             if (this.AnnotationProperty != null)
             {
                 this.AnnotationProperty.BuildOther(context, builder);
             }
+
+        }
+    }
+
+    public class NamedIndividualEntity : TokenPair
+    {
+        public NamedIndividualEntity()
+        {
+        }
+        public String NAMEDINDIVIDUAL
+        { get; set; }
+        public NamedIndividual NamedIndividual
+        { get; set; }
+
+        public void Parse(SwrlContext context)
+        {
+
+            if (this.NamedIndividual != null)
+            {
+                this.NamedIndividual.Parse(context);
+            }
+
+        }
+
+        public void Wise(SwrlContext context)
+        {
+
+            if (this.NamedIndividual != null)
+            {
+                this.NamedIndividual.Wise(context);
+            }
+
+        }
+
+        public void Format(SwrlContext context, IndentStringBuilder builder)
+        {
+
+            if (this.NamedIndividual != null)
+            {
+                this.NamedIndividual.Format(context, builder);
+            }
+
+        }
+
+        public void BuildQuery(SwrlContext context, IndentStringBuilder builder)
+        {
+
+            if (this.NamedIndividual != null)
+            {
+                this.NamedIndividual.BuildQuery(context, builder);
+            }
+
+        }
+
+        public void BuildMock(SwrlContext context, IndentStringBuilder builder)
+        {
+
+            if (this.NamedIndividual != null)
+            {
+                this.NamedIndividual.BuildMock(context, builder);
+            }
+
+        }
+
+        public void BuildOther(SwrlContext context, IndentStringBuilder builder)
+        {
 
             if (this.NamedIndividual != null)
             {
@@ -1213,7 +1730,7 @@ namespace CodeHelper.Core.Parse.ParseResults.Swrls
 
         public void Format(SwrlContext context, IndentStringBuilder builder)
         {
-
+            builder.Append(SUBCLASSOF + "(");
             if (this.AxiomAnnotations != null)
             {
                 this.AxiomAnnotations.Format(context, builder);
@@ -1228,7 +1745,7 @@ namespace CodeHelper.Core.Parse.ParseResults.Swrls
             {
                 this.SuperClassExpression.Format(context, builder);
             }
-
+            builder.AppendLine(")");
         }
 
         public void BuildQuery(SwrlContext context, IndentStringBuilder builder)
@@ -1337,7 +1854,7 @@ namespace CodeHelper.Core.Parse.ParseResults.Swrls
 
         public void Format(SwrlContext context, IndentStringBuilder builder)
         {
-
+            builder.Append(EQUIVALENTCLASSES + "(");
             if (this.AxiomAnnotations != null)
             {
                 this.AxiomAnnotations.Format(context, builder);
@@ -1347,7 +1864,7 @@ namespace CodeHelper.Core.Parse.ParseResults.Swrls
             {
                 this.ClassExpressions[i].Format(context, builder);
             }
-
+            builder.AppendLine(")");
         }
 
         public void BuildQuery(SwrlContext context, IndentStringBuilder builder)
@@ -1579,7 +2096,7 @@ namespace CodeHelper.Core.Parse.ParseResults.Swrls
 
         public void Format(SwrlContext context, IndentStringBuilder builder)
         {
-
+            builder.Append(DISJOINTCLASSES + "(");
             if (this.AxiomAnnotations != null)
             {
                 this.AxiomAnnotations.Format(context, builder);
@@ -1589,7 +2106,7 @@ namespace CodeHelper.Core.Parse.ParseResults.Swrls
             {
                 this.ClassExpressions[i].Format(context, builder);
             }
-
+            builder.AppendLine(")");
         }
 
         public void BuildQuery(SwrlContext context, IndentStringBuilder builder)
@@ -1694,7 +2211,7 @@ namespace CodeHelper.Core.Parse.ParseResults.Swrls
 
         public void Format(SwrlContext context, IndentStringBuilder builder)
         {
-
+            builder.Append(DISJOINTUNION + "(");
             if (this.AxiomAnnotations != null)
             {
                 this.AxiomAnnotations.Format(context, builder);
@@ -1709,7 +2226,7 @@ namespace CodeHelper.Core.Parse.ParseResults.Swrls
             {
                 this.DisjointClassExpressions.Format(context, builder);
             }
-
+            builder.AppendLine(")");
         }
 
         public void BuildQuery(SwrlContext context, IndentStringBuilder builder)
@@ -2352,7 +2869,7 @@ namespace CodeHelper.Core.Parse.ParseResults.Swrls
 
         public void Format(SwrlContext context, IndentStringBuilder builder)
         {
-
+            builder.Append(SUBOBJECTPROPERTYOF + "(");
             if (this.AxiomAnnotations != null)
             {
                 this.AxiomAnnotations.Format(context, builder);
@@ -2367,7 +2884,7 @@ namespace CodeHelper.Core.Parse.ParseResults.Swrls
             {
                 this.SuperObjectPropertyExpression.Format(context, builder);
             }
-
+            builder.AppendLine(")");
         }
 
         public void BuildQuery(SwrlContext context, IndentStringBuilder builder)
@@ -2565,12 +3082,12 @@ namespace CodeHelper.Core.Parse.ParseResults.Swrls
 
         public void Format(SwrlContext context, IndentStringBuilder builder)
         {
-
+            builder.Append(OBJECTPROPERTYCHAIN + "(");
             for (int i = 0; i < this.ObjectPropertyExpressions.Count(); i++)
             {
                 this.ObjectPropertyExpressions[i].Format(context, builder);
             }
-
+            builder.AppendLine(")");
         }
 
         public void BuildQuery(SwrlContext context, IndentStringBuilder builder)
@@ -2718,7 +3235,7 @@ namespace CodeHelper.Core.Parse.ParseResults.Swrls
 
         public void Format(SwrlContext context, IndentStringBuilder builder)
         {
-
+            builder.Append(EQUIVALENTOBJECTPROPERTIES + "(");
             if (this.AxiomAnnotations != null)
             {
                 this.AxiomAnnotations.Format(context, builder);
@@ -2728,7 +3245,7 @@ namespace CodeHelper.Core.Parse.ParseResults.Swrls
             {
                 this.ObjectPropertyExpressions[i].Format(context, builder);
             }
-
+            builder.AppendLine(")");
         }
 
         public void BuildQuery(SwrlContext context, IndentStringBuilder builder)
@@ -2822,7 +3339,7 @@ namespace CodeHelper.Core.Parse.ParseResults.Swrls
 
         public void Format(SwrlContext context, IndentStringBuilder builder)
         {
-
+            builder.Append(DISJOINTOBJECTPROPERTIES + "(");
             if (this.AxiomAnnotations != null)
             {
                 this.AxiomAnnotations.Format(context, builder);
@@ -2832,7 +3349,7 @@ namespace CodeHelper.Core.Parse.ParseResults.Swrls
             {
                 this.ObjectPropertyExpressions[i].Format(context, builder);
             }
-
+            builder.AppendLine(")");
         }
 
         public void BuildQuery(SwrlContext context, IndentStringBuilder builder)
@@ -2937,7 +3454,7 @@ namespace CodeHelper.Core.Parse.ParseResults.Swrls
 
         public void Format(SwrlContext context, IndentStringBuilder builder)
         {
-
+            builder.Append(OBJECTPROPERTYDOMAIN + "(");
             if (this.AxiomAnnotations != null)
             {
                 this.AxiomAnnotations.Format(context, builder);
@@ -2952,7 +3469,7 @@ namespace CodeHelper.Core.Parse.ParseResults.Swrls
             {
                 this.ClassExpression.Format(context, builder);
             }
-
+            builder.AppendLine(")");
         }
 
         public void BuildQuery(SwrlContext context, IndentStringBuilder builder)
@@ -3072,7 +3589,7 @@ namespace CodeHelper.Core.Parse.ParseResults.Swrls
 
         public void Format(SwrlContext context, IndentStringBuilder builder)
         {
-
+            builder.Append(OBJECTPROPERTYRANGE + "(");
             if (this.AxiomAnnotations != null)
             {
                 this.AxiomAnnotations.Format(context, builder);
@@ -3087,7 +3604,7 @@ namespace CodeHelper.Core.Parse.ParseResults.Swrls
             {
                 this.ClassExpression.Format(context, builder);
             }
-
+            builder.AppendLine(")");
         }
 
         public void BuildQuery(SwrlContext context, IndentStringBuilder builder)
@@ -3196,7 +3713,7 @@ namespace CodeHelper.Core.Parse.ParseResults.Swrls
 
         public void Format(SwrlContext context, IndentStringBuilder builder)
         {
-
+            builder.Append(INVERSEOBJECTPROPERTIES + "(");
             if (this.AxiomAnnotations != null)
             {
                 this.AxiomAnnotations.Format(context, builder);
@@ -3206,7 +3723,7 @@ namespace CodeHelper.Core.Parse.ParseResults.Swrls
             {
                 this.ObjectPropertyExpressions[i].Format(context, builder);
             }
-
+            builder.AppendLine(")");
         }
 
         public void BuildQuery(SwrlContext context, IndentStringBuilder builder)
@@ -3299,7 +3816,7 @@ namespace CodeHelper.Core.Parse.ParseResults.Swrls
 
         public void Format(SwrlContext context, IndentStringBuilder builder)
         {
-
+            builder.Append(FUNCTIONALOBJECTPROPERTY + "(");
             if (this.AxiomAnnotations != null)
             {
                 this.AxiomAnnotations.Format(context, builder);
@@ -3309,7 +3826,7 @@ namespace CodeHelper.Core.Parse.ParseResults.Swrls
             {
                 this.ObjectPropertyExpression.Format(context, builder);
             }
-
+            builder.AppendLine(")");
         }
 
         public void BuildQuery(SwrlContext context, IndentStringBuilder builder)
@@ -3402,7 +3919,7 @@ namespace CodeHelper.Core.Parse.ParseResults.Swrls
 
         public void Format(SwrlContext context, IndentStringBuilder builder)
         {
-
+            builder.Append(INVERSEFUNCTIONALOBJECTPROPERTY + "(");
             if (this.AxiomAnnotations != null)
             {
                 this.AxiomAnnotations.Format(context, builder);
@@ -3412,7 +3929,7 @@ namespace CodeHelper.Core.Parse.ParseResults.Swrls
             {
                 this.ObjectPropertyExpression.Format(context, builder);
             }
-
+            builder.AppendLine(")");
         }
 
         public void BuildQuery(SwrlContext context, IndentStringBuilder builder)
@@ -3505,7 +4022,7 @@ namespace CodeHelper.Core.Parse.ParseResults.Swrls
 
         public void Format(SwrlContext context, IndentStringBuilder builder)
         {
-
+            builder.Append(REFLEXIVEOBJECTPROPERTY + "(");
             if (this.AxiomAnnotations != null)
             {
                 this.AxiomAnnotations.Format(context, builder);
@@ -3515,7 +4032,7 @@ namespace CodeHelper.Core.Parse.ParseResults.Swrls
             {
                 this.ObjectPropertyExpression.Format(context, builder);
             }
-
+            builder.AppendLine(")");
         }
 
         public void BuildQuery(SwrlContext context, IndentStringBuilder builder)
@@ -3608,7 +4125,7 @@ namespace CodeHelper.Core.Parse.ParseResults.Swrls
 
         public void Format(SwrlContext context, IndentStringBuilder builder)
         {
-
+            builder.Append(IRREFLEXIVEOBJECTPROPERTY + "(");
             if (this.AxiomAnnotations != null)
             {
                 this.AxiomAnnotations.Format(context, builder);
@@ -3618,7 +4135,7 @@ namespace CodeHelper.Core.Parse.ParseResults.Swrls
             {
                 this.ObjectPropertyExpression.Format(context, builder);
             }
-
+            builder.AppendLine(")");
         }
 
         public void BuildQuery(SwrlContext context, IndentStringBuilder builder)
@@ -3711,7 +4228,7 @@ namespace CodeHelper.Core.Parse.ParseResults.Swrls
 
         public void Format(SwrlContext context, IndentStringBuilder builder)
         {
-
+            builder.Append(SYMMETRICOBJECTPROPERTY + "(");
             if (this.AxiomAnnotations != null)
             {
                 this.AxiomAnnotations.Format(context, builder);
@@ -3721,7 +4238,7 @@ namespace CodeHelper.Core.Parse.ParseResults.Swrls
             {
                 this.ObjectPropertyExpression.Format(context, builder);
             }
-
+            builder.AppendLine(")");
         }
 
         public void BuildQuery(SwrlContext context, IndentStringBuilder builder)
@@ -3814,7 +4331,7 @@ namespace CodeHelper.Core.Parse.ParseResults.Swrls
 
         public void Format(SwrlContext context, IndentStringBuilder builder)
         {
-
+            builder.Append(ASYMMETRICOBJECTPROPERTY + "(");
             if (this.AxiomAnnotations != null)
             {
                 this.AxiomAnnotations.Format(context, builder);
@@ -3824,7 +4341,7 @@ namespace CodeHelper.Core.Parse.ParseResults.Swrls
             {
                 this.ObjectPropertyExpression.Format(context, builder);
             }
-
+            builder.AppendLine(")");
         }
 
         public void BuildQuery(SwrlContext context, IndentStringBuilder builder)
@@ -3917,7 +4434,7 @@ namespace CodeHelper.Core.Parse.ParseResults.Swrls
 
         public void Format(SwrlContext context, IndentStringBuilder builder)
         {
-
+            builder.Append(TRANSITIVEOBJECTPROPERTY + "(");
             if (this.AxiomAnnotations != null)
             {
                 this.AxiomAnnotations.Format(context, builder);
@@ -3927,7 +4444,7 @@ namespace CodeHelper.Core.Parse.ParseResults.Swrls
             {
                 this.ObjectPropertyExpression.Format(context, builder);
             }
-
+            builder.AppendLine(")");
         }
 
         public void BuildQuery(SwrlContext context, IndentStringBuilder builder)
@@ -4261,7 +4778,7 @@ namespace CodeHelper.Core.Parse.ParseResults.Swrls
 
         public void Format(SwrlContext context, IndentStringBuilder builder)
         {
-
+            builder.Append(SUBDATAPROPERTYOF + "(");
             if (this.AxiomAnnotations != null)
             {
                 this.AxiomAnnotations.Format(context, builder);
@@ -4276,7 +4793,7 @@ namespace CodeHelper.Core.Parse.ParseResults.Swrls
             {
                 this.SuperDataPropertyExpression.Format(context, builder);
             }
-
+            builder.AppendLine(")");
         }
 
         public void BuildQuery(SwrlContext context, IndentStringBuilder builder)
@@ -4523,7 +5040,7 @@ namespace CodeHelper.Core.Parse.ParseResults.Swrls
 
         public void Format(SwrlContext context, IndentStringBuilder builder)
         {
-
+            builder.Append(EQUIVALENTDATAPROPERTIES + "(");
             if (this.AxiomAnnotations != null)
             {
                 this.AxiomAnnotations.Format(context, builder);
@@ -4533,7 +5050,7 @@ namespace CodeHelper.Core.Parse.ParseResults.Swrls
             {
                 this.DataPropertyExpressions[i].Format(context, builder);
             }
-
+            builder.AppendLine(")");
         }
 
         public void BuildQuery(SwrlContext context, IndentStringBuilder builder)
@@ -4627,7 +5144,7 @@ namespace CodeHelper.Core.Parse.ParseResults.Swrls
 
         public void Format(SwrlContext context, IndentStringBuilder builder)
         {
-
+            builder.Append(DISJOINTDATAPROPERTIES + "(");
             if (this.AxiomAnnotations != null)
             {
                 this.AxiomAnnotations.Format(context, builder);
@@ -4637,7 +5154,7 @@ namespace CodeHelper.Core.Parse.ParseResults.Swrls
             {
                 this.DataPropertyExpressions[i].Format(context, builder);
             }
-
+            builder.AppendLine(")");
         }
 
         public void BuildQuery(SwrlContext context, IndentStringBuilder builder)
@@ -4742,7 +5259,7 @@ namespace CodeHelper.Core.Parse.ParseResults.Swrls
 
         public void Format(SwrlContext context, IndentStringBuilder builder)
         {
-
+            builder.Append(DATAPROPERTYDOMAIN + "(");
             if (this.AxiomAnnotations != null)
             {
                 this.AxiomAnnotations.Format(context, builder);
@@ -4757,7 +5274,7 @@ namespace CodeHelper.Core.Parse.ParseResults.Swrls
             {
                 this.ClassExpression.Format(context, builder);
             }
-
+            builder.AppendLine(")");
         }
 
         public void BuildQuery(SwrlContext context, IndentStringBuilder builder)
@@ -4877,7 +5394,7 @@ namespace CodeHelper.Core.Parse.ParseResults.Swrls
 
         public void Format(SwrlContext context, IndentStringBuilder builder)
         {
-
+            builder.Append(DATAPROPERTYRANGE + "(");
             if (this.AxiomAnnotations != null)
             {
                 this.AxiomAnnotations.Format(context, builder);
@@ -4892,7 +5409,7 @@ namespace CodeHelper.Core.Parse.ParseResults.Swrls
             {
                 this.DataRange.Format(context, builder);
             }
-
+            builder.AppendLine(")");
         }
 
         public void BuildQuery(SwrlContext context, IndentStringBuilder builder)
@@ -5000,7 +5517,7 @@ namespace CodeHelper.Core.Parse.ParseResults.Swrls
 
         public void Format(SwrlContext context, IndentStringBuilder builder)
         {
-
+            builder.Append(FUNCTIONALDATAPROPERTY + "(");
             if (this.AxiomAnnotations != null)
             {
                 this.AxiomAnnotations.Format(context, builder);
@@ -5010,7 +5527,7 @@ namespace CodeHelper.Core.Parse.ParseResults.Swrls
             {
                 this.DataPropertyExpression.Format(context, builder);
             }
-
+            builder.AppendLine(")");
         }
 
         public void BuildQuery(SwrlContext context, IndentStringBuilder builder)
@@ -5115,7 +5632,7 @@ namespace CodeHelper.Core.Parse.ParseResults.Swrls
 
         public void Format(SwrlContext context, IndentStringBuilder builder)
         {
-
+            builder.Append(DATATYPEDEFINITION + "(");
             if (this.AxiomAnnotations != null)
             {
                 this.AxiomAnnotations.Format(context, builder);
@@ -5130,7 +5647,7 @@ namespace CodeHelper.Core.Parse.ParseResults.Swrls
             {
                 this.DataRange.Format(context, builder);
             }
-
+            builder.AppendLine(")");
         }
 
         public void BuildQuery(SwrlContext context, IndentStringBuilder builder)
@@ -5264,7 +5781,7 @@ namespace CodeHelper.Core.Parse.ParseResults.Swrls
 
         public void Format(SwrlContext context, IndentStringBuilder builder)
         {
-
+            builder.Append(HASKEY + "(");
             if (this.AxiomAnnotations != null)
             {
                 this.AxiomAnnotations.Format(context, builder);
@@ -5284,7 +5801,7 @@ namespace CodeHelper.Core.Parse.ParseResults.Swrls
             {
                 this.DataPropertyExpressions[i].Format(context, builder);
             }
-
+            builder.AppendLine(")");
         }
 
         public void BuildQuery(SwrlContext context, IndentStringBuilder builder)
@@ -5367,36 +5884,273 @@ namespace CodeHelper.Core.Parse.ParseResults.Swrls
     {
         public Atom()
         {
-            this.IArgs = new List<IArg>();
-            this.DArgs = new List<DArg>();
+        }
+        public ClassAtom ClassAtom
+        { get; set; }
+        public DataRangeAtom DataRangeAtom
+        { get; set; }
+        public ObjectPropertyAtom ObjectPropertyAtom
+        { get; set; }
+        public DataPropertyAtom DataPropertyAtom
+        { get; set; }
+        public BuiltInAtom BuiltInAtom
+        { get; set; }
+        public SameIndividualAtom SameIndividualAtom
+        { get; set; }
+        public DifferentIndividualsAtom DifferentIndividualsAtom
+        { get; set; }
+
+        public void Parse(SwrlContext context)
+        {
+
+            if (this.ClassAtom != null)
+            {
+                this.ClassAtom.Parse(context);
+            }
+
+            if (this.DataRangeAtom != null)
+            {
+                this.DataRangeAtom.Parse(context);
+            }
+
+            if (this.ObjectPropertyAtom != null)
+            {
+                this.ObjectPropertyAtom.Parse(context);
+            }
+
+            if (this.DataPropertyAtom != null)
+            {
+                this.DataPropertyAtom.Parse(context);
+            }
+
+            if (this.BuiltInAtom != null)
+            {
+                this.BuiltInAtom.Parse(context);
+            }
+
+            if (this.SameIndividualAtom != null)
+            {
+                this.SameIndividualAtom.Parse(context);
+            }
+
+            if (this.DifferentIndividualsAtom != null)
+            {
+                this.DifferentIndividualsAtom.Parse(context);
+            }
+
+        }
+
+        public void Wise(SwrlContext context)
+        {
+
+            if (this.ClassAtom != null)
+            {
+                this.ClassAtom.Wise(context);
+            }
+
+            if (this.DataRangeAtom != null)
+            {
+                this.DataRangeAtom.Wise(context);
+            }
+
+            if (this.ObjectPropertyAtom != null)
+            {
+                this.ObjectPropertyAtom.Wise(context);
+            }
+
+            if (this.DataPropertyAtom != null)
+            {
+                this.DataPropertyAtom.Wise(context);
+            }
+
+            if (this.BuiltInAtom != null)
+            {
+                this.BuiltInAtom.Wise(context);
+            }
+
+            if (this.SameIndividualAtom != null)
+            {
+                this.SameIndividualAtom.Wise(context);
+            }
+
+            if (this.DifferentIndividualsAtom != null)
+            {
+                this.DifferentIndividualsAtom.Wise(context);
+            }
+
+        }
+
+        public void Format(SwrlContext context, IndentStringBuilder builder)
+        {
+
+            if (this.ClassAtom != null)
+            {
+                this.ClassAtom.Format(context, builder);
+            }
+
+            if (this.DataRangeAtom != null)
+            {
+                this.DataRangeAtom.Format(context, builder);
+            }
+
+            if (this.ObjectPropertyAtom != null)
+            {
+                this.ObjectPropertyAtom.Format(context, builder);
+            }
+
+            if (this.DataPropertyAtom != null)
+            {
+                this.DataPropertyAtom.Format(context, builder);
+            }
+
+            if (this.BuiltInAtom != null)
+            {
+                this.BuiltInAtom.Format(context, builder);
+            }
+
+            if (this.SameIndividualAtom != null)
+            {
+                this.SameIndividualAtom.Format(context, builder);
+            }
+
+            if (this.DifferentIndividualsAtom != null)
+            {
+                this.DifferentIndividualsAtom.Format(context, builder);
+            }
+
+        }
+
+        public void BuildQuery(SwrlContext context, IndentStringBuilder builder)
+        {
+
+            if (this.ClassAtom != null)
+            {
+                this.ClassAtom.BuildQuery(context, builder);
+            }
+
+            if (this.DataRangeAtom != null)
+            {
+                this.DataRangeAtom.BuildQuery(context, builder);
+            }
+
+            if (this.ObjectPropertyAtom != null)
+            {
+                this.ObjectPropertyAtom.BuildQuery(context, builder);
+            }
+
+            if (this.DataPropertyAtom != null)
+            {
+                this.DataPropertyAtom.BuildQuery(context, builder);
+            }
+
+            if (this.BuiltInAtom != null)
+            {
+                this.BuiltInAtom.BuildQuery(context, builder);
+            }
+
+            if (this.SameIndividualAtom != null)
+            {
+                this.SameIndividualAtom.BuildQuery(context, builder);
+            }
+
+            if (this.DifferentIndividualsAtom != null)
+            {
+                this.DifferentIndividualsAtom.BuildQuery(context, builder);
+            }
+
+        }
+
+        public void BuildMock(SwrlContext context, IndentStringBuilder builder)
+        {
+
+            if (this.ClassAtom != null)
+            {
+                this.ClassAtom.BuildMock(context, builder);
+            }
+
+            if (this.DataRangeAtom != null)
+            {
+                this.DataRangeAtom.BuildMock(context, builder);
+            }
+
+            if (this.ObjectPropertyAtom != null)
+            {
+                this.ObjectPropertyAtom.BuildMock(context, builder);
+            }
+
+            if (this.DataPropertyAtom != null)
+            {
+                this.DataPropertyAtom.BuildMock(context, builder);
+            }
+
+            if (this.BuiltInAtom != null)
+            {
+                this.BuiltInAtom.BuildMock(context, builder);
+            }
+
+            if (this.SameIndividualAtom != null)
+            {
+                this.SameIndividualAtom.BuildMock(context, builder);
+            }
+
+            if (this.DifferentIndividualsAtom != null)
+            {
+                this.DifferentIndividualsAtom.BuildMock(context, builder);
+            }
+
+        }
+
+        public void BuildOther(SwrlContext context, IndentStringBuilder builder)
+        {
+
+            if (this.ClassAtom != null)
+            {
+                this.ClassAtom.BuildOther(context, builder);
+            }
+
+            if (this.DataRangeAtom != null)
+            {
+                this.DataRangeAtom.BuildOther(context, builder);
+            }
+
+            if (this.ObjectPropertyAtom != null)
+            {
+                this.ObjectPropertyAtom.BuildOther(context, builder);
+            }
+
+            if (this.DataPropertyAtom != null)
+            {
+                this.DataPropertyAtom.BuildOther(context, builder);
+            }
+
+            if (this.BuiltInAtom != null)
+            {
+                this.BuiltInAtom.BuildOther(context, builder);
+            }
+
+            if (this.SameIndividualAtom != null)
+            {
+                this.SameIndividualAtom.BuildOther(context, builder);
+            }
+
+            if (this.DifferentIndividualsAtom != null)
+            {
+                this.DifferentIndividualsAtom.BuildOther(context, builder);
+            }
+
+        }
+    }
+
+    public class ClassAtom : TokenPair
+    {
+        public ClassAtom()
+        {
         }
         public String CLASSATOM
         { get; set; }
         public ClassExpression ClassExpression
         { get; set; }
-        public List<IArg> IArgs
-        { get; set; }
-        public String DATARANGEATOM
-        { get; set; }
-        public DataRange DataRange
-        { get; set; }
-        public List<DArg> DArgs
-        { get; set; }
-        public String OBJECTPROPERTYATOM
-        { get; set; }
-        public ObjectPropertyExpression ObjectPropertyExpression
-        { get; set; }
-        public String DATAPROPERTYATOM
-        { get; set; }
-        public DataProperty DataProperty
-        { get; set; }
-        public String BUILTINATOM
-        { get; set; }
-        public IRI IRI
-        { get; set; }
-        public String SAMEINDIVIDUALATOM
-        { get; set; }
-        public String DIFFERENTINDIVIDUALSATOM
+        public IArg IArg
         { get; set; }
 
         public void Parse(SwrlContext context)
@@ -5407,34 +6161,9 @@ namespace CodeHelper.Core.Parse.ParseResults.Swrls
                 this.ClassExpression.Parse(context);
             }
 
-            for (int i = 0; i < this.IArgs.Count(); i++)
+            if (this.IArg != null)
             {
-                this.IArgs[i].Parse(context);
-            }
-
-            if (this.DataRange != null)
-            {
-                this.DataRange.Parse(context);
-            }
-
-            for (int i = 0; i < this.DArgs.Count(); i++)
-            {
-                this.DArgs[i].Parse(context);
-            }
-
-            if (this.ObjectPropertyExpression != null)
-            {
-                this.ObjectPropertyExpression.Parse(context);
-            }
-
-            if (this.DataProperty != null)
-            {
-                this.DataProperty.Parse(context);
-            }
-
-            if (this.IRI != null)
-            {
-                this.IRI.Parse(context);
+                this.IArg.Parse(context);
             }
 
         }
@@ -5447,34 +6176,9 @@ namespace CodeHelper.Core.Parse.ParseResults.Swrls
                 this.ClassExpression.Wise(context);
             }
 
-            for (int i = 0; i < this.IArgs.Count(); i++)
+            if (this.IArg != null)
             {
-                this.IArgs[i].Wise(context);
-            }
-
-            if (this.DataRange != null)
-            {
-                this.DataRange.Wise(context);
-            }
-
-            for (int i = 0; i < this.DArgs.Count(); i++)
-            {
-                this.DArgs[i].Wise(context);
-            }
-
-            if (this.ObjectPropertyExpression != null)
-            {
-                this.ObjectPropertyExpression.Wise(context);
-            }
-
-            if (this.DataProperty != null)
-            {
-                this.DataProperty.Wise(context);
-            }
-
-            if (this.IRI != null)
-            {
-                this.IRI.Wise(context);
+                this.IArg.Wise(context);
             }
 
         }
@@ -5487,34 +6191,9 @@ namespace CodeHelper.Core.Parse.ParseResults.Swrls
                 this.ClassExpression.Format(context, builder);
             }
 
-            for (int i = 0; i < this.IArgs.Count(); i++)
+            if (this.IArg != null)
             {
-                this.IArgs[i].Format(context, builder);
-            }
-
-            if (this.DataRange != null)
-            {
-                this.DataRange.Format(context, builder);
-            }
-
-            for (int i = 0; i < this.DArgs.Count(); i++)
-            {
-                this.DArgs[i].Format(context, builder);
-            }
-
-            if (this.ObjectPropertyExpression != null)
-            {
-                this.ObjectPropertyExpression.Format(context, builder);
-            }
-
-            if (this.DataProperty != null)
-            {
-                this.DataProperty.Format(context, builder);
-            }
-
-            if (this.IRI != null)
-            {
-                this.IRI.Format(context, builder);
+                this.IArg.Format(context, builder);
             }
 
         }
@@ -5527,34 +6206,9 @@ namespace CodeHelper.Core.Parse.ParseResults.Swrls
                 this.ClassExpression.BuildQuery(context, builder);
             }
 
-            for (int i = 0; i < this.IArgs.Count(); i++)
+            if (this.IArg != null)
             {
-                this.IArgs[i].BuildQuery(context, builder);
-            }
-
-            if (this.DataRange != null)
-            {
-                this.DataRange.BuildQuery(context, builder);
-            }
-
-            for (int i = 0; i < this.DArgs.Count(); i++)
-            {
-                this.DArgs[i].BuildQuery(context, builder);
-            }
-
-            if (this.ObjectPropertyExpression != null)
-            {
-                this.ObjectPropertyExpression.BuildQuery(context, builder);
-            }
-
-            if (this.DataProperty != null)
-            {
-                this.DataProperty.BuildQuery(context, builder);
-            }
-
-            if (this.IRI != null)
-            {
-                this.IRI.BuildQuery(context, builder);
+                this.IArg.BuildQuery(context, builder);
             }
 
         }
@@ -5567,34 +6221,9 @@ namespace CodeHelper.Core.Parse.ParseResults.Swrls
                 this.ClassExpression.BuildMock(context, builder);
             }
 
-            for (int i = 0; i < this.IArgs.Count(); i++)
+            if (this.IArg != null)
             {
-                this.IArgs[i].BuildMock(context, builder);
-            }
-
-            if (this.DataRange != null)
-            {
-                this.DataRange.BuildMock(context, builder);
-            }
-
-            for (int i = 0; i < this.DArgs.Count(); i++)
-            {
-                this.DArgs[i].BuildMock(context, builder);
-            }
-
-            if (this.ObjectPropertyExpression != null)
-            {
-                this.ObjectPropertyExpression.BuildMock(context, builder);
-            }
-
-            if (this.DataProperty != null)
-            {
-                this.DataProperty.BuildMock(context, builder);
-            }
-
-            if (this.IRI != null)
-            {
-                this.IRI.BuildMock(context, builder);
+                this.IArg.BuildMock(context, builder);
             }
 
         }
@@ -5607,14 +6236,450 @@ namespace CodeHelper.Core.Parse.ParseResults.Swrls
                 this.ClassExpression.BuildOther(context, builder);
             }
 
+            if (this.IArg != null)
+            {
+                this.IArg.BuildOther(context, builder);
+            }
+
+        }
+    }
+
+    public class DataRangeAtom : TokenPair
+    {
+        public DataRangeAtom()
+        {
+        }
+        public String DATARANGEATOM
+        { get; set; }
+        public DataRange DataRange
+        { get; set; }
+        public DArg DArg
+        { get; set; }
+
+        public void Parse(SwrlContext context)
+        {
+
+            if (this.DataRange != null)
+            {
+                this.DataRange.Parse(context);
+            }
+
+            if (this.DArg != null)
+            {
+                this.DArg.Parse(context);
+            }
+
+        }
+
+        public void Wise(SwrlContext context)
+        {
+
+            if (this.DataRange != null)
+            {
+                this.DataRange.Wise(context);
+            }
+
+            if (this.DArg != null)
+            {
+                this.DArg.Wise(context);
+            }
+
+        }
+
+        public void Format(SwrlContext context, IndentStringBuilder builder)
+        {
+
+            if (this.DataRange != null)
+            {
+                this.DataRange.Format(context, builder);
+            }
+
+            if (this.DArg != null)
+            {
+                this.DArg.Format(context, builder);
+            }
+
+        }
+
+        public void BuildQuery(SwrlContext context, IndentStringBuilder builder)
+        {
+
+            if (this.DataRange != null)
+            {
+                this.DataRange.BuildQuery(context, builder);
+            }
+
+            if (this.DArg != null)
+            {
+                this.DArg.BuildQuery(context, builder);
+            }
+
+        }
+
+        public void BuildMock(SwrlContext context, IndentStringBuilder builder)
+        {
+
+            if (this.DataRange != null)
+            {
+                this.DataRange.BuildMock(context, builder);
+            }
+
+            if (this.DArg != null)
+            {
+                this.DArg.BuildMock(context, builder);
+            }
+
+        }
+
+        public void BuildOther(SwrlContext context, IndentStringBuilder builder)
+        {
+
+            if (this.DataRange != null)
+            {
+                this.DataRange.BuildOther(context, builder);
+            }
+
+            if (this.DArg != null)
+            {
+                this.DArg.BuildOther(context, builder);
+            }
+
+        }
+    }
+
+    public class ObjectPropertyAtom : TokenPair
+    {
+        public ObjectPropertyAtom()
+        {
+            this.IArgs = new List<IArg>();
+        }
+        public String OBJECTPROPERTYATOM
+        { get; set; }
+        public ObjectPropertyExpression ObjectPropertyExpression
+        { get; set; }
+        public List<IArg> IArgs
+        { get; set; }
+
+        public void Parse(SwrlContext context)
+        {
+
+            if (this.ObjectPropertyExpression != null)
+            {
+                this.ObjectPropertyExpression.Parse(context);
+            }
+
+            for (int i = 0; i < this.IArgs.Count(); i++)
+            {
+                this.IArgs[i].Parse(context);
+            }
+
+        }
+
+        public void Wise(SwrlContext context)
+        {
+
+            if (this.ObjectPropertyExpression != null)
+            {
+                this.ObjectPropertyExpression.Wise(context);
+            }
+
+            for (int i = 0; i < this.IArgs.Count(); i++)
+            {
+                this.IArgs[i].Wise(context);
+            }
+
+        }
+
+        public void Format(SwrlContext context, IndentStringBuilder builder)
+        {
+
+            if (this.ObjectPropertyExpression != null)
+            {
+                this.ObjectPropertyExpression.Format(context, builder);
+            }
+
+            for (int i = 0; i < this.IArgs.Count(); i++)
+            {
+                this.IArgs[i].Format(context, builder);
+            }
+
+        }
+
+        public void BuildQuery(SwrlContext context, IndentStringBuilder builder)
+        {
+
+            if (this.ObjectPropertyExpression != null)
+            {
+                this.ObjectPropertyExpression.BuildQuery(context, builder);
+            }
+
+            for (int i = 0; i < this.IArgs.Count(); i++)
+            {
+                this.IArgs[i].BuildQuery(context, builder);
+            }
+
+        }
+
+        public void BuildMock(SwrlContext context, IndentStringBuilder builder)
+        {
+
+            if (this.ObjectPropertyExpression != null)
+            {
+                this.ObjectPropertyExpression.BuildMock(context, builder);
+            }
+
+            for (int i = 0; i < this.IArgs.Count(); i++)
+            {
+                this.IArgs[i].BuildMock(context, builder);
+            }
+
+        }
+
+        public void BuildOther(SwrlContext context, IndentStringBuilder builder)
+        {
+
+            if (this.ObjectPropertyExpression != null)
+            {
+                this.ObjectPropertyExpression.BuildOther(context, builder);
+            }
+
             for (int i = 0; i < this.IArgs.Count(); i++)
             {
                 this.IArgs[i].BuildOther(context, builder);
             }
 
-            if (this.DataRange != null)
+        }
+    }
+
+    public class DataPropertyAtom : TokenPair
+    {
+        public DataPropertyAtom()
+        {
+        }
+        public String DATAPROPERTYATOM
+        { get; set; }
+        public DataProperty DataProperty
+        { get; set; }
+        public IArg IArg
+        { get; set; }
+        public DArg DArg
+        { get; set; }
+
+        public void Parse(SwrlContext context)
+        {
+
+            if (this.DataProperty != null)
             {
-                this.DataRange.BuildOther(context, builder);
+                this.DataProperty.Parse(context);
+            }
+
+            if (this.IArg != null)
+            {
+                this.IArg.Parse(context);
+            }
+
+            if (this.DArg != null)
+            {
+                this.DArg.Parse(context);
+            }
+
+        }
+
+        public void Wise(SwrlContext context)
+        {
+
+            if (this.DataProperty != null)
+            {
+                this.DataProperty.Wise(context);
+            }
+
+            if (this.IArg != null)
+            {
+                this.IArg.Wise(context);
+            }
+
+            if (this.DArg != null)
+            {
+                this.DArg.Wise(context);
+            }
+
+        }
+
+        public void Format(SwrlContext context, IndentStringBuilder builder)
+        {
+
+            if (this.DataProperty != null)
+            {
+                this.DataProperty.Format(context, builder);
+            }
+
+            if (this.IArg != null)
+            {
+                this.IArg.Format(context, builder);
+            }
+
+            if (this.DArg != null)
+            {
+                this.DArg.Format(context, builder);
+            }
+
+        }
+
+        public void BuildQuery(SwrlContext context, IndentStringBuilder builder)
+        {
+
+            if (this.DataProperty != null)
+            {
+                this.DataProperty.BuildQuery(context, builder);
+            }
+
+            if (this.IArg != null)
+            {
+                this.IArg.BuildQuery(context, builder);
+            }
+
+            if (this.DArg != null)
+            {
+                this.DArg.BuildQuery(context, builder);
+            }
+
+        }
+
+        public void BuildMock(SwrlContext context, IndentStringBuilder builder)
+        {
+
+            if (this.DataProperty != null)
+            {
+                this.DataProperty.BuildMock(context, builder);
+            }
+
+            if (this.IArg != null)
+            {
+                this.IArg.BuildMock(context, builder);
+            }
+
+            if (this.DArg != null)
+            {
+                this.DArg.BuildMock(context, builder);
+            }
+
+        }
+
+        public void BuildOther(SwrlContext context, IndentStringBuilder builder)
+        {
+
+            if (this.DataProperty != null)
+            {
+                this.DataProperty.BuildOther(context, builder);
+            }
+
+            if (this.IArg != null)
+            {
+                this.IArg.BuildOther(context, builder);
+            }
+
+            if (this.DArg != null)
+            {
+                this.DArg.BuildOther(context, builder);
+            }
+
+        }
+    }
+
+    public class BuiltInAtom : TokenPair
+    {
+        public BuiltInAtom()
+        {
+            this.DArgs = new List<DArg>();
+        }
+        public String BUILTINATOM
+        { get; set; }
+        public IRI IRI
+        { get; set; }
+        public List<DArg> DArgs
+        { get; set; }
+
+        public void Parse(SwrlContext context)
+        {
+
+            if (this.IRI != null)
+            {
+                this.IRI.Parse(context);
+            }
+
+            for (int i = 0; i < this.DArgs.Count(); i++)
+            {
+                this.DArgs[i].Parse(context);
+            }
+
+        }
+
+        public void Wise(SwrlContext context)
+        {
+
+            if (this.IRI != null)
+            {
+                this.IRI.Wise(context);
+            }
+
+            for (int i = 0; i < this.DArgs.Count(); i++)
+            {
+                this.DArgs[i].Wise(context);
+            }
+
+        }
+
+        public void Format(SwrlContext context, IndentStringBuilder builder)
+        {
+
+            if (this.IRI != null)
+            {
+                this.IRI.Format(context, builder);
+            }
+
+            for (int i = 0; i < this.DArgs.Count(); i++)
+            {
+                this.DArgs[i].Format(context, builder);
+            }
+
+        }
+
+        public void BuildQuery(SwrlContext context, IndentStringBuilder builder)
+        {
+
+            if (this.IRI != null)
+            {
+                this.IRI.BuildQuery(context, builder);
+            }
+
+            for (int i = 0; i < this.DArgs.Count(); i++)
+            {
+                this.DArgs[i].BuildQuery(context, builder);
+            }
+
+        }
+
+        public void BuildMock(SwrlContext context, IndentStringBuilder builder)
+        {
+
+            if (this.IRI != null)
+            {
+                this.IRI.BuildMock(context, builder);
+            }
+
+            for (int i = 0; i < this.DArgs.Count(); i++)
+            {
+                this.DArgs[i].BuildMock(context, builder);
+            }
+
+        }
+
+        public void BuildOther(SwrlContext context, IndentStringBuilder builder)
+        {
+
+            if (this.IRI != null)
+            {
+                this.IRI.BuildOther(context, builder);
             }
 
             for (int i = 0; i < this.DArgs.Count(); i++)
@@ -5622,19 +6687,148 @@ namespace CodeHelper.Core.Parse.ParseResults.Swrls
                 this.DArgs[i].BuildOther(context, builder);
             }
 
-            if (this.ObjectPropertyExpression != null)
+        }
+    }
+
+    public class SameIndividualAtom : TokenPair
+    {
+        public SameIndividualAtom()
+        {
+            this.IArgs = new List<IArg>();
+        }
+        public String SAMEINDIVIDUALATOM
+        { get; set; }
+        public List<IArg> IArgs
+        { get; set; }
+
+        public void Parse(SwrlContext context)
+        {
+
+            for (int i = 0; i < this.IArgs.Count(); i++)
             {
-                this.ObjectPropertyExpression.BuildOther(context, builder);
+                this.IArgs[i].Parse(context);
             }
 
-            if (this.DataProperty != null)
+        }
+
+        public void Wise(SwrlContext context)
+        {
+
+            for (int i = 0; i < this.IArgs.Count(); i++)
             {
-                this.DataProperty.BuildOther(context, builder);
+                this.IArgs[i].Wise(context);
             }
 
-            if (this.IRI != null)
+        }
+
+        public void Format(SwrlContext context, IndentStringBuilder builder)
+        {
+
+            for (int i = 0; i < this.IArgs.Count(); i++)
             {
-                this.IRI.BuildOther(context, builder);
+                this.IArgs[i].Format(context, builder);
+            }
+
+        }
+
+        public void BuildQuery(SwrlContext context, IndentStringBuilder builder)
+        {
+
+            for (int i = 0; i < this.IArgs.Count(); i++)
+            {
+                this.IArgs[i].BuildQuery(context, builder);
+            }
+
+        }
+
+        public void BuildMock(SwrlContext context, IndentStringBuilder builder)
+        {
+
+            for (int i = 0; i < this.IArgs.Count(); i++)
+            {
+                this.IArgs[i].BuildMock(context, builder);
+            }
+
+        }
+
+        public void BuildOther(SwrlContext context, IndentStringBuilder builder)
+        {
+
+            for (int i = 0; i < this.IArgs.Count(); i++)
+            {
+                this.IArgs[i].BuildOther(context, builder);
+            }
+
+        }
+    }
+
+    public class DifferentIndividualsAtom : TokenPair
+    {
+        public DifferentIndividualsAtom()
+        {
+            this.IArgs = new List<IArg>();
+        }
+        public String DIFFERENTINDIVIDUALSATOM
+        { get; set; }
+        public List<IArg> IArgs
+        { get; set; }
+
+        public void Parse(SwrlContext context)
+        {
+
+            for (int i = 0; i < this.IArgs.Count(); i++)
+            {
+                this.IArgs[i].Parse(context);
+            }
+
+        }
+
+        public void Wise(SwrlContext context)
+        {
+
+            for (int i = 0; i < this.IArgs.Count(); i++)
+            {
+                this.IArgs[i].Wise(context);
+            }
+
+        }
+
+        public void Format(SwrlContext context, IndentStringBuilder builder)
+        {
+
+            for (int i = 0; i < this.IArgs.Count(); i++)
+            {
+                this.IArgs[i].Format(context, builder);
+            }
+
+        }
+
+        public void BuildQuery(SwrlContext context, IndentStringBuilder builder)
+        {
+
+            for (int i = 0; i < this.IArgs.Count(); i++)
+            {
+                this.IArgs[i].BuildQuery(context, builder);
+            }
+
+        }
+
+        public void BuildMock(SwrlContext context, IndentStringBuilder builder)
+        {
+
+            for (int i = 0; i < this.IArgs.Count(); i++)
+            {
+                this.IArgs[i].BuildMock(context, builder);
+            }
+
+        }
+
+        public void BuildOther(SwrlContext context, IndentStringBuilder builder)
+        {
+
+            for (int i = 0; i < this.IArgs.Count(); i++)
+            {
+                this.IArgs[i].BuildOther(context, builder);
             }
 
         }
@@ -5684,7 +6878,7 @@ namespace CodeHelper.Core.Parse.ParseResults.Swrls
 
         public void Format(SwrlContext context, IndentStringBuilder builder)
         {
-
+            builder.Append(this.VARIABLE + "(");
             if (this.IRI != null)
             {
                 this.IRI.Format(context, builder);
@@ -5694,7 +6888,7 @@ namespace CodeHelper.Core.Parse.ParseResults.Swrls
             {
                 this.Individual.Format(context, builder);
             }
-
+            builder.Append(")");
         }
 
         public void BuildQuery(SwrlContext context, IndentStringBuilder builder)
@@ -5787,7 +6981,7 @@ namespace CodeHelper.Core.Parse.ParseResults.Swrls
 
         public void Format(SwrlContext context, IndentStringBuilder builder)
         {
-
+            builder.Append(this.VARIABLE + "(");
             if (this.IRI != null)
             {
                 this.IRI.Format(context, builder);
@@ -5797,7 +6991,7 @@ namespace CodeHelper.Core.Parse.ParseResults.Swrls
             {
                 this.Literal.Format(context, builder);
             }
-
+            builder.AppendLine(")");
         }
 
         public void BuildQuery(SwrlContext context, IndentStringBuilder builder)
@@ -5863,6 +7057,8 @@ namespace CodeHelper.Core.Parse.ParseResults.Swrls
         { get; set; }
         public String HEAD
         { get; set; }
+        public HeadDGRule HeadDGRule
+        { get; set; }
 
         public void Parse(SwrlContext context)
         {
@@ -5877,6 +7073,10 @@ namespace CodeHelper.Core.Parse.ParseResults.Swrls
                 this.DGAtoms[i].Parse(context);
             }
 
+            if (this.HeadDGRule != null)
+            {
+                this.HeadDGRule.Parse(context);
+            }
         }
 
         public void Wise(SwrlContext context)
@@ -5892,21 +7092,35 @@ namespace CodeHelper.Core.Parse.ParseResults.Swrls
                 this.DGAtoms[i].Wise(context);
             }
 
+            if (this.HeadDGRule != null)
+            {
+                this.HeadDGRule.Wise(context);
+            }
         }
 
         public void Format(SwrlContext context, IndentStringBuilder builder)
         {
-
+            builder.IncreaseIndentLine(this.DESCRIPTIONGRAPHRULE + "(");
             for (int i = 0; i < this.Annotations.Count(); i++)
             {
                 this.Annotations[i].Format(context, builder);
             }
-
+            builder.IncreaseIndentLine(this.BODY + "(");
             for (int i = 0; i < this.DGAtoms.Count(); i++)
             {
                 this.DGAtoms[i].Format(context, builder);
             }
+            builder.DecreaseIndentLine(")");
 
+            builder.IncreaseIndentLine(this.HEAD + "(");
+
+            if (this.HeadDGRule != null)
+            {
+                this.HeadDGRule.Format(context, builder);
+            }
+
+            builder.DecreaseIndentLine(")");
+            builder.DecreaseIndentLine(")");
         }
 
         public void BuildQuery(SwrlContext context, IndentStringBuilder builder)
@@ -5920,6 +7134,11 @@ namespace CodeHelper.Core.Parse.ParseResults.Swrls
             for (int i = 0; i < this.DGAtoms.Count(); i++)
             {
                 this.DGAtoms[i].BuildQuery(context, builder);
+            }
+
+            if (this.HeadDGRule != null)
+            {
+                this.HeadDGRule.BuildQuery(context, builder);
             }
 
         }
@@ -5937,6 +7156,11 @@ namespace CodeHelper.Core.Parse.ParseResults.Swrls
                 this.DGAtoms[i].BuildMock(context, builder);
             }
 
+            if (this.HeadDGRule != null)
+            {
+                this.HeadDGRule.BuildMock(context, builder);
+            }
+
         }
 
         public void BuildOther(SwrlContext context, IndentStringBuilder builder)
@@ -5946,6 +7170,80 @@ namespace CodeHelper.Core.Parse.ParseResults.Swrls
             {
                 this.Annotations[i].BuildOther(context, builder);
             }
+
+            for (int i = 0; i < this.DGAtoms.Count(); i++)
+            {
+                this.DGAtoms[i].BuildOther(context, builder);
+            }
+
+            if (this.HeadDGRule != null)
+            {
+                this.HeadDGRule.BuildOther(context, builder);
+            }
+
+        }
+    }
+
+    public class HeadDGRule : TokenPair
+    {
+        public HeadDGRule()
+        {
+            this.DGAtoms = new List<DGAtom>();
+        }
+        public List<DGAtom> DGAtoms
+        { get; set; }
+
+        public void Parse(SwrlContext context)
+        {
+
+            for (int i = 0; i < this.DGAtoms.Count(); i++)
+            {
+                this.DGAtoms[i].Parse(context);
+            }
+
+        }
+
+        public void Wise(SwrlContext context)
+        {
+
+            for (int i = 0; i < this.DGAtoms.Count(); i++)
+            {
+                this.DGAtoms[i].Wise(context);
+            }
+
+        }
+
+        public void Format(SwrlContext context, IndentStringBuilder builder)
+        {     
+            for (int i = 0; i < this.DGAtoms.Count(); i++)
+            {
+                this.DGAtoms[i].Format(context, builder);
+            }
+     
+        }
+
+        public void BuildQuery(SwrlContext context, IndentStringBuilder builder)
+        {
+
+            for (int i = 0; i < this.DGAtoms.Count(); i++)
+            {
+                this.DGAtoms[i].BuildQuery(context, builder);
+            }
+
+        }
+
+        public void BuildMock(SwrlContext context, IndentStringBuilder builder)
+        {
+
+            for (int i = 0; i < this.DGAtoms.Count(); i++)
+            {
+                this.DGAtoms[i].BuildMock(context, builder);
+            }
+
+        }
+
+        public void BuildOther(SwrlContext context, IndentStringBuilder builder)
+        {
 
             for (int i = 0; i < this.DGAtoms.Count(); i++)
             {
@@ -6014,7 +7312,7 @@ namespace CodeHelper.Core.Parse.ParseResults.Swrls
 
         public void Format(SwrlContext context, IndentStringBuilder builder)
         {
-
+            builder.Append(this.CLASSATOM ?? this.OBJECTPROPERTYATOM + "(");
             if (this.ClassExpression != null)
             {
                 this.ClassExpression.Format(context, builder);
@@ -6029,7 +7327,7 @@ namespace CodeHelper.Core.Parse.ParseResults.Swrls
             {
                 this.ObjectPropertyExpression.Format(context, builder);
             }
-
+            builder.AppendLine(")");
         }
 
         public void BuildQuery(SwrlContext context, IndentStringBuilder builder)
@@ -6162,7 +7460,7 @@ namespace CodeHelper.Core.Parse.ParseResults.Swrls
 
         public void Format(SwrlContext context, IndentStringBuilder builder)
         {
-
+            builder.Append(this.DESCRIPTIONGRAPH + "(");
             for (int i = 0; i < this.Annotations.Count(); i++)
             {
                 this.Annotations[i].Format(context, builder);
@@ -6182,7 +7480,7 @@ namespace CodeHelper.Core.Parse.ParseResults.Swrls
             {
                 this.MainClasses.Format(context, builder);
             }
-
+            builder.AppendLine(")");
         }
 
         public void BuildQuery(SwrlContext context, IndentStringBuilder builder)
@@ -6294,12 +7592,12 @@ namespace CodeHelper.Core.Parse.ParseResults.Swrls
 
         public void Format(SwrlContext context, IndentStringBuilder builder)
         {
-
+            builder.Append(this.NODES + "(");
             for (int i = 0; i < this.NodeAssertions.Count(); i++)
             {
                 this.NodeAssertions[i].Format(context, builder);
             }
-
+            builder.AppendLine(")");
         }
 
         public void BuildQuery(SwrlContext context, IndentStringBuilder builder)
@@ -6377,7 +7675,7 @@ namespace CodeHelper.Core.Parse.ParseResults.Swrls
 
         public void Format(SwrlContext context, IndentStringBuilder builder)
         {
-
+            builder.Append(this.NODEASSERTION + "(");
             if (this.ClassN != null)
             {
                 this.ClassN.Format(context, builder);
@@ -6387,7 +7685,7 @@ namespace CodeHelper.Core.Parse.ParseResults.Swrls
             {
                 this.DGNode.Format(context, builder);
             }
-
+            builder.AppendLine(")");
         }
 
         public void BuildQuery(SwrlContext context, IndentStringBuilder builder)
@@ -6466,12 +7764,12 @@ namespace CodeHelper.Core.Parse.ParseResults.Swrls
 
         public void Format(SwrlContext context, IndentStringBuilder builder)
         {
-
+            
             if (this.IRI != null)
             {
                 this.IRI.Format(context, builder);
             }
-
+            
         }
 
         public void BuildQuery(SwrlContext context, IndentStringBuilder builder)
@@ -6538,12 +7836,12 @@ namespace CodeHelper.Core.Parse.ParseResults.Swrls
 
         public void Format(SwrlContext context, IndentStringBuilder builder)
         {
-
+            builder.Append(this.EDGES + "(");
             for (int i = 0; i < this.EdgeAssertions.Count(); i++)
             {
                 this.EdgeAssertions[i].Format(context, builder);
             }
-
+            builder.AppendLine(")");
         }
 
         public void BuildQuery(SwrlContext context, IndentStringBuilder builder)
@@ -6622,7 +7920,7 @@ namespace CodeHelper.Core.Parse.ParseResults.Swrls
 
         public void Format(SwrlContext context, IndentStringBuilder builder)
         {
-
+            builder.Append(this.EDGEASSERTION + "(");
             if (this.ObjectProperty != null)
             {
                 this.ObjectProperty.Format(context, builder);
@@ -6632,7 +7930,7 @@ namespace CodeHelper.Core.Parse.ParseResults.Swrls
             {
                 this.DGNodes[i].Format(context, builder);
             }
-
+            builder.AppendLine(")");
         }
 
         public void BuildQuery(SwrlContext context, IndentStringBuilder builder)
@@ -6714,12 +8012,12 @@ namespace CodeHelper.Core.Parse.ParseResults.Swrls
 
         public void Format(SwrlContext context, IndentStringBuilder builder)
         {
-
+            builder.Append(this.MAINCLASSES + "(");
             for (int i = 0; i < this.ClassNs.Count(); i++)
             {
                 this.ClassNs[i].Format(context, builder);
             }
-
+            builder.AppendLine(")");
         }
 
         public void BuildQuery(SwrlContext context, IndentStringBuilder builder)
@@ -7113,7 +8411,7 @@ namespace CodeHelper.Core.Parse.ParseResults.Swrls
 
         public void Format(SwrlContext context, IndentStringBuilder builder)
         {
-
+            builder.Append(this.ANNOTATION + "(");
             if (this.AnnotationAnnotations != null)
             {
                 this.AnnotationAnnotations.Format(context, builder);
@@ -7128,7 +8426,7 @@ namespace CodeHelper.Core.Parse.ParseResults.Swrls
             {
                 this.AnnotationValue.Format(context, builder);
             }
-
+            builder.AppendLine(")");
         }
 
         public void BuildQuery(SwrlContext context, IndentStringBuilder builder)
@@ -7564,7 +8862,7 @@ namespace CodeHelper.Core.Parse.ParseResults.Swrls
 
         public void Format(SwrlContext context, IndentStringBuilder builder)
         {
-
+            builder.Append(this.ANNOTATIONASSERTION + "(");
             if (this.AxiomAnnotations != null)
             {
                 this.AxiomAnnotations.Format(context, builder);
@@ -7584,7 +8882,7 @@ namespace CodeHelper.Core.Parse.ParseResults.Swrls
             {
                 this.AnnotationValue.Format(context, builder);
             }
-
+            builder.AppendLine(")");
         }
 
         public void BuildQuery(SwrlContext context, IndentStringBuilder builder)
@@ -7719,7 +9017,7 @@ namespace CodeHelper.Core.Parse.ParseResults.Swrls
 
         public void Format(SwrlContext context, IndentStringBuilder builder)
         {
-
+            builder.Append(this.SUBANNOTATIONPROPERTYOF + "(");
             if (this.AxiomAnnotations != null)
             {
                 this.AxiomAnnotations.Format(context, builder);
@@ -7734,7 +9032,7 @@ namespace CodeHelper.Core.Parse.ParseResults.Swrls
             {
                 this.SuperAnnotationProperty.Format(context, builder);
             }
-
+            builder.AppendLine(")");
         }
 
         public void BuildQuery(SwrlContext context, IndentStringBuilder builder)
@@ -7992,7 +9290,7 @@ namespace CodeHelper.Core.Parse.ParseResults.Swrls
 
         public void Format(SwrlContext context, IndentStringBuilder builder)
         {
-
+            builder.Append(this.ANNOTATIONPROPERTYDOMAIN + "(");
             if (this.AxiomAnnotations != null)
             {
                 this.AxiomAnnotations.Format(context, builder);
@@ -8007,7 +9305,7 @@ namespace CodeHelper.Core.Parse.ParseResults.Swrls
             {
                 this.IRI.Format(context, builder);
             }
-
+            builder.AppendLine(")");
         }
 
         public void BuildQuery(SwrlContext context, IndentStringBuilder builder)
@@ -8852,12 +10150,12 @@ namespace CodeHelper.Core.Parse.ParseResults.Swrls
 
         public void Format(SwrlContext context, IndentStringBuilder builder)
         {
-
+            builder.Append(this.OBJECTINTERSECTIONOF + "(");
             for (int i = 0; i < this.ClassExpressions.Count(); i++)
             {
                 this.ClassExpressions[i].Format(context, builder);
             }
-
+            builder.AppendLine(")");
         }
 
         public void BuildQuery(SwrlContext context, IndentStringBuilder builder)
@@ -8924,12 +10222,12 @@ namespace CodeHelper.Core.Parse.ParseResults.Swrls
 
         public void Format(SwrlContext context, IndentStringBuilder builder)
         {
-
+            builder.Append(this.OBJECTUNIONOF + "(");
             for (int i = 0; i < this.ClassExpressions.Count(); i++)
             {
                 this.ClassExpressions[i].Format(context, builder);
             }
-
+            builder.AppendLine(")");
         }
 
         public void BuildQuery(SwrlContext context, IndentStringBuilder builder)
@@ -8995,12 +10293,12 @@ namespace CodeHelper.Core.Parse.ParseResults.Swrls
 
         public void Format(SwrlContext context, IndentStringBuilder builder)
         {
-
+            builder.Append(this.OBJECTCOMPLEMENTOF + "(");
             if (this.ClassExpression != null)
             {
                 this.ClassExpression.Format(context, builder);
             }
-
+            builder.AppendLine(")");
         }
 
         public void BuildQuery(SwrlContext context, IndentStringBuilder builder)
@@ -9067,12 +10365,12 @@ namespace CodeHelper.Core.Parse.ParseResults.Swrls
 
         public void Format(SwrlContext context, IndentStringBuilder builder)
         {
-
+            builder.Append(this.OBJECTONEOF + "(");
             for (int i = 0; i < this.Individuals.Count(); i++)
             {
                 this.Individuals[i].Format(context, builder);
             }
-
+            builder.AppendLine(")");
         }
 
         public void BuildQuery(SwrlContext context, IndentStringBuilder builder)
@@ -9150,7 +10448,7 @@ namespace CodeHelper.Core.Parse.ParseResults.Swrls
 
         public void Format(SwrlContext context, IndentStringBuilder builder)
         {
-
+            builder.Append(this.OBJECTSOMEVALUESFROM + "(");
             if (this.ObjectPropertyExpression != null)
             {
                 this.ObjectPropertyExpression.Format(context, builder);
@@ -9160,7 +10458,7 @@ namespace CodeHelper.Core.Parse.ParseResults.Swrls
             {
                 this.ClassExpression.Format(context, builder);
             }
-
+            builder.AppendLine(")");
         }
 
         public void BuildQuery(SwrlContext context, IndentStringBuilder builder)
@@ -9253,7 +10551,7 @@ namespace CodeHelper.Core.Parse.ParseResults.Swrls
 
         public void Format(SwrlContext context, IndentStringBuilder builder)
         {
-
+            builder.Append(this.OBJECTALLVALUESFROM + "(");
             if (this.ObjectPropertyExpression != null)
             {
                 this.ObjectPropertyExpression.Format(context, builder);
@@ -9263,7 +10561,7 @@ namespace CodeHelper.Core.Parse.ParseResults.Swrls
             {
                 this.ClassExpression.Format(context, builder);
             }
-
+            builder.AppendLine(")");
         }
 
         public void BuildQuery(SwrlContext context, IndentStringBuilder builder)
@@ -9356,7 +10654,7 @@ namespace CodeHelper.Core.Parse.ParseResults.Swrls
 
         public void Format(SwrlContext context, IndentStringBuilder builder)
         {
-
+            builder.Append(this.OBJECTHASVALUE + "(");
             if (this.ObjectPropertyExpression != null)
             {
                 this.ObjectPropertyExpression.Format(context, builder);
@@ -9366,7 +10664,7 @@ namespace CodeHelper.Core.Parse.ParseResults.Swrls
             {
                 this.Individual.Format(context, builder);
             }
-
+            builder.AppendLine(")");
         }
 
         public void BuildQuery(SwrlContext context, IndentStringBuilder builder)
@@ -9447,12 +10745,12 @@ namespace CodeHelper.Core.Parse.ParseResults.Swrls
 
         public void Format(SwrlContext context, IndentStringBuilder builder)
         {
-
+            builder.Append(this.OBJECTHASSELF + "(");
             if (this.ObjectPropertyExpression != null)
             {
                 this.ObjectPropertyExpression.Format(context, builder);
             }
-
+            builder.AppendLine(")");
         }
 
         public void BuildQuery(SwrlContext context, IndentStringBuilder builder)
@@ -9532,7 +10830,8 @@ namespace CodeHelper.Core.Parse.ParseResults.Swrls
 
         public void Format(SwrlContext context, IndentStringBuilder builder)
         {
-
+            builder.Append(this.OBJECTMINCARDINALITY + "(");
+            builder.Append(this.INTEGER + " ");
             if (this.ObjectPropertyExpression != null)
             {
                 this.ObjectPropertyExpression.Format(context, builder);
@@ -9542,7 +10841,7 @@ namespace CodeHelper.Core.Parse.ParseResults.Swrls
             {
                 this.ClassExpression.Format(context, builder);
             }
-
+            builder.AppendLine(")");
         }
 
         public void BuildQuery(SwrlContext context, IndentStringBuilder builder)
@@ -9637,7 +10936,8 @@ namespace CodeHelper.Core.Parse.ParseResults.Swrls
 
         public void Format(SwrlContext context, IndentStringBuilder builder)
         {
-
+            builder.Append(this.OBJECTMAXCARDINALITY + "(");
+            builder.Append(this.INTEGER + " ");
             if (this.ObjectPropertyExpression != null)
             {
                 this.ObjectPropertyExpression.Format(context, builder);
@@ -9647,7 +10947,7 @@ namespace CodeHelper.Core.Parse.ParseResults.Swrls
             {
                 this.ClassExpression.Format(context, builder);
             }
-
+            builder.AppendLine(")");
         }
 
         public void BuildQuery(SwrlContext context, IndentStringBuilder builder)
@@ -9742,7 +11042,8 @@ namespace CodeHelper.Core.Parse.ParseResults.Swrls
 
         public void Format(SwrlContext context, IndentStringBuilder builder)
         {
-
+            builder.Append(this.OBJECTEXACTCARDINALITY + "(");
+            builder.Append(this.INTEGER + " ");
             if (this.ObjectPropertyExpression != null)
             {
                 this.ObjectPropertyExpression.Format(context, builder);
@@ -9752,7 +11053,7 @@ namespace CodeHelper.Core.Parse.ParseResults.Swrls
             {
                 this.ClassExpression.Format(context, builder);
             }
-
+            builder.AppendLine(")");
         }
 
         public void BuildQuery(SwrlContext context, IndentStringBuilder builder)
@@ -9846,7 +11147,7 @@ namespace CodeHelper.Core.Parse.ParseResults.Swrls
 
         public void Format(SwrlContext context, IndentStringBuilder builder)
         {
-
+            builder.Append(this.DATASOMEVALUESFROM + "(");
             for (int i = 0; i < this.DataPropertyExpressions.Count(); i++)
             {
                 this.DataPropertyExpressions[i].Format(context, builder);
@@ -9856,7 +11157,7 @@ namespace CodeHelper.Core.Parse.ParseResults.Swrls
             {
                 this.DataRange.Format(context, builder);
             }
-
+            builder.AppendLine(")");
         }
 
         public void BuildQuery(SwrlContext context, IndentStringBuilder builder)
@@ -9950,7 +11251,7 @@ namespace CodeHelper.Core.Parse.ParseResults.Swrls
 
         public void Format(SwrlContext context, IndentStringBuilder builder)
         {
-
+            builder.Append(this.DATAALLVALUESFROM + "(");
             for (int i = 0; i < this.DataPropertyExpressions.Count(); i++)
             {
                 this.DataPropertyExpressions[i].Format(context, builder);
@@ -9960,7 +11261,7 @@ namespace CodeHelper.Core.Parse.ParseResults.Swrls
             {
                 this.DataRange.Format(context, builder);
             }
-
+            builder.AppendLine(")");
         }
 
         public void BuildQuery(SwrlContext context, IndentStringBuilder builder)
@@ -10053,7 +11354,7 @@ namespace CodeHelper.Core.Parse.ParseResults.Swrls
 
         public void Format(SwrlContext context, IndentStringBuilder builder)
         {
-
+            builder.Append(this.DATAHASVALUE + "(");
             if (this.DataPropertyExpression != null)
             {
                 this.DataPropertyExpression.Format(context, builder);
@@ -10063,7 +11364,7 @@ namespace CodeHelper.Core.Parse.ParseResults.Swrls
             {
                 this.Literal.Format(context, builder);
             }
-
+            builder.AppendLine(")");
         }
 
         public void BuildQuery(SwrlContext context, IndentStringBuilder builder)
@@ -10158,7 +11459,8 @@ namespace CodeHelper.Core.Parse.ParseResults.Swrls
 
         public void Format(SwrlContext context, IndentStringBuilder builder)
         {
-
+            builder.Append(this.DATAMINCARDINALITY + "(");
+            builder.Append(this.INTEGER + " ");
             if (this.DataPropertyExpression != null)
             {
                 this.DataPropertyExpression.Format(context, builder);
@@ -10168,7 +11470,7 @@ namespace CodeHelper.Core.Parse.ParseResults.Swrls
             {
                 this.DataRange.Format(context, builder);
             }
-
+            builder.AppendLine(")");
         }
 
         public void BuildQuery(SwrlContext context, IndentStringBuilder builder)
@@ -10263,7 +11565,8 @@ namespace CodeHelper.Core.Parse.ParseResults.Swrls
 
         public void Format(SwrlContext context, IndentStringBuilder builder)
         {
-
+            builder.Append(this.DATAMAXCARDINALITY + "(");
+            builder.Append(this.INTEGER + " ");
             if (this.DataPropertyExpression != null)
             {
                 this.DataPropertyExpression.Format(context, builder);
@@ -10273,7 +11576,7 @@ namespace CodeHelper.Core.Parse.ParseResults.Swrls
             {
                 this.DataRange.Format(context, builder);
             }
-
+            builder.AppendLine(")");
         }
 
         public void BuildQuery(SwrlContext context, IndentStringBuilder builder)
@@ -10368,7 +11671,8 @@ namespace CodeHelper.Core.Parse.ParseResults.Swrls
 
         public void Format(SwrlContext context, IndentStringBuilder builder)
         {
-
+            builder.Append(this.DATAEXACTCARDINALITY + "(");
+            builder.Append(this.INTEGER + " ");
             if (this.DataPropertyExpression != null)
             {
                 this.DataPropertyExpression.Format(context, builder);
@@ -10378,7 +11682,7 @@ namespace CodeHelper.Core.Parse.ParseResults.Swrls
             {
                 this.DataRange.Format(context, builder);
             }
-
+            builder.AppendLine(")");
         }
 
         public void BuildQuery(SwrlContext context, IndentStringBuilder builder)
@@ -11009,7 +12313,7 @@ namespace CodeHelper.Core.Parse.ParseResults.Swrls
 
         public void Format(SwrlContext context, IndentStringBuilder builder)
         {
-
+            builder.Append(this.SAMEINDIVIDUAL + "(");
             if (this.AxiomAnnotations != null)
             {
                 this.AxiomAnnotations.Format(context, builder);
@@ -11019,7 +12323,7 @@ namespace CodeHelper.Core.Parse.ParseResults.Swrls
             {
                 this.Individuals[i].Format(context, builder);
             }
-
+            builder.AppendLine(")");
         }
 
         public void BuildQuery(SwrlContext context, IndentStringBuilder builder)
@@ -11113,7 +12417,7 @@ namespace CodeHelper.Core.Parse.ParseResults.Swrls
 
         public void Format(SwrlContext context, IndentStringBuilder builder)
         {
-
+            builder.Append(this.DIFFERENTINDIVIDUALS + "(");
             if (this.AxiomAnnotations != null)
             {
                 this.AxiomAnnotations.Format(context, builder);
@@ -11123,7 +12427,7 @@ namespace CodeHelper.Core.Parse.ParseResults.Swrls
             {
                 this.Individuals[i].Format(context, builder);
             }
-
+            builder.AppendLine(")");
         }
 
         public void BuildQuery(SwrlContext context, IndentStringBuilder builder)
@@ -11228,7 +12532,7 @@ namespace CodeHelper.Core.Parse.ParseResults.Swrls
 
         public void Format(SwrlContext context, IndentStringBuilder builder)
         {
-
+            builder.Append(this.CLASSASSERTION + "(");
             if (this.AxiomAnnotations != null)
             {
                 this.AxiomAnnotations.Format(context, builder);
@@ -11243,7 +12547,7 @@ namespace CodeHelper.Core.Parse.ParseResults.Swrls
             {
                 this.Individual.Format(context, builder);
             }
-
+            builder.AppendLine(")");
         }
 
         public void BuildQuery(SwrlContext context, IndentStringBuilder builder)
@@ -11375,27 +12679,31 @@ namespace CodeHelper.Core.Parse.ParseResults.Swrls
 
         public void Format(SwrlContext context, IndentStringBuilder builder)
         {
-
+            builder.Append(this.OBJECTPROPERTYASSERTION + "(");
             if (this.AxiomAnnotations != null)
             {
                 this.AxiomAnnotations.Format(context, builder);
+                builder.Append(" ");
             }
 
             if (this.ObjectPropertyExpression != null)
             {
                 this.ObjectPropertyExpression.Format(context, builder);
+                builder.Append(" ");
             }
 
             if (this.SourceIndividual != null)
             {
                 this.SourceIndividual.Format(context, builder);
+                builder.Append(" ");
             }
 
             if (this.TargetIndividual != null)
             {
                 this.TargetIndividual.Format(context, builder);
+                builder.Append(" ");
             }
-
+            builder.AppendLine(")");
         }
 
         public void BuildQuery(SwrlContext context, IndentStringBuilder builder)
@@ -11542,7 +12850,7 @@ namespace CodeHelper.Core.Parse.ParseResults.Swrls
 
         public void Format(SwrlContext context, IndentStringBuilder builder)
         {
-
+            builder.Append(this.NEGATIVEOBJECTPROPERTYASSERTION + "(");
             if (this.AxiomAnnotations != null)
             {
                 this.AxiomAnnotations.Format(context, builder);
@@ -11562,7 +12870,7 @@ namespace CodeHelper.Core.Parse.ParseResults.Swrls
             {
                 this.TargetIndividual.Format(context, builder);
             }
-
+            builder.AppendLine(")");
         }
 
         public void BuildQuery(SwrlContext context, IndentStringBuilder builder)
@@ -11709,7 +13017,7 @@ namespace CodeHelper.Core.Parse.ParseResults.Swrls
 
         public void Format(SwrlContext context, IndentStringBuilder builder)
         {
-
+            builder.Append(this.DATAPROPERTYASSERTION + "(");
             if (this.AxiomAnnotations != null)
             {
                 this.AxiomAnnotations.Format(context, builder);
@@ -11729,7 +13037,7 @@ namespace CodeHelper.Core.Parse.ParseResults.Swrls
             {
                 this.TargetValue.Format(context, builder);
             }
-
+            builder.AppendLine(")");
         }
 
         public void BuildQuery(SwrlContext context, IndentStringBuilder builder)
@@ -11876,7 +13184,7 @@ namespace CodeHelper.Core.Parse.ParseResults.Swrls
 
         public void Format(SwrlContext context, IndentStringBuilder builder)
         {
-
+            builder.Append(this.NEGATIVEDATAPROPERTYASSERTION + "(");
             if (this.AxiomAnnotations != null)
             {
                 this.AxiomAnnotations.Format(context, builder);
@@ -11896,7 +13204,7 @@ namespace CodeHelper.Core.Parse.ParseResults.Swrls
             {
                 this.TargetValue.Format(context, builder);
             }
-
+            builder.AppendLine(")");
         }
 
         public void BuildQuery(SwrlContext context, IndentStringBuilder builder)
@@ -12237,12 +13545,12 @@ namespace CodeHelper.Core.Parse.ParseResults.Swrls
 
         public void Format(SwrlContext context, IndentStringBuilder builder)
         {
-
+            builder.Append(this.DATAINTERSECTIONOF + "(");
             for (int i = 0; i < this.DataRanges.Count(); i++)
             {
                 this.DataRanges[i].Format(context, builder);
             }
-
+            builder.AppendLine(")");
         }
 
         public void BuildQuery(SwrlContext context, IndentStringBuilder builder)
@@ -12309,12 +13617,12 @@ namespace CodeHelper.Core.Parse.ParseResults.Swrls
 
         public void Format(SwrlContext context, IndentStringBuilder builder)
         {
-
+            builder.Append(this.DATAUNIONOF + "(");
             for (int i = 0; i < this.DataRanges.Count(); i++)
             {
                 this.DataRanges[i].Format(context, builder);
             }
-
+            builder.AppendLine(")");
         }
 
         public void BuildQuery(SwrlContext context, IndentStringBuilder builder)
@@ -12380,12 +13688,12 @@ namespace CodeHelper.Core.Parse.ParseResults.Swrls
 
         public void Format(SwrlContext context, IndentStringBuilder builder)
         {
-
+            builder.Append(this.DATACOMPLEMENTOF + "(");
             if (this.DataRange != null)
             {
                 this.DataRange.Format(context, builder);
             }
-
+            builder.AppendLine(")");
         }
 
         public void BuildQuery(SwrlContext context, IndentStringBuilder builder)
@@ -12452,12 +13760,12 @@ namespace CodeHelper.Core.Parse.ParseResults.Swrls
 
         public void Format(SwrlContext context, IndentStringBuilder builder)
         {
-
+            builder.Append(this.DATAONEOF + "(");
             for (int i = 0; i < this.Literals.Count(); i++)
             {
                 this.Literals[i].Format(context, builder);
             }
-
+            builder.AppendLine(")");
         }
 
         public void BuildQuery(SwrlContext context, IndentStringBuilder builder)
@@ -12693,12 +14001,12 @@ namespace CodeHelper.Core.Parse.ParseResults.Swrls
 
         public void Format(SwrlContext context, IndentStringBuilder builder)
         {
-
+            builder.Append(this.OBJECTINVERSEOF + "(");
             if (this.ObjectProperty != null)
             {
                 this.ObjectProperty.Format(context, builder);
             }
-
+            builder.AppendLine(")");
         }
 
         public void BuildQuery(SwrlContext context, IndentStringBuilder builder)
@@ -12790,7 +14098,7 @@ namespace CodeHelper.Core.Parse.ParseResults.Swrls
 
         public void Format(SwrlContext context, IndentStringBuilder builder)
         {
-
+            builder.Append(this.DATATYPERESTRICTION + "(");
             if (this.Datatype != null)
             {
                 this.Datatype.Format(context, builder);
@@ -12805,7 +14113,7 @@ namespace CodeHelper.Core.Parse.ParseResults.Swrls
             {
                 this.RestrictionValues[i].Format(context, builder);
             }
-
+            builder.AppendLine(")");
         }
 
         public void BuildQuery(SwrlContext context, IndentStringBuilder builder)
@@ -13528,6 +14836,8 @@ namespace CodeHelper.Core.Parse.ParseResults.Swrls
 
         public void Format(SwrlContext context, IndentStringBuilder builder)
         {
+            if (this.IRIREF != null)
+                builder.Append(this.IRIREF);
 
             if (this.PrefixedName != null)
             {
@@ -13589,7 +14899,7 @@ namespace CodeHelper.Core.Parse.ParseResults.Swrls
 
         public void Format(SwrlContext context, IndentStringBuilder builder)
         {
-
+            builder.Append(this.PNAMELN ?? this.PNAMENS);
         }
 
         public void BuildQuery(SwrlContext context, IndentStringBuilder builder)

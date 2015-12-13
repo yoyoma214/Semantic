@@ -120,6 +120,33 @@ namespace CodeHelper.Core.Parse.ParseResults.HermitRules
                 dLSafeRule.HEAD = HEADCtx.GetText();
             }
 
+            var headCtx = context.head();
+            if (headCtx != null)
+            {
+                dLSafeRule.Head = new Head();
+                this.stack.Push(dLSafeRule.Head);
+                this.Visit(headCtx);
+                this.stack.Pop();
+            }
+
+            return 0;
+        }
+
+        public override int VisitHead([NotNull] HermitRuleParser.HeadContext context)
+        {
+            var head = this.stack.PeekCtx<Head>();
+            head.Parse(context);
+
+            var atomCtxs = context.atom();
+            foreach (var ctx in atomCtxs)
+            {
+                var atom = new Atom();
+                head.Atoms.Add(atom);
+                this.stack.Push(atom);
+                this.Visit(ctx);
+                this.stack.Pop();
+            }
+
             return 0;
         }
 
@@ -240,92 +267,194 @@ namespace CodeHelper.Core.Parse.ParseResults.HermitRules
             var entity = this.stack.PeekCtx<Entity>();
             entity.Parse(context);
 
+            var class_entityCtx = context.class_entity();
+            if (class_entityCtx != null)
+            {
+                entity.ClassEntity = new ClassEntity();
+                this.stack.Push(entity.ClassEntity);
+                this.Visit(class_entityCtx);
+                this.stack.Pop();
+            }
+
+            var data_type_entityCtx = context.data_type_entity();
+            if (data_type_entityCtx != null)
+            {
+                entity.DataTypeEntity = new DataTypeEntity();
+                this.stack.Push(entity.DataTypeEntity);
+                this.Visit(data_type_entityCtx);
+                this.stack.Pop();
+            }
+
+            var object_property_entityCtx = context.object_property_entity();
+            if (object_property_entityCtx != null)
+            {
+                entity.ObjectPropertyEntity = new ObjectPropertyEntity();
+                this.stack.Push(entity.ObjectPropertyEntity);
+                this.Visit(object_property_entityCtx);
+                this.stack.Pop();
+            }
+
+            var data_property_entityCtx = context.data_property_entity();
+            if (data_property_entityCtx != null)
+            {
+                entity.DataPropertyEntity = new DataPropertyEntity();
+                this.stack.Push(entity.DataPropertyEntity);
+                this.Visit(data_property_entityCtx);
+                this.stack.Pop();
+            }
+
+            var annotation_property_entityCtx = context.annotation_property_entity();
+            if (annotation_property_entityCtx != null)
+            {
+                entity.AnnotationPropertyEntity = new AnnotationPropertyEntity();
+                this.stack.Push(entity.AnnotationPropertyEntity);
+                this.Visit(annotation_property_entityCtx);
+                this.stack.Pop();
+            }
+
+            var named_individual_entityCtx = context.named_individual_entity();
+            if (named_individual_entityCtx != null)
+            {
+                entity.NamedIndividualEntity = new NamedIndividualEntity();
+                this.stack.Push(entity.NamedIndividualEntity);
+                this.Visit(named_individual_entityCtx);
+                this.stack.Pop();
+            }
+
+            return 0;
+        }
+
+        public override int VisitClass_entity([NotNull] HermitRuleParser.Class_entityContext context)
+        {
+            var classEntity = this.stack.PeekCtx<ClassEntity>();
+            classEntity.Parse(context);
+
             var CLASSCtx = context.CLASS();
             if (CLASSCtx != null)
             {
-                entity.CLASS = CLASSCtx.GetText();
+                classEntity.CLASS = CLASSCtx.GetText();
             }
 
             var classNCtx = context.classN();
             if (classNCtx != null)
             {
-                entity.ClassN = new ClassN();
-                this.stack.Push(entity.ClassN);
+                classEntity.ClassN = new ClassN();
+                this.stack.Push(classEntity.ClassN);
                 this.Visit(classNCtx);
                 this.stack.Pop();
             }
 
+            return 0;
+        }
+
+        public override int VisitData_type_entity([NotNull] HermitRuleParser.Data_type_entityContext context)
+        {
+            var dataTypeEntity = this.stack.PeekCtx<DataTypeEntity>();
+            dataTypeEntity.Parse(context);
+
             var DATA_TYPECtx = context.DATA_TYPE();
             if (DATA_TYPECtx != null)
             {
-                entity.DATATYPE = DATA_TYPECtx.GetText();
+                dataTypeEntity.DATATYPE = DATA_TYPECtx.GetText();
             }
 
             var datatypeCtx = context.datatype();
             if (datatypeCtx != null)
             {
-                entity.Datatype = new Datatype();
-                this.stack.Push(entity.Datatype);
+                dataTypeEntity.Datatype = new Datatype();
+                this.stack.Push(dataTypeEntity.Datatype);
                 this.Visit(datatypeCtx);
                 this.stack.Pop();
             }
 
+            return 0;
+        }
+
+        public override int VisitObject_property_entity([NotNull] HermitRuleParser.Object_property_entityContext context)
+        {
+            var objectPropertyEntity = this.stack.PeekCtx<ObjectPropertyEntity>();
+            objectPropertyEntity.Parse(context);
+
             var OBJECT_PROPERTYCtx = context.OBJECT_PROPERTY();
             if (OBJECT_PROPERTYCtx != null)
             {
-                entity.OBJECTPROPERTY = OBJECT_PROPERTYCtx.GetText();
+                objectPropertyEntity.OBJECTPROPERTY = OBJECT_PROPERTYCtx.GetText();
             }
 
             var objectPropertyCtx = context.objectProperty();
             if (objectPropertyCtx != null)
             {
-                entity.ObjectProperty = new ObjectProperty();
-                this.stack.Push(entity.ObjectProperty);
+                objectPropertyEntity.ObjectProperty = new ObjectProperty();
+                this.stack.Push(objectPropertyEntity.ObjectProperty);
                 this.Visit(objectPropertyCtx);
                 this.stack.Pop();
             }
 
+            return 0;
+        }
+
+        public override int VisitData_property_entity([NotNull] HermitRuleParser.Data_property_entityContext context)
+        {
+            var dataPropertyEntity = this.stack.PeekCtx<DataPropertyEntity>();
+            dataPropertyEntity.Parse(context);
+
             var DATA_PROPERTYCtx = context.DATA_PROPERTY();
             if (DATA_PROPERTYCtx != null)
             {
-                entity.DATAPROPERTY = DATA_PROPERTYCtx.GetText();
+                dataPropertyEntity.DATAPROPERTY = DATA_PROPERTYCtx.GetText();
             }
 
             var dataPropertyCtx = context.dataProperty();
             if (dataPropertyCtx != null)
             {
-                entity.DataProperty = new DataProperty();
-                this.stack.Push(entity.DataProperty);
+                dataPropertyEntity.DataProperty = new DataProperty();
+                this.stack.Push(dataPropertyEntity.DataProperty);
                 this.Visit(dataPropertyCtx);
                 this.stack.Pop();
             }
 
+            return 0;
+        }
+
+        public override int VisitAnnotation_property_entity([NotNull] HermitRuleParser.Annotation_property_entityContext context)
+        {
+            var annotationPropertyEntity = this.stack.PeekCtx<AnnotationPropertyEntity>();
+            annotationPropertyEntity.Parse(context);
+
             var ANNOTATION_PROPERTYCtx = context.ANNOTATION_PROPERTY();
             if (ANNOTATION_PROPERTYCtx != null)
             {
-                entity.ANNOTATIONPROPERTY = ANNOTATION_PROPERTYCtx.GetText();
+                annotationPropertyEntity.ANNOTATIONPROPERTY = ANNOTATION_PROPERTYCtx.GetText();
             }
 
             var annotationPropertyCtx = context.annotationProperty();
             if (annotationPropertyCtx != null)
             {
-                entity.AnnotationProperty = new AnnotationProperty();
-                this.stack.Push(entity.AnnotationProperty);
+                annotationPropertyEntity.AnnotationProperty = new AnnotationProperty();
+                this.stack.Push(annotationPropertyEntity.AnnotationProperty);
                 this.Visit(annotationPropertyCtx);
                 this.stack.Pop();
             }
 
+            return 0;
+        }
+
+        public override int VisitNamed_individual_entity([NotNull] HermitRuleParser.Named_individual_entityContext context)
+        {
+            var namedIndividualEntity = this.stack.PeekCtx<NamedIndividualEntity>();
+            namedIndividualEntity.Parse(context);
+
             var NAMED_INDIVIDUALCtx = context.NAMED_INDIVIDUAL();
             if (NAMED_INDIVIDUALCtx != null)
             {
-                entity.NAMEDINDIVIDUAL = NAMED_INDIVIDUALCtx.GetText();
+                namedIndividualEntity.NAMEDINDIVIDUAL = NAMED_INDIVIDUALCtx.GetText();
             }
 
             var namedIndividualCtx = context.namedIndividual();
             if (namedIndividualCtx != null)
             {
-                entity.NamedIndividual = new NamedIndividual();
-                this.stack.Push(entity.NamedIndividual);
+                namedIndividualEntity.NamedIndividual = new NamedIndividual();
+                this.stack.Push(namedIndividualEntity.NamedIndividual);
                 this.Visit(namedIndividualCtx);
                 this.stack.Pop();
             }
@@ -1630,18 +1759,153 @@ namespace CodeHelper.Core.Parse.ParseResults.HermitRules
             var atom = this.stack.PeekCtx<Atom>();
             atom.Parse(context);
 
+            var class_atomCtx = context.class_atom();
+            if (class_atomCtx != null)
+            {
+                atom.ClassAtom = new ClassAtom();
+                this.stack.Push(atom.ClassAtom);
+                this.Visit(class_atomCtx);
+                this.stack.Pop();
+            }
+
+            var data_range_atomCtx = context.data_range_atom();
+            if (data_range_atomCtx != null)
+            {
+                atom.DataRangeAtom = new DataRangeAtom();
+                this.stack.Push(atom.DataRangeAtom);
+                this.Visit(data_range_atomCtx);
+                this.stack.Pop();
+            }
+
+            var object_property_atomCtx = context.object_property_atom();
+            if (object_property_atomCtx != null)
+            {
+                atom.ObjectPropertyAtom = new ObjectPropertyAtom();
+                this.stack.Push(atom.ObjectPropertyAtom);
+                this.Visit(object_property_atomCtx);
+                this.stack.Pop();
+            }
+
+            var data_property_atomCtx = context.data_property_atom();
+            if (data_property_atomCtx != null)
+            {
+                atom.DataPropertyAtom = new DataPropertyAtom();
+                this.stack.Push(atom.DataPropertyAtom);
+                this.Visit(data_property_atomCtx);
+                this.stack.Pop();
+            }
+
+            var built_in_atomCtx = context.built_in_atom();
+            if (built_in_atomCtx != null)
+            {
+                atom.BuiltInAtom = new BuiltInAtom();
+                this.stack.Push(atom.BuiltInAtom);
+                this.Visit(built_in_atomCtx);
+                this.stack.Pop();
+            }
+
+            var same_individual_atomCtx = context.same_individual_atom();
+            if (same_individual_atomCtx != null)
+            {
+                atom.SameIndividualAtom = new SameIndividualAtom();
+                this.stack.Push(atom.SameIndividualAtom);
+                this.Visit(same_individual_atomCtx);
+                this.stack.Pop();
+            }
+
+            var different_individuals_atomCtx = context.different_individuals_atom();
+            if (different_individuals_atomCtx != null)
+            {
+                atom.DifferentIndividualsAtom = new DifferentIndividualsAtom();
+                this.stack.Push(atom.DifferentIndividualsAtom);
+                this.Visit(different_individuals_atomCtx);
+                this.stack.Pop();
+            }
+
+            return 0;
+        }
+
+        public override int VisitClass_atom([NotNull] HermitRuleParser.Class_atomContext context)
+        {
+            var classAtom = this.stack.PeekCtx<ClassAtom>();
+            classAtom.Parse(context);
+
             var CLASS_ATOMCtx = context.CLASS_ATOM();
             if (CLASS_ATOMCtx != null)
             {
-                atom.CLASSATOM = CLASS_ATOMCtx.GetText();
+                classAtom.CLASSATOM = CLASS_ATOMCtx.GetText();
             }
 
             var classExpressionCtx = context.classExpression();
             if (classExpressionCtx != null)
             {
-                atom.ClassExpression = new ClassExpression();
-                this.stack.Push(atom.ClassExpression);
+                classAtom.ClassExpression = new ClassExpression();
+                this.stack.Push(classAtom.ClassExpression);
                 this.Visit(classExpressionCtx);
+                this.stack.Pop();
+            }
+
+            var iArgCtx = context.iArg();
+            if (iArgCtx != null)
+            {
+                classAtom.IArg = new IArg();
+                this.stack.Push(classAtom.IArg);
+                this.Visit(iArgCtx);
+                this.stack.Pop();
+            }
+
+            return 0;
+        }
+
+        public override int VisitData_range_atom([NotNull] HermitRuleParser.Data_range_atomContext context)
+        {
+            var dataRangeAtom = this.stack.PeekCtx<DataRangeAtom>();
+            dataRangeAtom.Parse(context);
+
+            var DATA_RANGE_ATOMCtx = context.DATA_RANGE_ATOM();
+            if (DATA_RANGE_ATOMCtx != null)
+            {
+                dataRangeAtom.DATARANGEATOM = DATA_RANGE_ATOMCtx.GetText();
+            }
+
+            var dataRangeCtx = context.dataRange();
+            if (dataRangeCtx != null)
+            {
+                dataRangeAtom.DataRange = new DataRange();
+                this.stack.Push(dataRangeAtom.DataRange);
+                this.Visit(dataRangeCtx);
+                this.stack.Pop();
+            }
+
+            var dArgCtx = context.dArg();
+            if (dArgCtx != null)
+            {
+                dataRangeAtom.DArg = new DArg();
+                this.stack.Push(dataRangeAtom.DArg);
+                this.Visit(dArgCtx);
+                this.stack.Pop();
+            }
+
+            return 0;
+        }
+
+        public override int VisitObject_property_atom([NotNull] HermitRuleParser.Object_property_atomContext context)
+        {
+            var objectPropertyAtom = this.stack.PeekCtx<ObjectPropertyAtom>();
+            objectPropertyAtom.Parse(context);
+
+            var OBJECT_PROPERTY_ATOMCtx = context.OBJECT_PROPERTY_ATOM();
+            if (OBJECT_PROPERTY_ATOMCtx != null)
+            {
+                objectPropertyAtom.OBJECTPROPERTYATOM = OBJECT_PROPERTY_ATOMCtx.GetText();
+            }
+
+            var objectPropertyExpressionCtx = context.objectPropertyExpression();
+            if (objectPropertyExpressionCtx != null)
+            {
+                objectPropertyAtom.ObjectPropertyExpression = new ObjectPropertyExpression();
+                this.stack.Push(objectPropertyAtom.ObjectPropertyExpression);
+                this.Visit(objectPropertyExpressionCtx);
                 this.stack.Pop();
             }
 
@@ -1649,24 +1913,73 @@ namespace CodeHelper.Core.Parse.ParseResults.HermitRules
             foreach (var ctx in iArgCtxs)
             {
                 var iArg = new IArg();
-                atom.IArgs.Add(iArg);
+                objectPropertyAtom.IArgs.Add(iArg);
                 this.stack.Push(iArg);
                 this.Visit(ctx);
                 this.stack.Pop();
             }
 
-            var DATA_RANGE_ATOMCtx = context.DATA_RANGE_ATOM();
-            if (DATA_RANGE_ATOMCtx != null)
+            return 0;
+        }
+
+        public override int VisitData_property_atom([NotNull] HermitRuleParser.Data_property_atomContext context)
+        {
+            var dataPropertyAtom = this.stack.PeekCtx<DataPropertyAtom>();
+            dataPropertyAtom.Parse(context);
+
+            var DATA_PROPERTY_ATOMCtx = context.DATA_PROPERTY_ATOM();
+            if (DATA_PROPERTY_ATOMCtx != null)
             {
-                atom.DATARANGEATOM = DATA_RANGE_ATOMCtx.GetText();
+                dataPropertyAtom.DATAPROPERTYATOM = DATA_PROPERTY_ATOMCtx.GetText();
             }
 
-            var dataRangeCtx = context.dataRange();
-            if (dataRangeCtx != null)
+            var dataPropertyCtx = context.dataProperty();
+            if (dataPropertyCtx != null)
             {
-                atom.DataRange = new DataRange();
-                this.stack.Push(atom.DataRange);
-                this.Visit(dataRangeCtx);
+                dataPropertyAtom.DataProperty = new DataProperty();
+                this.stack.Push(dataPropertyAtom.DataProperty);
+                this.Visit(dataPropertyCtx);
+                this.stack.Pop();
+            }
+
+            var iArgCtx = context.iArg();
+            if (iArgCtx != null)
+            {
+                dataPropertyAtom.IArg = new IArg();
+                this.stack.Push(dataPropertyAtom.IArg);
+                this.Visit(iArgCtx);
+                this.stack.Pop();
+            }
+
+            var dArgCtx = context.dArg();
+            if (dArgCtx != null)
+            {
+                dataPropertyAtom.DArg = new DArg();
+                this.stack.Push(dataPropertyAtom.DArg);
+                this.Visit(dArgCtx);
+                this.stack.Pop();
+            }
+
+            return 0;
+        }
+
+        public override int VisitBuilt_in_atom([NotNull] HermitRuleParser.Built_in_atomContext context)
+        {
+            var builtInAtom = this.stack.PeekCtx<BuiltInAtom>();
+            builtInAtom.Parse(context);
+
+            var BUILT_IN_ATOMCtx = context.BUILT_IN_ATOM();
+            if (BUILT_IN_ATOMCtx != null)
+            {
+                builtInAtom.BUILTINATOM = BUILT_IN_ATOMCtx.GetText();
+            }
+
+            var iRICtx = context.iRI();
+            if (iRICtx != null)
+            {
+                builtInAtom.IRI = new IRI();
+                this.stack.Push(builtInAtom.IRI);
+                this.Visit(iRICtx);
                 this.stack.Pop();
             }
 
@@ -1674,67 +1987,58 @@ namespace CodeHelper.Core.Parse.ParseResults.HermitRules
             foreach (var ctx in dArgCtxs)
             {
                 var dArg = new DArg();
-                atom.DArgs.Add(dArg);
+                builtInAtom.DArgs.Add(dArg);
                 this.stack.Push(dArg);
                 this.Visit(ctx);
                 this.stack.Pop();
             }
 
-            var OBJECT_PROPERTY_ATOMCtx = context.OBJECT_PROPERTY_ATOM();
-            if (OBJECT_PROPERTY_ATOMCtx != null)
-            {
-                atom.OBJECTPROPERTYATOM = OBJECT_PROPERTY_ATOMCtx.GetText();
-            }
+            return 0;
+        }
 
-            var objectPropertyExpressionCtx = context.objectPropertyExpression();
-            if (objectPropertyExpressionCtx != null)
-            {
-                atom.ObjectPropertyExpression = new ObjectPropertyExpression();
-                this.stack.Push(atom.ObjectPropertyExpression);
-                this.Visit(objectPropertyExpressionCtx);
-                this.stack.Pop();
-            }
-
-            var DATA_PROPERTY_ATOMCtx = context.DATA_PROPERTY_ATOM();
-            if (DATA_PROPERTY_ATOMCtx != null)
-            {
-                atom.DATAPROPERTYATOM = DATA_PROPERTY_ATOMCtx.GetText();
-            }
-
-            var dataPropertyCtx = context.dataProperty();
-            if (dataPropertyCtx != null)
-            {
-                atom.DataProperty = new DataProperty();
-                this.stack.Push(atom.DataProperty);
-                this.Visit(dataPropertyCtx);
-                this.stack.Pop();
-            }
-
-            var BUILT_IN_ATOMCtx = context.BUILT_IN_ATOM();
-            if (BUILT_IN_ATOMCtx != null)
-            {
-                atom.BUILTINATOM = BUILT_IN_ATOMCtx.GetText();
-            }
-
-            var iRICtx = context.iRI();
-            if (iRICtx != null)
-            {
-                atom.IRI = new IRI();
-                this.stack.Push(atom.IRI);
-                this.Visit(iRICtx);
-                this.stack.Pop();
-            }
+        public override int VisitSame_individual_atom([NotNull] HermitRuleParser.Same_individual_atomContext context)
+        {
+            var sameIndividualAtom = this.stack.PeekCtx<SameIndividualAtom>();
+            sameIndividualAtom.Parse(context);
 
             var SAME_INDIVIDUAL_ATOMCtx = context.SAME_INDIVIDUAL_ATOM();
             if (SAME_INDIVIDUAL_ATOMCtx != null)
             {
-                atom.SAMEINDIVIDUALATOM = SAME_INDIVIDUAL_ATOMCtx.GetText();
+                sameIndividualAtom.SAMEINDIVIDUALATOM = SAME_INDIVIDUAL_ATOMCtx.GetText();
             }
+
+            var iArgCtxs = context.iArg();
+            foreach (var ctx in iArgCtxs)
+            {
+                var iArg = new IArg();
+                sameIndividualAtom.IArgs.Add(iArg);
+                this.stack.Push(iArg);
+                this.Visit(ctx);
+                this.stack.Pop();
+            }
+
+            return 0;
+        }
+
+        public override int VisitDifferent_individuals_atom([NotNull] HermitRuleParser.Different_individuals_atomContext context)
+        {
+            var differentIndividualsAtom = this.stack.PeekCtx<DifferentIndividualsAtom>();
+            differentIndividualsAtom.Parse(context);
 
             var DIFFERENT_INDIVIDUALS_ATOMCtx = context.DIFFERENT_INDIVIDUALS_ATOM();
             if (DIFFERENT_INDIVIDUALS_ATOMCtx != null)
             {
-                atom.DIFFERENTINDIVIDUALSATOM = DIFFERENT_INDIVIDUALS_ATOMCtx.GetText();
+                differentIndividualsAtom.DIFFERENTINDIVIDUALSATOM = DIFFERENT_INDIVIDUALS_ATOMCtx.GetText();
+            }
+
+            var iArgCtxs = context.iArg();
+            foreach (var ctx in iArgCtxs)
+            {
+                var iArg = new IArg();
+                differentIndividualsAtom.IArgs.Add(iArg);
+                this.stack.Push(iArg);
+                this.Visit(ctx);
+                this.stack.Pop();
             }
 
             return 0;
@@ -1845,6 +2149,24 @@ namespace CodeHelper.Core.Parse.ParseResults.HermitRules
             if (HEADCtx != null)
             {
                 dGRule.HEAD = HEADCtx.GetText();
+            }
+
+            return 0;
+        }
+
+        public override int VisitHeadDGRule([NotNull] HermitRuleParser.HeadDGRuleContext context)
+        {
+            var headDGRule = this.stack.PeekCtx<HeadDGRule>();
+            headDGRule.Parse(context);
+
+            var dGAtomCtxs = context.dGAtom();
+            foreach (var ctx in dGAtomCtxs)
+            {
+                var dGAtom = new DGAtom();
+                headDGRule.DGAtoms.Add(dGAtom);
+                this.stack.Push(dGAtom);
+                this.Visit(ctx);
+                this.stack.Pop();
             }
 
             return 0;

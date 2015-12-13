@@ -17,6 +17,7 @@ using CodeHelper.Core.Parser;
 using CodeHelper.Core.Parse.ParseResults.Swrls;
 using CodeHelper.Common;
 using CodeHelper.Core.Error;
+using CodeHelper.UI;
 
 namespace CodeHelper
 {
@@ -381,7 +382,10 @@ namespace CodeHelper
  
             var builder = new IndentStringBuilder();
             module.Format(builder);
-            GlobalService.EditorContextManager.CurrentContext.EditorContainer.Text = builder.ToString();          
+            var codeFrm = new ShowCodeFrm();
+            codeFrm.SetText(builder.ToString());
+            codeFrm.Show();
+            //GlobalService.EditorContextManager.CurrentContext.EditorContainer.Text = builder.ToString();          
         }
     }
 }

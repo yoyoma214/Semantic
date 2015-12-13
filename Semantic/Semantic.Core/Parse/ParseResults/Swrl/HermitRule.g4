@@ -9,16 +9,21 @@ grammar HermitRule;
 axioms : ( axiom | ruleN | dGAxiom )*;
 ruleN : dLSafeRule | dGRule;
 dLSafeRule : DL_SAFE_RULE '(' annotation* BODY '(' atom* ')'
-    HEAD '(' atom* ')' ')';
+    HEAD '(' head ')' ')';
+
+head: atom*;
 axiom : declaration | classAxiom | objectPropertyAxiom | dataPropertyAxiom | datatypeDefinition | hasKey | assertion | annotationAxiom;
 declaration: DECLARATION '(' axiomAnnotations entity ')';
-entity :
-     CLASS '(' classN ')' |
-     DATA_TYPE '(' datatype ')' |
-     OBJECT_PROPERTY '(' objectProperty ')' |
-     DATA_PROPERTY '(' dataProperty ')' |
-     ANNOTATION_PROPERTY '(' annotationProperty ')' |
-     NAMED_INDIVIDUAL '(' namedIndividual ')';
+
+entity: class_entity | data_type_entity | object_property_entity 
+        | data_property_entity | annotation_property_entity | named_individual_entity;
+class_entity:CLASS '(' classN ')';
+data_type_entity:DATA_TYPE '(' datatype ')';
+object_property_entity:OBJECT_PROPERTY '(' objectProperty ')';
+data_property_entity:DATA_PROPERTY '(' dataProperty ')';
+annotation_property_entity:ANNOTATION_PROPERTY '(' annotationProperty ')';
+named_individual_entity:NAMED_INDIVIDUAL '(' namedIndividual ')';
+
 classAxiom:subClassOf | equivalentClasses | disjointClasses | disjointUnion;
 subClassOf:SUB_CLASS_OF '(' axiomAnnotations subClassExpression superClassExpression ')';
 equivalentClasses:EQUIVALENT_CLASSES '(' axiomAnnotations classExpression classExpression classExpression* ')';
@@ -84,17 +89,24 @@ datatypeDefinition : DATATYPE_DEFINITION '(' axiomAnnotations datatype dataRange
 
 hasKey : HAS_KEY '(' axiomAnnotations classExpression '(' objectPropertyExpression* ')' '(' dataPropertyExpression* ')' ')';
 
-atom : CLASS_ATOM '(' classExpression iArg ')'
-| DATA_RANGE_ATOM '(' dataRange dArg ')'
-| OBJECT_PROPERTY_ATOM '(' objectPropertyExpression iArg iArg ')'
-| DATA_PROPERTY_ATOM '(' dataProperty iArg dArg ')'
-| BUILT_IN_ATOM '(' iRI dArg dArg* ')'
-| SAME_INDIVIDUAL_ATOM '(' iArg iArg ')'
-| DIFFERENT_INDIVIDUALS_ATOM '(' iArg iArg')';
+atom:
+        class_atom | data_range_atom | object_property_atom 
+    | data_property_atom | built_in_atom | same_individual_atom
+    | different_individuals_atom
+    ;
+class_atom:CLASS_ATOM '(' classExpression iArg ')';
+data_range_atom:DATA_RANGE_ATOM '(' dataRange dArg ')';
+object_property_atom:OBJECT_PROPERTY_ATOM '(' objectPropertyExpression iArg iArg ')';
+data_property_atom:DATA_PROPERTY_ATOM '(' dataProperty iArg dArg ')';
+built_in_atom:BUILT_IN_ATOM '(' iRI dArg dArg* ')';
+same_individual_atom:SAME_INDIVIDUAL_ATOM '(' iArg iArg ')';
+different_individuals_atom:DIFFERENT_INDIVIDUALS_ATOM '(' iArg iArg')';
+
 iArg : VARIABLE '(' iRI ')' | individual;
 dArg : VARIABLE '(' iRI ')' | literal;
 dGRule : DESCRIPTION_GRAPH_RULE '(' annotation* BODY '(' dGAtom* ')'
-HEAD '(' dGAtom* ')' ')';
+HEAD '(' headDGRule ')' ')';
+headDGRule:dGAtom*;
 dGAtom : CLASS_ATOM '(' classExpression iArg ')'
 | OBJECT_PROPERTY_ATOM '(' objectPropertyExpression iArg iArg ')';
 dGAxiom : DESCRIPTION_GRAPH '(' annotation* dGNodes
