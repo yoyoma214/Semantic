@@ -42,7 +42,7 @@ namespace CodeHelper.Core.Parse.ParseResults.Swrls
             //foreach (var pre in context.Prefixs)
             //    this.UsingNameSpaces.Add(pre.Name, pre.Value);
 
-            //this.Variables.AddRange(context.Variables);
+            this.Variables.AddRange(context.Variables);
 
         }
 

@@ -11,6 +11,8 @@ using CodeHelper.Core.Services;
 using CodeHelper.Core.Parser;
 using CodeHelper.Core.Parse.ParseResults;
 using CodeHelper.Core.Parse.ParseResults.Sparqls;
+using CodeHelper.Core.Parse.ParseResults.Swrl;
+using CodeHelper.Core.Parse.ParseResults.Swrls;
 
 namespace CodeHelper.Domain.Controller.UI
 {
@@ -259,60 +261,42 @@ namespace CodeHelper.Domain.Controller.UI
                 return;
 
             var model = GlobalService.ModelManager.GetModel(module.FileId);
+            var varaibles = ((SwrlModule)module).Variables;
             //module.Fake = model.Fake;
-            if (model.Fake && module.Subject == null && module.Verb == null && module.Object == null)//对应虚拟输入并且为主键
-            {
-                this.data.AddRange(SwrlSensor.SubjectSensor.Sensor(prevText.Trim(), module));
-            }
-            else if (prevText.EndsWith("^^"))
+            //if (model.Fake && module.Subject == null && module.Verb == null && module.Object == null)//对应虚拟输入并且为主键
+            //{
+            //    //this.data.AddRange(SwrlSensor.SubjectSensor.Sensor(prevText.Trim(), module));
+        
+            //}
+            //else 
+            if (prevText.EndsWith("^^"))
             {
                 this.data.Clear();
 
                 this.data.AddRange(OWLTypes.Instance().XSD_Typtes.Keys);
             }
-            else if (!string.IsNullOrWhiteSpace(module.Object))
-            {
-                //this.data.AddRange(OWLTypes.Instance().Object_Types.Keys);
-                this.data.AddRange(SwrlSensor.ObjectSensor.Sensor(prevText.Trim(), module));
-            }
-            else if (!string.IsNullOrWhiteSpace(module.Verb))
+            else if (prevText.Contains(":"))
             {
                 this.data.Clear();
 
-                if (!module.Fake)
-                {
-                    this.data.AddRange(SwrlSensor.VerbSensor.Sensor(prevText.Trim(), module));
-                }
-                else
-                {
-                    this.data.AddRange(SwrlSensor.ObjectSensor.Sensor(prevText.Trim(), module));
-                }
-            }
-            else if (!string.IsNullOrWhiteSpace(module.Subject))
-            {
-                this.data.Clear();
-
-                if (!module.Fake)
-                {
-                    this.data.AddRange(SwrlSensor.SubjectSensor.Sensor(prevText.Trim(), module));
-                }
-                else
-                {
-                    this.data.AddRange(SwrlSensor.VerbSensor.Sensor(prevText.Trim(), module));
-                }
+                //todo:添加变量
+                //this.data.AddRange(OWLTypes.Instance().XSD_Typtes.Keys);
+                this.data.AddRange(varaibles);
             }
             else
             {
+                this.data.AddRange(RuleTypes.Instance().AllKeyWords());
+                this.data.AddRange(RuleTypes.Instance().AllFunctions());
             }
 
-            #region 对关键字和函数的提示
-            if (!prevText.Contains("?:") && module.Subject == null && module.Verb == null && module.Object == null)
-            {
-                this.data.AddRange(QLTypes.Instance().AllKeyWords());
-                this.data.AddRange(QLTypes.Instance().AllFunctions());
-            }
+            //#region 对关键字和函数的提示
+            //else
+            //{
+            //    this.data.AddRange(RuleTypes.Instance().AllKeyWords());
+            //    this.data.AddRange(RuleTypes.Instance().AllFunctions());
+            //}
 
-            #endregion
+            //#endregion
 
             if (prevText.EndsWith("^^"))
                 this.textBox1.Text = ":";
@@ -322,7 +306,6 @@ namespace CodeHelper.Domain.Controller.UI
             this.textBox1.SelectionStart = this.textBox1.Text.Length;
             if (prevText == "")
                 textBox1_TextChanged(null, null);
-
 
         }
 
@@ -377,203 +360,203 @@ namespace CodeHelper.Domain.Controller.UI
         
     }
 
-    public class SwrlSensor
-    {
-        public class SubjectSensor
-        {
-            public static List<String> Sensor(string prevText, IParseModule module)
-            {
-                var data = new List<String>();               
+    //public class SwrlSensor
+    //{
+    //    public class SubjectSensor
+    //    {
+    //        public static List<String> Sensor(string prevText, IParseModule module)
+    //        {
+    //            var data = new List<String>();               
 
-                foreach (var ns in module.UsingNameSpaces)
-                {
-                    var types = GlobalService.ModelManager.ListType(ns.Value,null,true);
-                    foreach (var each in types)
-                        data.Add(ns.Key + each.Name);
+    //            foreach (var ns in module.UsingNameSpaces)
+    //            {
+    //                var types = GlobalService.ModelManager.ListType(ns.Value,null,true);
+    //                foreach (var each in types)
+    //                    data.Add(ns.Key + each.Name);
 
-                    var ps = GlobalService.ModelManager.ListProperty(ns.Value,null,true);
-                    foreach (var each in ps)
-                        data.Add(ns.Key + each.Name);
+    //                var ps = GlobalService.ModelManager.ListProperty(ns.Value,null,true);
+    //                foreach (var each in ps)
+    //                    data.Add(ns.Key + each.Name);
 
-                    var ins = GlobalService.ModelManager.ListInstance(ns.Value,null,true);
-                    foreach (var each in ins)
-                        data.Add(ns.Key + each.Name);
-                }
+    //                var ins = GlobalService.ModelManager.ListInstance(ns.Value,null,true);
+    //                foreach (var each in ins)
+    //                    data.Add(ns.Key + each.Name);
+    //            }
 
-                return data;
-            }
-        }
+    //            return data;
+    //        }
+    //    }
 
-        public class VerbSensor
-        {
-            public static List<String> Sensor(string prevText, IParseModule module)
-            {
-                var data = new List<String>();
+    //    public class VerbSensor
+    //    {
+    //        public static List<String> Sensor(string prevText, IParseModule module)
+    //        {
+    //            var data = new List<String>();
 
-                var subject = module.Subject;
-                var isAnonymous = module.Subject == null;
-                //if (string.IsNullOrWhiteSpace(subject))
-                //    return new List<string>();
+    //            var subject = module.Subject;
+    //            var isAnonymous = module.Subject == null;
+    //            //if (string.IsNullOrWhiteSpace(subject))
+    //            //    return new List<string>();
 
-                if (isAnonymous)
-                {
-                    if (module.PrevVerbObjects.Count > 0)
-                    {
-                        if (module.PrevVerbObjects.Last().Key == "owl:withRestrictions")
-                        {
-                            return SenseFact(prevText, module);
-                        }
-                    }
+    //            if (isAnonymous)
+    //            {
+    //                if (module.PrevVerbObjects.Count > 0)
+    //                {
+    //                    if (module.PrevVerbObjects.Last().Key == "owl:withRestrictions")
+    //                    {
+    //                        return SenseFact(prevText, module);
+    //                    }
+    //                }
 
-                    data.AddRange(OWLTypes.Instance().Ver_Types.Keys);
-                    return data;
-                }
+    //                data.AddRange(OWLTypes.Instance().Ver_Types.Keys);
+    //                return data;
+    //            }
 
-                OWLName owlName = module.ResloveName(subject);
+    //            OWLName owlName = module.ResloveName(subject);
 
-                object obj = GlobalService.ModelManager.Reslove(owlName.NameSpace, owlName.LocalName);
-                if (obj == null)
-                {
-                    data.AddRange(OWLTypes.Instance().Ver_Types.Keys);
-                    return data;
-                }
+    //            object obj = GlobalService.ModelManager.Reslove(owlName.NameSpace, owlName.LocalName);
+    //            if (obj == null)
+    //            {
+    //                data.AddRange(OWLTypes.Instance().Ver_Types.Keys);
+    //                return data;
+    //            }
 
-                #region 如果主语是类
-                if (obj is ITypeInfo || isAnonymous)
-                {
-                    foreach (var ver in OWLTypes.Instance().Ver_Types)
-                    {
-                        if (ver.Value.Allow_Subject_Class)
-                        {
-                            data.Add(ver.Key);
-                        }
-                    }
-                    return data;
-                }
+    //            #region 如果主语是类
+    //            if (obj is ITypeInfo || isAnonymous)
+    //            {
+    //                foreach (var ver in OWLTypes.Instance().Ver_Types)
+    //                {
+    //                    if (ver.Value.Allow_Subject_Class)
+    //                    {
+    //                        data.Add(ver.Key);
+    //                    }
+    //                }
+    //                return data;
+    //            }
 
-                #endregion
+    //            #endregion
 
-                #region 如果主语是实例
-                if (obj is OWLInstance)
-                {
-                    foreach (var ver in OWLTypes.Instance().Ver_Types)
-                    {
-                        if (ver.Value.Allow_Subject_Instance)
-                        {
-                            data.Add(ver.Key);
-                        }
-                    }
+    //            #region 如果主语是实例
+    //            if (obj is OWLInstance)
+    //            {
+    //                foreach (var ver in OWLTypes.Instance().Ver_Types)
+    //                {
+    //                    if (ver.Value.Allow_Subject_Instance)
+    //                    {
+    //                        data.Add(ver.Key);
+    //                    }
+    //                }
 
-                    //添加当前模块能看到的属性
-                    var nss = new List<string>();
-                    if (prevText == ":")
-                    {
-                        nss = module.UsingNameSpaces.Values.ToList();
-                    }
-                    else
-                    {
-                        var t = module.GetFullNameSpace(prevText);
-                        if (t != null)
-                            nss.Add(t);
-                    }
+    //                //添加当前模块能看到的属性
+    //                var nss = new List<string>();
+    //                if (prevText == ":")
+    //                {
+    //                    nss = module.UsingNameSpaces.Values.ToList();
+    //                }
+    //                else
+    //                {
+    //                    var t = module.GetFullNameSpace(prevText);
+    //                    if (t != null)
+    //                        nss.Add(t);
+    //                }
 
-                    var ps = GlobalService.ModelManager.ListProperty(nss, null, true);
+    //                var ps = GlobalService.ModelManager.ListProperty(nss, null, true);
 
-                    //var ps = module.PropertySeeAble(owlName.NameSpace, null, false);
-                    foreach (var p in ps)
-                    {
-                        data.Add(module.GetLocalNameSpace(owlName.NameSpace) + p.Name);
-                    }
+    //                //var ps = module.PropertySeeAble(owlName.NameSpace, null, false);
+    //                foreach (var p in ps)
+    //                {
+    //                    data.Add(module.GetLocalNameSpace(owlName.NameSpace) + p.Name);
+    //                }
 
-                    //data.AddRange(ps.Select(x=> owlName.LocalName + ":" + x.Name));
+    //                //data.AddRange(ps.Select(x=> owlName.LocalName + ":" + x.Name));
 
-                    return data;
-                }
+    //                return data;
+    //            }
 
-                #endregion
+    //            #endregion
 
-                #region 如果主语是属性
-                if (obj is OWLProperty)
-                {
-                    foreach (var ver in OWLTypes.Instance().Ver_Types)
-                    {
-                        if (ver.Value.Allow_Subject_Property)
-                        {
-                            data.Add(ver.Key);
-                        }
-                    }
-                    return data;
-                }
+    //            #region 如果主语是属性
+    //            if (obj is OWLProperty)
+    //            {
+    //                foreach (var ver in OWLTypes.Instance().Ver_Types)
+    //                {
+    //                    if (ver.Value.Allow_Subject_Property)
+    //                    {
+    //                        data.Add(ver.Key);
+    //                    }
+    //                }
+    //                return data;
+    //            }
 
-                #endregion
+    //            #endregion
 
-                foreach (var p in module.Properties.Keys)
-                {
-                    data.Add(p);
-                }
+    //            foreach (var p in module.Properties.Keys)
+    //            {
+    //                data.Add(p);
+    //            }
 
-                foreach (var ns in module.UsingNameSpaces)
-                {
-                    var ps = GlobalService.ModelManager.ListProperty(ns.Value, null, true);
-                    foreach (var property in ps)
-                        data.Add(property.Name);
-                }
+    //            foreach (var ns in module.UsingNameSpaces)
+    //            {
+    //                var ps = GlobalService.ModelManager.ListProperty(ns.Value, null, true);
+    //                foreach (var property in ps)
+    //                    data.Add(property.Name);
+    //            }
 
-                return data;
-            }
+    //            return data;
+    //        }
 
-            private static List<String> SenseFact(string prevText, IParseModule module)
-            {
-                var data = new List<String>();
+    //        private static List<String> SenseFact(string prevText, IParseModule module)
+    //        {
+    //            var data = new List<String>();
 
-                string typeName = null;
-                foreach (var vo in module.PrevVerbObjects)
-                {
-                    if (vo.Key == "owl:onDatatype")
-                    {
-                        typeName = vo.Value[0];
-                    }
-                }
+    //            string typeName = null;
+    //            foreach (var vo in module.PrevVerbObjects)
+    //            {
+    //                if (vo.Key == "owl:onDatatype")
+    //                {
+    //                    typeName = vo.Value[0];
+    //                }
+    //            }
                 
-                var owlName = module.ResloveName(typeName);
-                //var dataType = module.ResloveType(owlName.NameSpace, owlName.LocalName);
+    //            var owlName = module.ResloveName(typeName);
+    //            //var dataType = module.ResloveType(owlName.NameSpace, owlName.LocalName);
 
-                foreach (var f in OWLTypes.Instance().Ver_Facets)
-                {
-                    if (f.Value.AllowDataType(owlName))
-                    {
-                        data.Add(f.Key);
-                    }
-                }
+    //            foreach (var f in OWLTypes.Instance().Ver_Facets)
+    //            {
+    //                if (f.Value.AllowDataType(owlName))
+    //                {
+    //                    data.Add(f.Key);
+    //                }
+    //            }
 
-                return data;
-            }
-        }
+    //            return data;
+    //        }
+    //    }
 
-        public class ObjectSensor
-        {
-            public static List<String> Sensor(string prevText, IParseModule module)
-            {
-               OWLName owlName = module.ResloveName(module.Verb);
+    //    public class ObjectSensor
+    //    {
+    //        public static List<String> Sensor(string prevText, IParseModule module)
+    //        {
+    //           OWLName owlName = module.ResloveName(module.Verb);
 
-               if (String.IsNullOrWhiteSpace(owlName.NameSpace) || String.IsNullOrWhiteSpace(owlName.LocalName))
-                   return new List<string>();
+    //           if (String.IsNullOrWhiteSpace(owlName.NameSpace) || String.IsNullOrWhiteSpace(owlName.LocalName))
+    //               return new List<string>();
 
-                foreach (var ns in module.UsingNameSpaces)
-                {
-                    object obj = GlobalService.ModelManager.Reslove(owlName.NameSpace, module.Verb);
+    //            foreach (var ns in module.UsingNameSpaces)
+    //            {
+    //                object obj = GlobalService.ModelManager.Reslove(owlName.NameSpace, module.Verb);
 
-                    if (obj != null)
-                    {
-                    }
-                    if (obj is IVerb)
-                    {
-                        var verb =obj as IVerb;
-                        return verb.AllowObject(module);                        
-                    }
-                }
-                return new List<string>();
-            }
-        }
-    }
+    //                if (obj != null)
+    //                {
+    //                }
+    //                if (obj is IVerb)
+    //                {
+    //                    var verb =obj as IVerb;
+    //                    return verb.AllowObject(module);                        
+    //                }
+    //            }
+    //            return new List<string>();
+    //        }
+    //    }
+    //}
 }

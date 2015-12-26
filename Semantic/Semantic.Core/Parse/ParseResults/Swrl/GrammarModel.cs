@@ -311,18 +311,20 @@ namespace CodeHelper.Core.Parse.ParseResults.Swrls
             {
                 this.Annotations[i].Format(context, builder);
             }
+            builder.Increase();
             builder.IncreaseIndentLine(BODY + "(");
             for (int i = 0; i < this.Atoms.Count(); i++)
             {
                 this.Atoms[i].Format(context, builder);
             }
-            builder.AppendLine(HEAD + "(");
+            builder.DecreaseIndentLine(")");
+            builder.IncreaseIndentLine(HEAD + "(");
             if (this.Head != null)
             {
                 this.Head.Format(context, builder);
             }
-            builder.AppendLine(")");
             builder.DecreaseIndentLine(")");
+            builder.DecreaseIndentLine(")");            
         }
 
         public void BuildQuery(SwrlContext context, IndentStringBuilder builder)
@@ -6185,7 +6187,7 @@ namespace CodeHelper.Core.Parse.ParseResults.Swrls
 
         public void Format(SwrlContext context, IndentStringBuilder builder)
         {
-
+            builder.Append(this.CLASSATOM + "(");
             if (this.ClassExpression != null)
             {
                 this.ClassExpression.Format(context, builder);
@@ -6195,7 +6197,7 @@ namespace CodeHelper.Core.Parse.ParseResults.Swrls
             {
                 this.IArg.Format(context, builder);
             }
-
+            builder.AppendLine(")");
         }
 
         public void BuildQuery(SwrlContext context, IndentStringBuilder builder)
@@ -6288,7 +6290,7 @@ namespace CodeHelper.Core.Parse.ParseResults.Swrls
 
         public void Format(SwrlContext context, IndentStringBuilder builder)
         {
-
+            builder.Append(this.DATARANGEATOM + "(");
             if (this.DataRange != null)
             {
                 this.DataRange.Format(context, builder);
@@ -6298,7 +6300,7 @@ namespace CodeHelper.Core.Parse.ParseResults.Swrls
             {
                 this.DArg.Format(context, builder);
             }
-
+            builder.AppendLine(")");
         }
 
         public void BuildQuery(SwrlContext context, IndentStringBuilder builder)
@@ -6392,17 +6394,20 @@ namespace CodeHelper.Core.Parse.ParseResults.Swrls
 
         public void Format(SwrlContext context, IndentStringBuilder builder)
         {
-
+            builder.Append(this.OBJECTPROPERTYATOM + "(");
             if (this.ObjectPropertyExpression != null)
             {
                 this.ObjectPropertyExpression.Format(context, builder);
+                builder.Append(" ");
             }
 
             for (int i = 0; i < this.IArgs.Count(); i++)
-            {
+            {                
                 this.IArgs[i].Format(context, builder);
+                if (i < this.IArgs.Count - 1)
+                    builder.Append(" ");
             }
-
+            builder.AppendLine(")");
         }
 
         public void BuildQuery(SwrlContext context, IndentStringBuilder builder)
@@ -6507,7 +6512,7 @@ namespace CodeHelper.Core.Parse.ParseResults.Swrls
 
         public void Format(SwrlContext context, IndentStringBuilder builder)
         {
-
+            builder.Append(this.DATAPROPERTYATOM + "(");
             if (this.DataProperty != null)
             {
                 this.DataProperty.Format(context, builder);
@@ -6522,7 +6527,7 @@ namespace CodeHelper.Core.Parse.ParseResults.Swrls
             {
                 this.DArg.Format(context, builder);
             }
-
+            builder.AppendLine(")");
         }
 
         public void BuildQuery(SwrlContext context, IndentStringBuilder builder)
@@ -6631,7 +6636,7 @@ namespace CodeHelper.Core.Parse.ParseResults.Swrls
 
         public void Format(SwrlContext context, IndentStringBuilder builder)
         {
-
+            builder.Append(this.BUILTINATOM + "(");
             if (this.IRI != null)
             {
                 this.IRI.Format(context, builder);
@@ -6641,7 +6646,7 @@ namespace CodeHelper.Core.Parse.ParseResults.Swrls
             {
                 this.DArgs[i].Format(context, builder);
             }
-
+            builder.AppendLine(")");
         }
 
         public void BuildQuery(SwrlContext context, IndentStringBuilder builder)
@@ -6723,12 +6728,12 @@ namespace CodeHelper.Core.Parse.ParseResults.Swrls
 
         public void Format(SwrlContext context, IndentStringBuilder builder)
         {
-
+            builder.Append(this.SAMEINDIVIDUALATOM + "(");
             for (int i = 0; i < this.IArgs.Count(); i++)
             {
                 this.IArgs[i].Format(context, builder);
             }
-
+            builder.AppendLine(")");
         }
 
         public void BuildQuery(SwrlContext context, IndentStringBuilder builder)
@@ -6795,12 +6800,14 @@ namespace CodeHelper.Core.Parse.ParseResults.Swrls
 
         public void Format(SwrlContext context, IndentStringBuilder builder)
         {
-
+            builder.Append(this.DIFFERENTINDIVIDUALSATOM + "(");
             for (int i = 0; i < this.IArgs.Count(); i++)
             {
                 this.IArgs[i].Format(context, builder);
+                if (i < this.IArgs.Count - 1)
+                    builder.Append(" ");
             }
-
+            builder.AppendLine(")");
         }
 
         public void BuildQuery(SwrlContext context, IndentStringBuilder builder)
@@ -6867,6 +6874,7 @@ namespace CodeHelper.Core.Parse.ParseResults.Swrls
             if (this.IRI != null)
             {
                 this.IRI.Wise(context);
+                context.AddVariable(this.IRI.GetText());
             }
 
             if (this.Individual != null)
@@ -6966,10 +6974,11 @@ namespace CodeHelper.Core.Parse.ParseResults.Swrls
 
         public void Wise(SwrlContext context)
         {
-
             if (this.IRI != null)
             {
                 this.IRI.Wise(context);
+
+                context.AddVariable(this.IRI.IRIREF);
             }
 
             if (this.Literal != null)
@@ -14814,6 +14823,12 @@ namespace CodeHelper.Core.Parse.ParseResults.Swrls
         public PrefixedName PrefixedName
         { get; set; }
 
+        internal string GetText()
+        {
+            return this.IRIREF ?? this.PrefixedName.GetText();
+        }
+
+
         public void Parse(SwrlContext context)
         {
 
@@ -14915,6 +14930,11 @@ namespace CodeHelper.Core.Parse.ParseResults.Swrls
         public void BuildOther(SwrlContext context, IndentStringBuilder builder)
         {
 
+        }
+
+        internal string GetText()
+        {
+            return this.PNAMELN ?? this.PNAMENS;
         }
     }
 

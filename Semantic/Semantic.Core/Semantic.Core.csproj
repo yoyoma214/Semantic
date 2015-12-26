@@ -245,6 +245,8 @@
     <Compile Include="Parse\ParseResults\Sparqls\SparqlVisitor.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="Parse\ParseResults\Swrl\Base\BaseFunction.cs" />
+    <Compile Include="Parse\ParseResults\Swrl\Base\BaseKeyWord.cs" />
     <Compile Include="Parse\ParseResults\Swrl\GrammarModel.cs" />
     <Compile Include="Parse\ParseResults\Swrl\HermitRule.g4.lexer.cs">
       <DependentUpon>HermitRule.g4</DependentUpon>
@@ -252,6 +254,93 @@
     <Compile Include="Parse\ParseResults\Swrl\HermitRule.g4.parser.cs">
       <DependentUpon>HermitRule.g4</DependentUpon>
     </Compile>
+    <Compile Include="Parse\ParseResults\Swrl\KeyWords\Annotation.cs" />
+    <Compile Include="Parse\ParseResults\Swrl\KeyWords\AnnotationAssertion.cs" />
+    <Compile Include="Parse\ParseResults\Swrl\KeyWords\AnnotationProperty.cs" />
+    <Compile Include="Parse\ParseResults\Swrl\KeyWords\AnnotationPropertyDomain.cs" />
+    <Compile Include="Parse\ParseResults\Swrl\KeyWords\AnnotationPropertyRange.cs" />
+    <Compile Include="Parse\ParseResults\Swrl\KeyWords\AsymmetricObjectProperty.cs" />
+    <Compile Include="Parse\ParseResults\Swrl\KeyWords\Body.cs" />
+    <Compile Include="Parse\ParseResults\Swrl\KeyWords\BuiltInAtom.cs" />
+    <Compile Include="Parse\ParseResults\Swrl\KeyWords\Class.cs" />
+    <Compile Include="Parse\ParseResults\Swrl\KeyWords\ClassAssertion.cs" />
+    <Compile Include="Parse\ParseResults\Swrl\KeyWords\ClassAtom.cs" />
+    <Compile Include="Parse\ParseResults\Swrl\KeyWords\DataAllValuesFrom.cs" />
+    <Compile Include="Parse\ParseResults\Swrl\KeyWords\DataComplementOf.cs" />
+    <Compile Include="Parse\ParseResults\Swrl\KeyWords\DataExactCardinality.cs" />
+    <Compile Include="Parse\ParseResults\Swrl\KeyWords\DataHasValue.cs" />
+    <Compile Include="Parse\ParseResults\Swrl\KeyWords\DataIntersectionOf.cs" />
+    <Compile Include="Parse\ParseResults\Swrl\KeyWords\DataMaxCardinality.cs" />
+    <Compile Include="Parse\ParseResults\Swrl\KeyWords\DataMinCardinality.cs" />
+    <Compile Include="Parse\ParseResults\Swrl\KeyWords\DataOneOf.cs" />
+    <Compile Include="Parse\ParseResults\Swrl\KeyWords\DataProperty.cs" />
+    <Compile Include="Parse\ParseResults\Swrl\KeyWords\DataPropertyAssertion.cs" />
+    <Compile Include="Parse\ParseResults\Swrl\KeyWords\DataPropertyAtom.cs" />
+    <Compile Include="Parse\ParseResults\Swrl\KeyWords\DataPropertyDomain.cs" />
+    <Compile Include="Parse\ParseResults\Swrl\KeyWords\DataPropertyRange.cs" />
+    <Compile Include="Parse\ParseResults\Swrl\KeyWords\DataRangeAtom.cs" />
+    <Compile Include="Parse\ParseResults\Swrl\KeyWords\DataSomeValuesFrom.cs" />
+    <Compile Include="Parse\ParseResults\Swrl\KeyWords\Datatype.cs" />
+    <Compile Include="Parse\ParseResults\Swrl\KeyWords\DatatypeDefinition.cs" />
+    <Compile Include="Parse\ParseResults\Swrl\KeyWords\DatatypeRestriction.cs" />
+    <Compile Include="Parse\ParseResults\Swrl\KeyWords\DataUnionOf.cs" />
+    <Compile Include="Parse\ParseResults\Swrl\KeyWords\Declaration.cs" />
+    <Compile Include="Parse\ParseResults\Swrl\KeyWords\DescriptionGraph.cs" />
+    <Compile Include="Parse\ParseResults\Swrl\KeyWords\DescriptionGraphRule.cs" />
+    <Compile Include="Parse\ParseResults\Swrl\KeyWords\DifferentIndividuals.cs" />
+    <Compile Include="Parse\ParseResults\Swrl\KeyWords\DifferentIndividualsAtom.cs" />
+    <Compile Include="Parse\ParseResults\Swrl\KeyWords\DisjointClasses.cs" />
+    <Compile Include="Parse\ParseResults\Swrl\KeyWords\DisjointDataProperties.cs" />
+    <Compile Include="Parse\ParseResults\Swrl\KeyWords\DisjointObjectProperties.cs" />
+    <Compile Include="Parse\ParseResults\Swrl\KeyWords\DisjointUnion.cs" />
+    <Compile Include="Parse\ParseResults\Swrl\KeyWords\DLSafeRule.cs" />
+    <Compile Include="Parse\ParseResults\Swrl\KeyWords\EdgeAssertion.cs" />
+    <Compile Include="Parse\ParseResults\Swrl\KeyWords\Edges.cs" />
+    <Compile Include="Parse\ParseResults\Swrl\KeyWords\EquivalentClasses.cs" />
+    <Compile Include="Parse\ParseResults\Swrl\KeyWords\EquivalentDataProperties.cs" />
+    <Compile Include="Parse\ParseResults\Swrl\KeyWords\EquivalentObjectProperties.cs" />
+    <Compile Include="Parse\ParseResults\Swrl\KeyWords\FunctionalDataProperty.cs" />
+    <Compile Include="Parse\ParseResults\Swrl\KeyWords\FunctionalObjectProperty.cs" />
+    <Compile Include="Parse\ParseResults\Swrl\KeyWords\HasKey.cs" />
+    <Compile Include="Parse\ParseResults\Swrl\KeyWords\Head.cs" />
+    <Compile Include="Parse\ParseResults\Swrl\KeyWords\InverseFunctionalObjectProperty.cs" />
+    <Compile Include="Parse\ParseResults\Swrl\KeyWords\InverseObjectProperties.cs" />
+    <Compile Include="Parse\ParseResults\Swrl\KeyWords\IrreflexiveObjectProperty.cs" />
+    <Compile Include="Parse\ParseResults\Swrl\KeyWords\MainClasses.cs" />
+    <Compile Include="Parse\ParseResults\Swrl\KeyWords\NamedIndividual.cs" />
+    <Compile Include="Parse\ParseResults\Swrl\KeyWords\NegativeDataPropertyAssertion.cs" />
+    <Compile Include="Parse\ParseResults\Swrl\KeyWords\NegativeObjectPropertyAssertion.cs" />
+    <Compile Include="Parse\ParseResults\Swrl\KeyWords\NodeAssertion.cs" />
+    <Compile Include="Parse\ParseResults\Swrl\KeyWords\Nodes.cs" />
+    <Compile Include="Parse\ParseResults\Swrl\KeyWords\ObjectAllValuesFrom.cs" />
+    <Compile Include="Parse\ParseResults\Swrl\KeyWords\ObjectComplementOf.cs" />
+    <Compile Include="Parse\ParseResults\Swrl\KeyWords\ObjectExactCardinality.cs" />
+    <Compile Include="Parse\ParseResults\Swrl\KeyWords\ObjectHasSelf.cs" />
+    <Compile Include="Parse\ParseResults\Swrl\KeyWords\ObjectHasValue.cs" />
+    <Compile Include="Parse\ParseResults\Swrl\KeyWords\ObjectIntersectionOf.cs" />
+    <Compile Include="Parse\ParseResults\Swrl\KeyWords\ObjectInverseOf.cs" />
+    <Compile Include="Parse\ParseResults\Swrl\KeyWords\ObjectMaxCardinality.cs" />
+    <Compile Include="Parse\ParseResults\Swrl\KeyWords\ObjectMinCardinality.cs" />
+    <Compile Include="Parse\ParseResults\Swrl\KeyWords\ObjectOneOf.cs" />
+    <Compile Include="Parse\ParseResults\Swrl\KeyWords\ObjectProperty.cs" />
+    <Compile Include="Parse\ParseResults\Swrl\KeyWords\ObjectPropertyAssertion.cs" />
+    <Compile Include="Parse\ParseResults\Swrl\KeyWords\ObjectPropertyAtom.cs" />
+    <Compile Include="Parse\ParseResults\Swrl\KeyWords\ObjectPropertyChain.cs" />
+    <Compile Include="Parse\ParseResults\Swrl\KeyWords\ObjectPropertyDomain.cs" />
+    <Compile Include="Parse\ParseResults\Swrl\KeyWords\ObjectPropertyRange.cs" />
+    <Compile Include="Parse\ParseResults\Swrl\KeyWords\ObjectSomeValuesFrom.cs" />
+    <Compile Include="Parse\ParseResults\Swrl\KeyWords\ObjectUnionOf.cs" />
+    <Compile Include="Parse\ParseResults\Swrl\KeyWords\ReflexiveObjectProperty.cs" />
+    <Compile Include="Parse\ParseResults\Swrl\KeyWords\SameIndividual.cs" />
+    <Compile Include="Parse\ParseResults\Swrl\KeyWords\SameIndividualAtom.cs" />
+    <Compile Include="Parse\ParseResults\Swrl\KeyWords\SubAnnotationPropertyOf.cs" />
+    <Compile Include="Parse\ParseResults\Swrl\KeyWords\SubClassOf.cs" />
+    <Compile Include="Parse\ParseResults\Swrl\KeyWords\SubDataPropertyOf.cs" />
+    <Compile Include="Parse\ParseResults\Swrl\KeyWords\SubObjectPropertyOf.cs" />
+    <Compile Include="Parse\ParseResults\Swrl\KeyWords\SymmetricObjectProperty.cs" />
+    <Compile Include="Parse\ParseResults\Swrl\KeyWords\TransitiveObjectProperty.cs" />
+    <Compile Include="Parse\ParseResults\Swrl\KeyWords\Variable.cs" />
+    <Compile Include="Parse\ParseResults\Swrl\RuleTypes.cs" />
     <Compile Include="Parse\ParseResults\Swrl\SwrlComplier.cs" />
     <Compile Include="Parse\ParseResults\Swrl\SwrlContext.cs" />
     <Compile Include="Parse\ParseResults\Swrl\SwrlModule.cs" />
@@ -495,7 +584,9 @@
       <Name>CodeHelper.Xml</Name>
     </ProjectReference>
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <Folder Include="Parse\ParseResults\Swrl\Functions\" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
     <PropertyGroup>

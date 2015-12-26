@@ -1,10 +1,12 @@
-ObjectPropertyAssertion(:f :a :b)
-ObjectPropertyAssertion(:f :a :c)
-FunctionalObjectProperty(:f)        
+ObjectPropertyAssertion( :f :a :b )
+ObjectPropertyAssertion( :f :a :c )
+FunctionalObjectProperty(:f)
 DLSafeRule(
-Body(
-ObjectPropertyAtom(:f Variable(:x) Variable(:y)) 
-ObjectPropertyAtom(:f Variable(:x) Variable(:z))) 
-Head(
-DifferentIndividualsAtom(Variable(:y) Variable(:z))
-))
+	Body(
+		ObjectPropertyAtom(:f Variable(:x) Variable(:y))
+		ObjectPropertyAtom(:f Variable(:x) Variable(:z))				
+	)
+	Head(
+		DifferentIndividualsAtom(Variable(:y) Variable(:z))		
+	)
+)

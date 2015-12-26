@@ -11,10 +11,12 @@ namespace CodeHelper.Core.Parse.ParseResults.Swrls
         public List<ParseErrorInfo> Errors { get; set; }
         public Guid? FileId { get; set; }
         public String File { get; set; }
+        public List<String> Variables { get; set; }
 
         public SwrlContext()
         {
             this.Errors = new List<ParseErrorInfo>();
+            this.Variables = new List<string>();
         }
 
         public void AddError(TokenPair token, String msg)
@@ -28,6 +30,14 @@ namespace CodeHelper.Core.Parse.ParseResults.Swrls
                 File = File,
                 Message = msg
             });
+        }
+
+        public void AddVariable(string variable)
+        {
+            if (this.Variables.Contains(variable))
+                return;
+
+            this.Variables.Add(variable);
         }
     }
 }

@@ -27,7 +27,7 @@ namespace CodeHelper.Domain.EditorController
 
         protected override void OnInputChar(char c, int offset, System.Drawing.Point location)
         {
-            if (Char.IsWhiteSpace(c) || ".#;{}\"',;/\\".Contains(c))
+            if (Char.IsWhiteSpace(c) || ".#;{}\"',;/\\()".Contains(c))
                 return;
 
             if (c == '?' || c == '$' || c == '^' || c == '@')
@@ -84,13 +84,14 @@ namespace CodeHelper.Domain.EditorController
                 {
                     var ch = ss[i];
                     if (ch == '#') return;//如果是注释则返回
-                    if (ch == '.') return;//如果是.后则返回                    
+                    if (ch == '.') return;//如果是.后则返回      
+                    
                 }
 
                 for (var i = ss.Length - 1; i > 0; i--)
                 {
                     var ch = ss[i];
-                    if (char.IsWhiteSpace(ch) || ",;".Contains(ch))
+                    if (char.IsWhiteSpace(ch) || ",;()".Contains(ch))
                         break;
 
                     //this.model.Caret.Offset -= 1;
