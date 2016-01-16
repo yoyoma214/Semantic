@@ -25,6 +25,8 @@ namespace CodeHelper.Domain.Controller.UI
 
         IParseModule m_module { get; set; }
 
+        internal static List<string> data_better = new List<string>();
+
         public TurtleSenseMenu()
         {
             InitializeComponent();
@@ -359,6 +361,18 @@ namespace CodeHelper.Domain.Controller.UI
 
             m_selectIndex = -1;
 
+            foreach (var t in TurtleSenseMenu.data_better)
+            {
+                if (t.ToLower().Contains(this.textBox1.Text.Trim().ToLower()))
+                {
+                    ListViewItem lvi = new ListViewItem();
+                    lvi.ImageKey = "129";
+                    lvi.Text = t;
+
+                    this.listView1.Items.Add(lvi);
+                }
+            }
+
             foreach (var t in this.data)
             {
                 if (t.ToLower().Contains(this.textBox1.Text.Trim().ToLower()))
@@ -412,6 +426,8 @@ namespace CodeHelper.Domain.Controller.UI
             public static List<String> Sensor(string prevText, IParseModule module)
             {
                 var data = new List<String>();
+
+                TurtleSenseMenu.data_better.Clear();
 
                 var subject = module.Subject;
                 var isAnonymous = module.Subject == null;
@@ -479,12 +495,30 @@ namespace CodeHelper.Domain.Controller.UI
                         if (t != null)
                             nss.Add(t);
                     }
+                                       
+                    
+                    var ins = obj as OWLInstance;
+                    //获取类的属性
+                    if (ins.Type != null)
+                    {
+                        foreach (var p in ins.Type.PropertyInfos)
+                        {
+                            TurtleSenseMenu.data_better.Add(p.Name);
+                        }
+                    }
 
                     var ps = GlobalService.ModelManager.ListProperty(nss, null, true);
 
                     //var ps = module.PropertySeeAble(owlName.NameSpace, null, false);
+
                     foreach (var p in ps)
                     {
+                        foreach (var p2 in ins.Type.PropertyInfos)
+                        {
+                            if (p.Name.Equals(p2.Name))
+                                continue;
+                        }
+
                         data.Add(module.GetLocalNameSpace(owlName.NameSpace) + p.Name);
                     }
 

@@ -47,6 +47,8 @@ namespace CodeHelper.Core.Parse.ParseResults.Turtles
             this.Errors.AddRange(Root.Errors);
             this.NameSpace = context.NameSpace;
             this.UsingNameSpaces = context.Imports;
+
+            this.Root.Wise(context);
         }
 
         public override Parser.ParseType ParseType

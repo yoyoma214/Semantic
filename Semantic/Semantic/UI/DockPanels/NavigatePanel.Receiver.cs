@@ -75,9 +75,17 @@ namespace CodeHelper.UI.DockPanels
             {
                 token = ((OWLProperty)e.Node.Tag).TokenPair;
             }
+            else if (e.Node.Tag is IRestrictPropertyInfo)
+            {
+                token = ((RestrictProperty)e.Node.Tag).TokenPair;
+            }
             else
                 return;
+
             if (token == null)
+                return;
+
+            if (token.BeginToken == null)
                 return;
 
             if (!fileId.HasValue)
@@ -154,6 +162,12 @@ namespace CodeHelper.UI.DockPanels
             {
                 var node = new TreeNode(type.Key);
                 node.Tag = type.Value;
+                foreach (var p in type.Value.PropertyInfos)
+                {
+                    var propertyNode = new TreeNode(p.Name);
+                    propertyNode.Tag = p;
+                    node.Nodes.Add(propertyNode);
+                }
                 this.typeRoot.Nodes.Add(node);
             }
 

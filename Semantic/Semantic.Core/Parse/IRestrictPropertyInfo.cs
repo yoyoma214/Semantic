@@ -9,7 +9,7 @@ namespace CodeHelper.Core.Parse.ParseResults
     public interface IRestrictPropertyInfo:IWiseble//, IToken
     {
         String Name { get; set; }
-
+        String NameSpace { get; set; }
         string Type { get; set; }
 
         //List<AttributeInfo> Attributes { get; set; }
@@ -20,8 +20,8 @@ namespace CodeHelper.Core.Parse.ParseResults
         //bool IsXmlNode { get; set; }
 
         //void Wise();
-        TokenPair Position { get; set; }
-
+        TokenPair TokenPair { get; set; }
+        
         //bool Nullabe { get; set; }
 
         void Init();

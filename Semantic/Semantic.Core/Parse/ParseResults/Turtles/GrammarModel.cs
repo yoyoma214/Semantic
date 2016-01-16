@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using CodeHelper.Core.Error;
+using CodeHelper.Core.Parser;
 
 namespace CodeHelper.Core.Parse.ParseResults.Turtles
 {
@@ -27,6 +28,14 @@ namespace CodeHelper.Core.Parse.ParseResults.Turtles
                 context.FlushTriple(s);
             }
         }
+
+        public void Wise(TurtleContext context)
+        {
+            foreach (var s in Statements)
+            {
+                s.Wise(context);                
+            }
+        }
     }
 
     public class Statement : TokenPair
@@ -40,6 +49,14 @@ namespace CodeHelper.Core.Parse.ParseResults.Turtles
                 this.Directive.Parse(context);
             if (this.Triples != null)
                 this.Triples.Parse(context);
+        }
+
+        internal void Wise(TurtleContext context)
+        {
+            if (this.Directive != null)
+                this.Directive.Wise(context);
+            if (this.Triples != null)
+                this.Triples.Wise(context);
         }
     }
 
@@ -60,6 +77,18 @@ namespace CodeHelper.Core.Parse.ParseResults.Turtles
                 this.SparqlBase.Parse(context);
             if (this.SparqlPrefix != null)
                 this.SparqlPrefix.Parse(context);
+        }
+
+        internal void Wise(TurtleContext context)
+        {
+            if (this.PrefixID != null)
+                this.PrefixID.Wise(context);
+            if (this.Base != null)
+                this.Base.Wise(context);
+            if (this.SparqlBase != null)
+                this.SparqlBase.Wise(context);
+            if (this.SparqlPrefix != null)
+                this.SparqlPrefix.Wise(context); 
         }
     }
 
@@ -86,6 +115,16 @@ namespace CodeHelper.Core.Parse.ParseResults.Turtles
             if (this.PredicateObjectList != null)
                 this.PredicateObjectList.Parse(context);
         }
+
+        internal void Wise(TurtleContext context)
+        {
+            if (this.Subject != null)
+                this.Subject.Wise(context);
+            if (this.BlankNodePropertyList != null)
+                this.BlankNodePropertyList.Wise(context);
+            if (this.PredicateObjectList != null)
+                this.PredicateObjectList.Wise(context);
+        }
     }
 
     public class PrefixID : TokenPair
@@ -105,6 +144,11 @@ namespace CodeHelper.Core.Parse.ParseResults.Turtles
             }
             context.Imports.Add(this.PNAME_NS, this.IRIREF);
         }
+
+        internal void Wise(TurtleContext context)
+        {
+           
+        }
     }
 
     public class Base : TokenPair
@@ -114,6 +158,11 @@ namespace CodeHelper.Core.Parse.ParseResults.Turtles
         internal void Parse(TurtleContext context)        
         {           
             //context.Imports.Add(":", this.IRIREF);
+        }
+
+        internal void Wise(TurtleContext context)
+        {
+            
         }
     }
 
@@ -126,6 +175,11 @@ namespace CodeHelper.Core.Parse.ParseResults.Turtles
         {
             context.Imports.Add(this.PNAME_NS, this.IRIREF);
         }
+
+        internal void Wise(TurtleContext context)
+        {
+            
+        }
     }
 
     public class SparqlBase : TokenPair
@@ -135,6 +189,11 @@ namespace CodeHelper.Core.Parse.ParseResults.Turtles
         internal void Parse(TurtleContext context)
         {
             context.Imports.Add(":", this.IRIREF);
+        }
+
+        internal void Wise(TurtleContext context)
+        {
+            
         }
     }
 
@@ -174,6 +233,22 @@ namespace CodeHelper.Core.Parse.ParseResults.Turtles
                 this.Collection.Parse(context);
             }            
         }
+
+        internal void Wise(TurtleContext context)
+        {
+            if (this.IRI != null)
+            {
+                this.IRI.Wise(context);
+            }
+            else if (this.BlankNode != null)
+            {
+                this.BlankNode.Wise(context);
+            }
+            else if (this.Collection != null)
+            {
+                this.Collection.Wise(context);
+            }     
+        }
     }
 
     public class PredicateObjectList : TokenPair
@@ -192,13 +267,125 @@ namespace CodeHelper.Core.Parse.ParseResults.Turtles
             if (this.Verbs[0].EndToken.Text == "owl:propertyChainAxiom")
             {
             }
+
+            var newClz = false;
+            TypeInfoBase clzCtx = null;
+
             for (var i = 0; i < this.Verbs.Count; i++)
-            {                
+            {
                 context.Visit = TurtleContext.VisitType.Verb;
                 this.Verbs[i].Parse(context);
+                var verb = context.CurrentVerb;
+               
+                if (verb == "rdf:type")
+                {
+                    context.Visit = TurtleContext.VisitType.Object;
+                    this.ObjectLists[i].Parse(context);
+
+                    if (context.CurrentVerbObjects.Last().Value.First() == "owl:Class"
+                         || context.CurrentVerbObjects.Last().Value.First() == "rdfs:Datatype")
+                    {
+                        var clz = new TypeInfoBase();
+                        //clz.Name = context.CurrentSubjects;
+                        context.TypeStack.Push(clz);
+                        clz.Name = OWLName.ParseLocalName(context.CurrentSubjects.First());
+                        clz.FullName = context.CurrentSubjects.First();
+                        clz.NameSpace = ":";
+                        clz.TokenPair = this.ObjectLists[i];
+                        context.Types.Add(clz.FullName, clz);
+                        newClz = true;
+                    }
+
+                    continue;
+                }
+                else if (verb == "owl:equivalentClass")
+                {
+                    var clz = new TypeInfoBase();
+                    clz.Name = verb;
+                    context.TypeStack.Push(clz);
+                    newClz = true;
+                }
+                else if (verb == "rdfs:subClassOf")
+                {
+                    var clz = new TypeInfoBase();
+                    clz.Name = verb;
+                    context.TypeStack.Push(clz);
+                    newClz = true;
+                }
+                else if (verb == "owl:intersectionOf")
+                {
+                    var clz = new TypeInfoBase();
+                    clz.Name = verb;
+                    context.TypeStack.Push(clz);
+                    newClz = true;
+                }
 
                 context.Visit = TurtleContext.VisitType.Object;
                 this.ObjectLists[i].Parse(context);
+
+                foreach (var vo in context.CurrentVerbObjects)
+                {
+                    if (vo.Key == "rdf:type" && vo.Value.First() == "owl:Restriction")
+                    {
+                        clzCtx = context.TypeStack.First() as TypeInfoBase;
+                        break;
+                    }
+                }
+
+                if (verb == "owl:equivalentClass")
+                {
+                    if (context.TypeStack.Count > 1)
+                    {
+                        var parentClz = context.TypeStack.ElementAt(1) as TypeInfoBase;
+                        parentClz.PropertyInfos.AddRange(clzCtx.PropertyInfos);
+                    }
+                }
+                else if (verb == "rdfs:subClassOf")
+                {
+                    if (context.TypeStack.Count > 1)
+                    {
+                        var parentClz = context.TypeStack.ElementAt(1) as TypeInfoBase;
+                        parentClz.PropertyInfos.AddRange(clzCtx.PropertyInfos);
+                    }
+                }
+                else if (verb == "owl:intersectionOf")
+                {
+                    if (context.TypeStack.Count > 1)
+                    {
+                        var parentClz = context.TypeStack.ElementAt(1) as TypeInfoBase;
+                        parentClz.PropertyInfos.AddRange(clzCtx.PropertyInfos);
+                    }
+                }
+            }
+
+            if (clzCtx != null)
+            {
+                foreach (var vo in context.CurrentVerbObjects)
+                {
+                    if (vo.Key == "owl:onProperty")
+                    {
+                        var p = new RestrictProperty();
+                        p.Name = vo.Value.First();
+                        p.TokenPair = this.Verbs[0];
+                        //p.NameSpace = 
+                        clzCtx.PropertyInfos.Add(p);
+                    }
+                }
+            }
+
+            if (newClz)
+                context.TypeStack.Pop();
+        }
+
+        internal void Wise(TurtleContext context)
+        {
+            for (var i = 0; i < this.Verbs.Count; i++)
+            {
+                context.Visit = TurtleContext.VisitType.Verb;
+                this.Verbs[i].Wise(context);
+
+                context.Visit = TurtleContext.VisitType.Object;
+                this.ObjectLists[i].Wise(context);
             }
         }
     }
@@ -213,6 +400,14 @@ namespace CodeHelper.Core.Parse.ParseResults.Turtles
             {
                 context.FlushTriple(this);
                 this.PredicateObjectList.Parse(context);
+            }
+        }
+
+        internal void Wise(TurtleContext context)
+        {
+            if (this.PredicateObjectList != null)
+            {
+                this.PredicateObjectList.Wise(context);
             }
         }
     }
@@ -238,6 +433,17 @@ namespace CodeHelper.Core.Parse.ParseResults.Turtles
 
             if (this.IsA)
                 context.AddTriple("a",this);
+
+            if (context.CurrentVerb == "owl:intersectionOf")
+            {
+            }
+        }
+
+        internal void Wise(TurtleContext context)
+        {
+            if (this.Predicate != null)
+                this.Predicate.Wise(context);
+            
         }
     }
 
@@ -254,8 +460,28 @@ namespace CodeHelper.Core.Parse.ParseResults.Turtles
         {
             context.Visit = TurtleContext.VisitType.Object;
 
+            TypeInfoBase clz = null;
             foreach (var obj in this.Objects)
+            {
                 obj.Parse(context);
+
+                foreach (var vo in context.CurrentVerbObjects)
+                {
+                    if (vo.Key == "rdf:type" && vo.Value.First() == "owl:Restriction")
+                    {
+                        clz = context.TypeStack.First() as TypeInfoBase;
+                        break;
+                    }
+                }
+
+
+            }
+        }
+
+        internal void Wise(TurtleContext context)
+        {
+            foreach (var obj in this.Objects)
+                obj.Wise(context);
         }
     }
 
@@ -269,6 +495,12 @@ namespace CodeHelper.Core.Parse.ParseResults.Turtles
 
             if (this.IRI != null)
                 this.IRI.Parse(context);
+        }
+
+        internal void Wise(TurtleContext context)
+        {
+            if (this.IRI != null)
+                this.IRI.Wise(context);
         }
     }
 
@@ -295,6 +527,12 @@ namespace CodeHelper.Core.Parse.ParseResults.Turtles
             }
 
         }
+
+        internal void Wise(TurtleContext context)
+        {
+            if (this.PrefixedName != null)
+                this.PrefixedName.Wise(context);
+        }
     }
 
     public class Collection : TokenPair
@@ -310,6 +548,12 @@ namespace CodeHelper.Core.Parse.ParseResults.Turtles
         {
             foreach (var obj in this.Objects)
                 obj.Parse(context);
+        }
+
+        internal void Wise(TurtleContext context)
+        {
+            foreach (var obj in this.Objects)
+                obj.Wise(context);
         }
     }
 
@@ -338,6 +582,20 @@ namespace CodeHelper.Core.Parse.ParseResults.Turtles
             if (this.Literal != null)
                 this.Literal.Parse(context);
         }
+
+        internal void Wise(TurtleContext context)
+        {
+            if (this.IRI != null)
+                this.IRI.Wise(context);
+            if (this.BlankNode != null)
+                this.BlankNode.Wise(context);
+            if (this.Collection != null)
+                this.Collection.Wise(context);
+            if (this.BlankNodePropertyList != null)
+                this.BlankNodePropertyList.Wise(context);
+            if (this.Literal != null)
+                this.Literal.Wise(context);
+        }
     }
 
     public class PrefixedName : TokenPair
@@ -363,6 +621,11 @@ namespace CodeHelper.Core.Parse.ParseResults.Turtles
                 context.AddTriple(this.PNAME_NS, this);
             }
         }
+
+        internal void Wise(TurtleContext context)
+        {
+            
+        }
     }
 
     public class BlankNode : TokenPair
@@ -381,6 +644,11 @@ namespace CodeHelper.Core.Parse.ParseResults.Turtles
             {
                 context.AddTriple(this.ANON, this);
             }
+        }
+
+        internal void Wise(TurtleContext context)
+        {
+            
         }
     }
 
@@ -410,6 +678,11 @@ namespace CodeHelper.Core.Parse.ParseResults.Turtles
                 context.AddTriple(this.NumericLiteral, this);
             if (this.BooleanLiteral != null)
                 context.AddTriple(this.BooleanLiteral, this);
+        }
+
+        internal void Wise(TurtleContext context)
+        {
+
         }
     }
 }

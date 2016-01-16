@@ -8,7 +8,7 @@ using CodeHelper.Core.Services;
 
 namespace CodeHelper.Core.Parse.ParseResults
 {
-    public class RestrictProperty :TokenPair, IRestrictPropertyInfo, IGeneratorUtil
+    public class RestrictProperty : IRestrictPropertyInfo, IGeneratorUtil
     {
         public List<AttributeInfo> Attributes { get; set; }
 
@@ -81,12 +81,26 @@ namespace CodeHelper.Core.Parse.ParseResults
             
         }
 
-        public TokenPair Position
+        //public TokenPair Position
+        //{
+        //    get;
+        //    set;
+        //}
+
+        //public String DefaultValue { get; set; }
+
+
+        public string NameSpace
         {
             get;
             set;
         }
 
-        //public String DefaultValue { get; set; }
+
+        public TokenPair TokenPair
+        {
+            get;
+            set;
+        }
     }
 }

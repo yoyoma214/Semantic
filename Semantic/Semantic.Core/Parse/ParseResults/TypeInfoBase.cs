@@ -165,5 +165,17 @@ namespace CodeHelper.Core.Parse.ParseResults
                 return this.CharPositionInLine + this.Length;
             }
         }
+
+        //List<IRestrictPropertyInfo> ITypeInfo.PropertyInfos
+        //{
+        //    get
+        //    {
+        //        throw new NotImplementedException();
+        //    }
+        //    set
+        //    {
+        //        throw new NotImplementedException();
+        //    }
+        //}
     }
 }

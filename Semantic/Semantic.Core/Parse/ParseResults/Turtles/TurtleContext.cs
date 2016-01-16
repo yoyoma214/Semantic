@@ -31,11 +31,11 @@ namespace CodeHelper.Core.Parse.ParseResults.Turtles
 
         public List<ParseErrorInfo> Errors { get; set; }
 
-        private List<string> CurrentSubjects { get; set; }
+        internal List<string> CurrentSubjects { get; set; }
 
-        private Dictionary<string, List<string>> CurrentVerbObjects { get; set; }
+        internal Dictionary<string, List<string>> CurrentVerbObjects { get; set; }
 
-        private string CurrentVerb { get; set; }
+        internal string CurrentVerb { get; set; }
 
         /// <summary>
         /// 用户输入所在主语
@@ -63,6 +63,8 @@ namespace CodeHelper.Core.Parse.ParseResults.Turtles
         /// 前面一个语句的谓语宾语集合
         /// </summary>
         public Dictionary<string, List<string>> PrevVerbObjects { get; set; }
+
+        internal Stack<object> TypeStack { get; set; }
 
         public TurtleDoc Root { get; set; }
 
@@ -92,7 +94,8 @@ namespace CodeHelper.Core.Parse.ParseResults.Turtles
             //this.PrevVerbs = new List<string>();
 
             this.PrevVerbObjects = new Dictionary<string, List<string>>();
-            
+
+            this.TypeStack = new Stack<object>();
         }
 
         /// <summary>
@@ -180,8 +183,9 @@ namespace CodeHelper.Core.Parse.ParseResults.Turtles
         {
             foreach (var vo in this.CurrentVerbObjects)
             {
+                #region type
                 if (vo.Key == "rdf:type")
-                {                    
+                {
                     foreach (var obj in vo.Value)
                     {
                         if (obj == "owl:Ontology")
@@ -193,19 +197,19 @@ namespace CodeHelper.Core.Parse.ParseResults.Turtles
                         if (obj == "owl:Class" || obj == "rdfs:Datatype")//|| obj == "rdfs:subClassOf" || obj == "owl:equivalentClass")
                         {
 
-                            foreach (var subject in this.CurrentSubjects)
-                            {
-                                if (!this.Types.ContainsKey(subject))
-                                {
-                                    var t = new TypeInfoBase();
-                                    t.Name = OWLName.ParseLocalName(subject);
-                                    t.FullName = subject;
-                                    t.NameSpace = ":";
-                                    t.TokenPair = pair;
-                                    t.IsPrimitive = obj == "rdfs:Datatype";
-                                    this.Types.Add(t.FullName, t);
-                                }
-                            }
+                            //foreach (var subject in this.CurrentSubjects)
+                            //{
+                            //    if (!this.Types.ContainsKey(subject))
+                            //    {
+                            //        var t = new TypeInfoBase();
+                            //        t.Name = OWLName.ParseLocalName(subject);
+                            //        t.FullName = subject;
+                            //        t.NameSpace = ":";
+                            //        t.TokenPair = pair;
+                            //        t.IsPrimitive = obj == "rdfs:Datatype";
+                            //        this.Types.Add(t.FullName, t);
+                            //    }
+                            //}
                         }
                         else if (obj == "owl:ObjectProperty")
                         {
@@ -230,7 +234,7 @@ namespace CodeHelper.Core.Parse.ParseResults.Turtles
                                 if (!this.Properties.ContainsKey(subject))
                                 {
                                     OWLProperty p = new OWLProperty();
-                                    p.Name = OWLName.ParseLocalName(subject);                                    
+                                    p.Name = OWLName.ParseLocalName(subject);
                                     p.IsObject = false;
                                     p.NameSpace = this.NameSpace;
                                     p.FullName = subject;
@@ -239,6 +243,9 @@ namespace CodeHelper.Core.Parse.ParseResults.Turtles
                                 }
                             }
                         }
+                        else if (obj == "owl:Restriction")
+                        {
+                        }                     
                         else
                         {
                             foreach (var subject in this.CurrentSubjects)
@@ -257,6 +264,15 @@ namespace CodeHelper.Core.Parse.ParseResults.Turtles
                         }
                     }
                 }
+                #endregion
+                #region
+                else if (vo.Key == "owl:intersectionOf")
+                {                    
+                }
+                else if (vo.Key == "owl:onProperty")
+                {
+                }
+                #endregion
             }
 
             if (m_matchCaret == false)

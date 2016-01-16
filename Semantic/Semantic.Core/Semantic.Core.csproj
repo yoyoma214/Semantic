@@ -356,7 +356,7 @@
     <Compile Include="Parse\ParseResults\AtomTokenPair.cs" />
     <Compile Include="Parse\ParseResults\AttributeInfo.cs" />
     <Compile Include="Parse\ParseResults\ErrorListener.cs" />
-    <Compile Include="Parse\ParseResults\IRestrictPropertyInfo.cs" />
+    <Compile Include="Parse\IRestrictPropertyInfo.cs" />
     <Compile Include="Parse\ParseResults\RestrictProperty.cs" />
     <Compile Include="Parse\ParseResults\Sparqls\GrammarModel.cs" />
     <Compile Include="Parse\ParseResults\Sparqls\Sparql.g4.lexer.cs">

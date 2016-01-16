@@ -933,6 +933,7 @@ namespace CodeHelper.Domain.Model
                 string error;
                 foreach (var p in type.PropertyInfos)
                 {
+                    break;//暂不验证类属性
                     var types = ParseType(p.Type, module, out error);
                     if (!string.IsNullOrWhiteSpace(error))
                     {
@@ -940,9 +941,9 @@ namespace CodeHelper.Domain.Model
                         {
                             FileId = module.FileId,
                             File = module.File,
-                            CharPositionInLine = p.Position.BeginToken.CharPositionInLine,
+                            CharPositionInLine = p.TokenPair.BeginToken.CharPositionInLine,
                             ErrorType = ErrorType.Wise,
-                            Line = p.Position.BeginToken.Line,
+                            Line = p.TokenPair.BeginToken.Line,
                             Message = error
                         });
                     }
@@ -952,9 +953,9 @@ namespace CodeHelper.Domain.Model
                         {
                             FileId = module.FileId,
                             File = module.File,
-                            CharPositionInLine = p.Position.BeginToken.CharPositionInLine,
+                            CharPositionInLine = p.TokenPair.BeginToken.CharPositionInLine,
                             ErrorType = ErrorType.Wise,
-                            Line = p.Position.BeginToken.Line,
+                            Line = p.TokenPair.BeginToken.Line,
                             Message = string.Format("当前上下文无此类型{0}", p.Type)
                         });
                     }
@@ -964,9 +965,9 @@ namespace CodeHelper.Domain.Model
                         {
                             FileId = module.FileId,
                             File = module.File,
-                            CharPositionInLine = p.Position.BeginToken.CharPositionInLine,
+                            CharPositionInLine = p.TokenPair.BeginToken.CharPositionInLine,
                             ErrorType = ErrorType.Wise,
-                            Line = p.Position.BeginToken.Line,
+                            Line = p.TokenPair.BeginToken.Line,
                             Message = string.Format("当前上下文有多个此类型{0}:{1}"
                             , p.Type
                             , String.Join(",", types.Select(x => x.FullName).ToArray()))
