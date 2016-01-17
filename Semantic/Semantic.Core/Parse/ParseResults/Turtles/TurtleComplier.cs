@@ -17,6 +17,7 @@ namespace CodeHelper.Core.Parse.ParseResults.Turtles
             var lexer = new TurtleLexer(stream);
 
             var listener_symbol = new ErrorListenerSymbol();
+            lexer.ErrorListeners.Clear();
             lexer.AddErrorListener(listener_symbol);
 
             var tokens = new CommonTokenStream(lexer);

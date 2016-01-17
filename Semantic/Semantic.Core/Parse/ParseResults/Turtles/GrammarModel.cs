@@ -276,14 +276,14 @@ namespace CodeHelper.Core.Parse.ParseResults.Turtles
                 context.Visit = TurtleContext.VisitType.Verb;
                 this.Verbs[i].Parse(context);
                 var verb = context.CurrentVerb;
-               
+
                 if (verb == "rdf:type")
                 {
                     context.Visit = TurtleContext.VisitType.Object;
                     this.ObjectLists[i].Parse(context);
-
-                    if (context.CurrentVerbObjects.Last().Value.First() == "owl:Class"
-                         || context.CurrentVerbObjects.Last().Value.First() == "rdfs:Datatype")
+                    var type = context.CurrentVerbObjects.Last().Value.First();
+                    if (type == "owl:Class"
+                         || type == "rdfs:Datatype")
                     {
                         var clz = new TypeInfoBase();
                         //clz.Name = context.CurrentSubjects;
@@ -295,6 +295,23 @@ namespace CodeHelper.Core.Parse.ParseResults.Turtles
                         context.Types.Add(clz.FullName, clz);
                         newClz = true;
                     }
+                    //else if (type == "owl:NamedIndividual" ||
+                    //    (type != "owl:Restriction") && (type != "owl:DatatypeProperty") && (type != "owl:ObjectProperty"))
+                    //{
+                    //    //foreach (var subject in this.CurrentSubjects)
+                    //    //{
+                    //    if (!context.Instances.ContainsKey(type))
+                    //    {
+                    //        OWLInstance p = new OWLInstance();
+                    //        p.Name = OWLName.ParseLocalName(type);
+                    //        p.FullName = type;
+                    //        p.NameSpace = context.NameSpace;
+                    //        p.Type = context.Parse(obj);
+                    //        p.TokenPair = pair;
+                    //        context.Instances.Add(p.FullName, p);
+                    //    }
+                    //    //}
+                    //}
 
                     continue;
                 }
@@ -334,7 +351,7 @@ namespace CodeHelper.Core.Parse.ParseResults.Turtles
 
                 if (verb == "owl:equivalentClass")
                 {
-                    if (context.TypeStack.Count > 1)
+                    if (context.TypeStack.Count > 1 && clzCtx != null)
                     {
                         var parentClz = context.TypeStack.ElementAt(1) as TypeInfoBase;
                         parentClz.PropertyInfos.AddRange(clzCtx.PropertyInfos);
@@ -342,7 +359,7 @@ namespace CodeHelper.Core.Parse.ParseResults.Turtles
                 }
                 else if (verb == "rdfs:subClassOf")
                 {
-                    if (context.TypeStack.Count > 1)
+                    if (context.TypeStack.Count > 1 && clzCtx != null)
                     {
                         var parentClz = context.TypeStack.ElementAt(1) as TypeInfoBase;
                         parentClz.PropertyInfos.AddRange(clzCtx.PropertyInfos);
@@ -350,7 +367,7 @@ namespace CodeHelper.Core.Parse.ParseResults.Turtles
                 }
                 else if (verb == "owl:intersectionOf")
                 {
-                    if (context.TypeStack.Count > 1)
+                    if (context.TypeStack.Count > 1 && clzCtx != null)
                     {
                         var parentClz = context.TypeStack.ElementAt(1) as TypeInfoBase;
                         parentClz.PropertyInfos.AddRange(clzCtx.PropertyInfos);

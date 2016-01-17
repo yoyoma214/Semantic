@@ -7,3 +7,4 @@ SELECT ?p
 	WHERE { ?p owl:equivalentClass :employee ; rdf:type :sexType,:leader,:sexType.
 		?m rdf:type xsd:anyURI.		 
 }
+

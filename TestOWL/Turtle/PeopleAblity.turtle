@@ -132,3 +132,5 @@
 :x rdf:type owl:Class .
 
 :tom :name "cc"^^xsd:string .
+
+:newPerson rdfs:subClassOf :newPerson2 .

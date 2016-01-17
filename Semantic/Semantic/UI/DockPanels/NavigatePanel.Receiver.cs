@@ -161,11 +161,12 @@ namespace CodeHelper.UI.DockPanels
             foreach (var type in module.Types)
             {
                 var node = new TreeNode(type.Key);
-                node.Tag = type.Value;
+                node.Tag = type.Value;                
                 foreach (var p in type.Value.PropertyInfos)
                 {
                     var propertyNode = new TreeNode(p.Name);
                     propertyNode.Tag = p;
+                    propertyNode.SelectedImageKey = propertyNode.ImageKey = "256";                    
                     node.Nodes.Add(propertyNode);
                 }
                 this.typeRoot.Nodes.Add(node);
@@ -180,7 +181,8 @@ namespace CodeHelper.UI.DockPanels
 
             foreach (var type in module.Instances)
             {
-                var node = new TreeNode(type.Key);
+                var typeName = type.Value.Type.NameSpace + type.Value.Type.Name;
+                var node = new TreeNode(type.Key + "(" + typeName + ")");
                 node.Tag = type.Value;
                 this.instanceRoot.Nodes.Add(node);
             }

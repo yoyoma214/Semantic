@@ -149,11 +149,16 @@ namespace CodeHelper.Domain.EditorController
 
                 var ss = this.editorContainer.Editor.Document.GetText(line);
 
-                if (this.editorContainer.Editor.Document.TextLength > line.Offset - offset + line.Length)
+                //if (this.editorContainer.Editor.Document.TextLength > line.Offset - offset + line.Length)
+                if (this.editorContainer.Editor.Document.TextLength > line.Offset + line.Length)
                 {
                     ss = this.editorContainer.Editor.Document.GetText(offset + 1, line.Offset - offset + line.Length);
                     if (String.IsNullOrWhiteSpace(ss))
                         text += " ";
+                }
+                else if (this.editorContainer.Editor.Document.TextLength == line.Offset + line.Length)
+                {
+                    text += " ";
                 }
             }
 
