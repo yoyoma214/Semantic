@@ -13,6 +13,7 @@ namespace CodeHelper.Core.Parse.ParseResults
         public List<TypeInfoBase> Domain { get; set; }
         public List<TypeInfoBase> Range { get; set; }
         public OWLProperty Parent { get; set; }
+        public List<OWLProperty> Children { get; set; }
         public TokenPair Position { get; set; }
         public bool IsObject { get; set; }
 
@@ -22,6 +23,7 @@ namespace CodeHelper.Core.Parse.ParseResults
         {
             this.Domain = new List<TypeInfoBase>();
             this.Range = new List<TypeInfoBase>();
+            this.Children = new List<OWLProperty>();
         }
 
         public void Wise()

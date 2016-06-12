@@ -1043,7 +1043,8 @@ namespace CodeHelper.Domain.Model
 
             foreach (var nameSpace in this.Namespace_Modules.Keys)
             {
-                if (ns.Equals(ns))
+                //if (nameSpace.Equals(ns))
+				if (ns.Equals(ns))
                 {
                    has = true;
                    break;

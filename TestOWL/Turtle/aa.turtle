@@ -1,0 +1,141 @@
+
+@prefix :      <http://randy/owl/testy> .
+@prefix rdf:   <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix owl:   <http://www.w3.org/2002/07/owl#> .
+@prefix xsd:   <http://www.w3.org/2001/XMLSchema#> .
+@prefix rdfs:  <http://www.w3.org/2000/01/rdf-schema#> .
+
+:       rdf:type       owl:Ontology .
+
+:sf rdf:type owl:Class .
+
+:name rdf:type owl:DatatypeProperty .
+
+
+<http://randy/owl/D0>
+        a       owl:Class .
+
+<http://randy/owl/c0_1>
+        a       <http://randy/owl/C0> , owl:NamedIndividual .
+
+<http://randy/owl/p3>
+        a       owl:ObjectProperty .
+
+<http://randy/owl/A011>
+        a                owl:Class ;
+        rdfs:subClassOf  <http://randy/owl/A01> .
+
+<http://randy/owl/A04>
+        a                    owl:Class ;
+        rdfs:subClassOf      <http://randy/owl/A0> ;
+        owl:equivalentClass  [ a               owl:Restriction ;
+                               owl:hasValue    <http://randy/owl/b0_2> ;
+                               owl:onProperty  <http://randy/owl/p3>
+                             ] .
+
+<http://randy/owl/C0>
+        a       owl:Class .
+
+<http://randy/owl/B0>
+        a       owl:Class .
+
+<http://randy/owl/p2>
+        a       owl:ObjectProperty .
+
+<http://randy/owl/A03>
+        a                    owl:Class ;
+        rdfs:subClassOf      <http://randy/owl/A0> ;
+        owl:equivalentClass  [ a          owl:unionOf ;
+                               owl:Class  [ a                  owl:Restriction ;
+                                            owl:allValuesFrom  <http://randy/owl/C0> ;
+                                            owl:onProperty     <http://randy/owl/p2>
+                                          ] ;
+                               owl:Class  [ a                  owl:Restriction ;
+                                            owl:allValuesFrom  <http://randy/owl/B0> ;
+                                            owl:onProperty     <http://randy/owl/p1_1>
+                                          ]
+                             ] .
+
+<http://randy/owl/a011_2>
+        a       <http://randy/owl/A011> , owl:NamedIndividual .
+
+<http://randy/owl/A0>
+        a       owl:Class .
+
+<http://example.com/owl/families/Mark>
+        a                owl:Class ;
+        rdfs:subClassOf  <http://randy/owl/B0> ;
+        <hasName>        "chenzhiyu" .
+
+<http://randy/owl/b0_1>
+        a       <http://randy/owl/B0> , owl:NamedIndividual .
+
+<http://randy/owl/p1>
+        a       owl:ObjectProperty .
+
+<http://randy/owl/A02>
+        a                owl:Class ;
+        rdfs:subClassOf  <http://randy/owl/A0> .
+
+<http://randy/owl/B01>
+        a                owl:Class ;
+        rdfs:subClassOf  <http://randy/owl/B0> .
+
+<http://randy/owl/a011_1>
+        a       <http://randy/owl/A011> , owl:NamedIndividual .
+
+<http://randy/owl/p1_1>
+        a                   owl:ObjectProperty ;
+        rdfs:subPropertyOf  <http://randy/owl/p1> .
+
+<hasName>  a    rdf:Property .
+
+<http://randy/owl/A01>
+        a                owl:Class ;
+        rdfs:subClassOf  <http://randy/owl/A0> .
+
+
+
+<http://randy/owl/R0>
+        a                owl:Class ;
+        rdfs:subClassOf  [ a               owl:Restriction ;
+                           owl:hasValue    <http://randy/owl/b0_2> ;
+                           owl:onProperty  <http://randy/owl/p3>
+                         ] .
+
+<http://randy/owl/a04_1>
+        a       owl:NamedIndividual ;
+        :p4     <http://randy/owl/b0_2> .
+
+
+<http://randy/owl/a0_1>
+        a       <http://randy/owl/A0> , owl:NamedIndividual .
+
+<http://randy/owl/a03_1>
+        a       owl:NamedIndividual ;
+        :p1_1   <http://randy/owl/b0_1> ;
+        :p2     <http://randy/owl/c0_1> .
+
+<http://randy/owl/B011>
+        a                owl:Class ;
+        rdfs:subClassOf  <http://randy/owl/B01> .
+
+<http://randy/owl/A022>
+        a                owl:Class ;
+        rdfs:subClassOf  <http://randy/owl/A02> .
+
+<http://randy/owl/a02_1>
+        a       <http://randy/owl/A02> , owl:NamedIndividual .
+
+<http://randy/owl/A012>
+        a                owl:Class ;
+        rdfs:subClassOf  <http://randy/owl/A01> .
+
+<xyz>   a          <http://randy/owl/B0> ;
+        <hasName>  "sdfsadfasd" .
+
+<http://randy/owl/A021>
+        a                owl:Class ;
+        rdfs:subClassOf  <http://randy/owl/A02> .
+
+ 

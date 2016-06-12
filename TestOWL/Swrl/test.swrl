@@ -7,6 +7,6 @@ DLSafeRule(
 		ObjectPropertyAtom(:f Variable(:x) Variable(:z))				
 	)
 	Head(
-		DifferentIndividualsAtom(Variable(:y) Variable(:z))		
+		DifferentIndividualsAtom(Variable(:y) Variable(:z))	
 	)
 )

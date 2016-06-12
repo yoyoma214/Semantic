@@ -377,23 +377,39 @@ namespace CodeHelper.Core.Parse.ParseResults.Turtles
             var predicateObjectList = this.stack.PeekCtx<PredicateObjectList>();
             predicateObjectList.Parse(context);
 
-            var verbCtxs = context.verb();
-            foreach (var verbCtx in verbCtxs)
+            var verbObjectListCtxs = context.verbObjectList();
+            foreach (var ctx in verbObjectListCtxs)
             {
-                var verb = new Verb();
-                predicateObjectList.Verbs.Add(verb);
-                this.stack.Push(verb);
+                var verbObjectList = new VerbObjectList();
+                predicateObjectList.VerbObjectLists.Add(verbObjectList);
+                this.stack.Push(verbObjectList);
+                this.Visit(ctx);
+                this.stack.Pop();
+            }
+
+            return 0;
+        }
+
+        public override int VisitVerbObjectList([NotNull] TurtleParser.VerbObjectListContext context)
+        {
+            var verbObjectList = this.stack.PeekCtx<VerbObjectList>();
+            verbObjectList.Parse(context);
+
+            var verbCtx = context.verb();
+            if (verbCtx != null)
+            {
+                verbObjectList.Verb = new Verb();
+                this.stack.Push(verbObjectList.Verb);
                 this.Visit(verbCtx);
                 this.stack.Pop();
             }
 
-            var objectListCtxs = context.objectList();
-            foreach (var ctx in objectListCtxs)
+            var objectListCtx = context.objectList();
+            if (objectListCtx != null)
             {
-                var objectList = new ObjectList();
-                predicateObjectList.ObjectLists.Add(objectList);
-                this.stack.Push(objectList);
-                this.Visit(ctx);
+                verbObjectList.ObjectList = new ObjectList();
+                this.stack.Push(verbObjectList.ObjectList);
+                this.Visit(objectListCtx);
                 this.stack.Pop();
             }
 

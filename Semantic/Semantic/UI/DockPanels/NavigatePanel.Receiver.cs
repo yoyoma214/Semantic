@@ -38,6 +38,11 @@ namespace CodeHelper.UI.DockPanels
 
         Guid? fileId;
 
+        /// <summary>
+        /// 记录已经构造过的对象（仅限当次构造，不含历史）
+        /// </summary>
+        List<object> buildObjects = new List<object>();
+
         //DesignProjectNode mDesignNode;
         //DBProjectNode mDataBaseNode;
         
@@ -157,31 +162,51 @@ namespace CodeHelper.UI.DockPanels
             this.typeRoot.Nodes.Clear();
             this.instanceRoot.Nodes.Clear();
             this.propertyRoot.Nodes.Clear();
+            buildObjects.Clear();
 
             foreach (var type in module.Types)
             {
-                var node = new TreeNode(type.Key);
-                node.Tag = type.Value;                
-                foreach (var p in type.Value.PropertyInfos)
-                {
-                    var propertyNode = new TreeNode(p.Name);
-                    propertyNode.Tag = p;
-                    propertyNode.SelectedImageKey = propertyNode.ImageKey = "256";                    
-                    node.Nodes.Add(propertyNode);
-                }
-                this.typeRoot.Nodes.Add(node);
+                if (type.Value.Super != null)
+                    continue;
+
+                //var node = new TreeNode(type.Key);
+                //node.Tag = type.Value;                
+                //foreach (var p in type.Value.PropertyInfos)
+                //{
+                //    var propertyNode = new TreeNode(p.Name);
+                //    propertyNode.Tag = p;
+                //    propertyNode.SelectedImageKey = propertyNode.ImageKey = "256";                    
+                //    node.Nodes.Add(propertyNode);
+                //}
+                //foreach (var child in type.Value.Children)
+                //{
+                //    var node2 = new TreeNode(((TypeInfoBase)child).Name);
+                //    node2.Tag = child;
+                //    node.Nodes.Add(node2);
+                //}
+                //this.typeRoot.Nodes.Add(node);
+                
+
+                BuildClassNode(type.Value, this.typeRoot);                
             }
 
             foreach (var type in module.Properties)
             {
-                var node = new TreeNode(type.Key);
-                node.Tag = type.Value;
-                this.propertyRoot.Nodes.Add(node);
+                if (type.Value.Parent != null)
+                    continue;
+                //var node = new TreeNode(type.Key);
+                //node.Tag = type.Value;
+                //this.propertyRoot.Nodes.Add(node);
+
+                BuildPropertyNode(type.Value, this.propertyRoot);
             }
 
             foreach (var type in module.Instances)
-            {
-                var typeName = type.Value.Type.NameSpace + type.Value.Type.Name;
+            {             
+				//var typeName = type.Value.Type.NameSpace + type.Value.Type.Name;
+                var typeName = "";
+                if (type.Value.Type != null)
+                    typeName = type.Value.Type.NameSpace + type.Value.Type.Name;
                 var node = new TreeNode(type.Key + "(" + typeName + ")");
                 node.Tag = type.Value;
                 this.instanceRoot.Nodes.Add(node);
@@ -190,6 +215,43 @@ namespace CodeHelper.UI.DockPanels
             this.treeView1.ExpandAll();
 
             this.treeView1.EndUpdate();
+        }
+
+        private void BuildClassNode(TypeInfoBase type,TreeNode parentNode)
+        {
+            var node = new TreeNode(type.Name);
+            node.Tag = type;
+            foreach (var p in type.PropertyInfos)
+            {
+                var propertyNode = new TreeNode(p.Name);
+                propertyNode.Tag = p;
+                propertyNode.SelectedImageKey = propertyNode.ImageKey = "256";
+                node.Nodes.Add(propertyNode);
+            }
+            foreach (var child in type.Children)
+            {
+                //var node2 = new TreeNode(((TypeInfoBase)child).Name);
+                //node2.Tag = child;
+                //node.Nodes.Add(node2);
+                BuildClassNode(child as TypeInfoBase, node);
+            }
+            parentNode.Nodes.Add(node);
+            //this.typeRoot.Nodes.Add(node);
+        }
+
+        private void BuildPropertyNode(OWLProperty property, TreeNode parentNode)
+        {
+            var node = new TreeNode(property.Name);
+            node.Tag = property;
+
+            foreach (var child in property.Children)
+            {
+                //var node2 = new TreeNode(((TypeInfoBase)child).Name);
+                //node2.Tag = child;
+                //node.Nodes.Add(node2);
+                BuildPropertyNode(child as OWLProperty, node);
+            }
+            parentNode.Nodes.Add(node);
         }
 
         protected override void OnLoad(EventArgs e)

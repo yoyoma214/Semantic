@@ -34,13 +34,12 @@ namespace CodeHelper.Parser
 
         private ConnectProxy()
         {
-            Configuration cfa =
-                ConfigurationManager.OpenExeConfiguration(this.GetType().Assembly.Location);
-            
-            serverIp = cfa.AppSettings.Settings["ServerIp"].Value;
-            
-            serverPort = int.Parse(cfa.AppSettings.Settings["ServerPort"].Value);                       
-          
+            //    Configuration cfa =
+            //        ConfigurationManager.OpenExeConfiguration(this.GetType().Assembly.Location);
+
+            serverIp = ConfigurationManager.AppSettings["ServerIp"];
+
+            serverPort = int.Parse(ConfigurationManager.AppSettings["ServerPort"]);
         }
 
         private void Connect()

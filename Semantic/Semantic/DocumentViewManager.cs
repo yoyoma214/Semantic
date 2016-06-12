@@ -18,6 +18,8 @@ using CodeHelper.Core.Parse.ParseResults.Swrls;
 using CodeHelper.Common;
 using CodeHelper.Core.Error;
 using CodeHelper.UI;
+using CodeHelper.Core.Parse.ParseResults.Turtles;
+using CodeHelper.Parser;
 
 namespace CodeHelper
 {
@@ -55,12 +57,12 @@ namespace CodeHelper
 
         void m_documentViewContainer_ControlRemoved(object sender, ControlEventArgs e)
         {
-            
+
         }
 
         void m_documentViewContainer_ContentRemoved(object sender, DockContentEventArgs e)
         {
-            
+
         }
 
         bool m_receiver_OnCloseFile(Guid fileId)
@@ -97,6 +99,15 @@ namespace CodeHelper
             {
                 docView.TabPageContextMenu.MenuItems.Add(new MenuItem("格式美化", menuFormat_Click));
             }
+            if (docView.FileName.EndsWith(Dict.Extenstions.Turtle_Extension))
+            {
+                docView.TabPageContextMenu.MenuItems.Add(new MenuItem("验证", menuValidate_Click));
+            }
+            //if (docView.FileName.EndsWith(Dict.Extenstions.Swrl_Extension))
+            //{
+            //    docView.TabPageContextMenu.MenuItems.Add(new MenuItem("格式美化", menuFormat_Click));
+            //}
+
             foreach (MenuItem menu in docView.TabPageContextMenu.MenuItems)
             {
                 menu.Tag = docView;
@@ -165,12 +176,12 @@ namespace CodeHelper
 
         private DocumentViewManager(DockPanel documentView)
         {
-            
+
         }
 
         void m_documentViewContainer_ActivePaneChanged(object sender, EventArgs e)
         {
-           
+
         }
 
         void m_documentViewContainer_ActiveDocumentChanged(object sender, EventArgs e)
@@ -223,7 +234,7 @@ namespace CodeHelper
 
             if (view != null)
             {
-                view.Activate();                    
+                view.Activate();
                 return;
             }
             if (this.m_documentViews.Count(x => x.FileName == file) > 0)
@@ -251,7 +262,7 @@ namespace CodeHelper
             page.Name = (Path.GetFileName(file));
             page.TabText = page.Text = page.Name;
             page.FileName = file;
-            
+
             //page.Name = model.File;
             page.Tag = model.FileId;
             page.ToolTipText = model.File;
@@ -287,15 +298,16 @@ namespace CodeHelper
 
         void Model_Changed(IModel model)
         {
-            var docView = this.m_documentViews.FirstOrDefault(x =>{
+            var docView = this.m_documentViews.FirstOrDefault(x =>
+            {
                 var fileId = (Guid)x.Tag;
-                return fileId == model.FileId;                
+                return fileId == model.FileId;
             });
 
             if (docView != null)
             {
-                if ( docView.TabText.EndsWith("*"))
-                    return ;
+                if (docView.TabText.EndsWith("*"))
+                    return;
 
                 docView.TabText += "*";
             }
@@ -342,11 +354,11 @@ namespace CodeHelper
 
         public void menuCopyPath_Click(object sender, EventArgs args)
         {
-            var docView = ((MenuItem)sender).Tag as FileTabPanel;       
+            var docView = ((MenuItem)sender).Tag as FileTabPanel;
 
             var model = GlobalService.ModelManager.GetModel((Guid)docView.Tag);
 
-            Clipboard.SetDataObject(model.File,true);
+            Clipboard.SetDataObject(model.File, true);
         }
 
         public void menuOpenFolder_Click(object sender, EventArgs args)
@@ -379,7 +391,7 @@ namespace CodeHelper
                     return;
                 }
             }
- 
+
             var builder = new IndentStringBuilder();
             module.Format(builder);
             var codeFrm = new ShowCodeFrm();
@@ -387,5 +399,73 @@ namespace CodeHelper
             codeFrm.Show();
             //GlobalService.EditorContextManager.CurrentContext.EditorContainer.Text = builder.ToString();          
         }
+
+        public void menuValidate_Click(object sender, EventArgs args)
+        {
+            var docView = ((MenuItem)sender).Tag as FileTabPanel;
+            var model = GlobalService.ModelManager.GetModel((Guid)docView.Tag);
+            if (model == null)
+            {
+                MessageBox.Show("不能解析当前文档");
+                return;
+            }
+
+            var module = GlobalService.ModelManager.GetParseModule(model.FileId) as TurtleModule;
+            foreach (var error in module.Errors)
+            {
+                if (error.ErrorType == ErrorType.Syntax)
+                {
+                    MessageBox.Show("语法有问题，请先解决");
+                    return;
+                }
+            }
+            
+            var req = new ValidationReq();
+            req.Files.Add("test");
+            var info = new ParseInfo();
+            info.Type = ParseInfo.TYPE_VALIDATION;
+            info.Content = Newtonsoft.Json.JsonConvert.SerializeObject(req);
+            var parseInfo_json = Newtonsoft.Json.JsonConvert.SerializeObject(info);
+            ConnectProxy.Instance().Send(parseInfo_json);
+            var r = ConnectProxy.Instance().Read();
+            if (r != null)
+            {
+                var rslt = Newtonsoft.Json.JsonConvert.DeserializeObject<ReturnInfo>(r);
+                MessageBox.Show(rslt.IsSuccess?"成功":"失败:" + rslt.Message);
+            }
+            //var builder = new IndentStringBuilder();
+            //module.Format(builder);
+            //var codeFrm = new ShowCodeFrm();
+            //codeFrm.SetText(builder.ToString());
+            //codeFrm.Show();
+            //GlobalService.EditorContextManager.CurrentContext.EditorContainer.Text = builder.ToString();          
+        }
+    }
+
+    public class ValidationReq
+    {
+        public List<String> Files { get; set; }
+        public ValidationReq()
+        {
+            this.Files = new List<string>();
+        }
+    }
+
+    public class ReturnInfo<T>
+    {
+        public T Data { get; set; }
+        public Boolean Success { get; set; }
+        public String Message { get; set; }
+    }
+
+    public class ParseInfo
+    {
+        public static String TYPE_VALIDATION = "validation";
+        public static String TYPE_QUERY = "query";
+        public static String TYPE_RULE = "rule";
+
+        public String Type { get; set; }
+        public String Content { get; set; }
+
     }
 }

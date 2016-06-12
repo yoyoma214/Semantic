@@ -6,9 +6,9 @@
 @prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
 @base <http://www.6starhome.com/company/#> .
 
-<http://www.6starhome.com/company/#> rdf:type owl:Ontology .
+: rdf:type owl:Ontology .
 
-
+ 
 #################################################################
 #
 #    Datatypes
@@ -18,7 +18,6 @@
 ###  http://www.6starhome.com/company/#sexType
 
 :sexType rdf:type rdfs:Datatype .
- 
 
 #################################################################
 #
@@ -33,11 +32,20 @@
       rdfs:range xsd:string .
 :age rdf:type owl:DatatypeProperty .
 
+:address rdf:type owl:DatatypeProperty .
 
 ###  http://www.6starhome.com/company/#sex
 
 :sex rdf:type owl:DatatypeProperty .
 
+:sfz rdf:type owl:DatatypeProperty .
+
+:sfz rdfs:domain :employee .
+
+:sfz rdfs:domain :leader .
+
+:sfz rdfs:range :ceo, :ceo2 .
+ 
 ############w ####################################################
 #
 #    Classes
@@ -48,89 +56,80 @@
 ###  http://www.6starhome.com/company/#employee
 
 :employee rdf:type owl:Class ;
-		owl:equivalentClass [owl:intersectionOf( [ rdf:type owl:Restriction ;
-                                owl:onProperty :name ;
-                                owl:cardinality "1"^^xsd:nonNegativeInteger ;
-                                #owl:allValuesFrom  xsd:string ;
-                                owl:onDataRange xsd:string ; 
+		rdfs:subClassOf	[ rdf:type owl:Restriction ;
+                                owl:onProperty :name ;                                
+                                #owl:cardinality 1 
+                                owl:allValuesFrom  xsd:string 
+                                #owl:onDataRange xsd:string 
                                 #owl:hasValue "xyz"^^xsd:string  
                                 #oww :cardinality "1"^^xsd:nonNegativeInteger 
-                            ]
+                            ] , 
                             [ rdf:type owl:Restriction ;
                                 owl:onProperty :sex  ;
-                                owl:cardinality "1"^^xsd:nonNegativeInteger ;
-                                #owl:someValuesFrom xsd:string  ;
-                                owl:onDataRange xsd:string ; 
+                                #owl:cardinality "1"^^xsd:nonNegativeInteger ;
+                                owl:someValuesFrom   xsd:string  ;
+                                #owl:onDataRange xsd:string ; 
                                 #owl:hasValue "xyz"^^xsd:string  
                                 #oww :cardinality "1"^^xsd:nonNegativeInteger 
-                            ]
-                            
-                            )
-                            
-                            ]  .
+                            ]  
+                             .
+                             
 
 # http://www.6starhome.com/company/leader
 
 :leader rdf:type owl:Class ;         
-        owl:equivalentClass [owl:intersectionOf( [ rdf:type owl:Restriction ;
-                                owl:onProperty :name ;
-                                owl:cardinality "1"^^xsd:nonNegativeInteger ;
-                                #owl:allValuesFrom  xsd:string ;
-                                owl:onDataRange xsd:string ; 
-                           		#owl:owl:FunctionalProperty     #owl:hasValue "xyz"^^xsd:string  
-                                #oww :cardinality "1":employee ^xsd:nonNegativeInteger 
-                            ]
-                            [ rdf:type owl:Restriction ;
-                                owl:onProperty :sex  ;
-                                owl:cardinality "1"^^xsd:nonNegativeInteger ;
-                                #owl:someValuesFrom   xsd:string  ;
-                                owl:onDataRange xsd:string ; 
+        owl:equivalentClass [ rdf:type owl:Restriction ;
+                                owl:onProperty :address ;                                
+                                owl:cardinality 1 ;
+                                #owl:allValuesFrom  xsd:string 
+                                #owl:onDataRange xsd:string 
                                 #owl:hasValue "xyz"^^xsd:string  
-                                #oww :cardinality "1"^^xsd:nonNegativeInteger 
-                            ]
-                            
-                            
-                            
-                            )
-                            
+                                #oww :cardinality "1"^^xsd:nonNegativeInteger                                                   
                             ]  .
-                            
+                                                        
                             
 ###  http://www.6starhome.com/company/#skill
 
 :skill rdf:type owl:Class .
 
+:ceo rdf:type owl:Class ;
+	owl:equivalentClass :employee , [ rdf:type owl:Restriction ;
+                                owl:onProperty :address ;                                
+                                #owl:cardinality 1 ;
+                                owl:allValuesFrom  xsd:string 
+                                #owl:onDataRange xsd:string 
+                                #owl:hasValue "xyz"^^xsd:string  
+                                #oww :cardinality "1"^^xsd:nonNegativeInteger                                                   
+                            ]  .
+
+:ceo2 rdf:type owl:Class ;
+	owl:equivalentClass :ceo .                       
+	  
+:ceo3 rdf:type owl:Class ;
+	  owl:equivalentClass [owl:intersectionOf( :ceo :ceo2)].           
 #
 #
 #    Individuals
 #
 #
 
-:tom rdf:type :employee ,
+:cat rdf:type owl:NamedIndividual ;
+	 :name "da"^^xsd:string ,"2"^^xsd:string .
+	 
+
+:tom rdf:type :employee, 
               owl:NamedIndividual ;
+              
+     #:address "ss"^^xsd:string ;
      
-     :sex "man"^^xsd:string ;
+     :sfz :cat .
      
-     :name "xxx"^^xsd:string ;
+     #:sex "man"^^xsd:string ;
+       
+     #:name "yyy"^^xsd:string .
      
-     :name "yyy"^^xsd:string .
-     
-     #:age "33"^^xsd:integer .
-    
 
-:xyz rdf:type :leader ,  owl:NamedIndividual;
-	:name "xyz"^^xsd:string .
+:l1 rdf:type owl:NamedIndividual , :employee  , :skill .
 
-:newPerson rdf:type owl:Class .
-:sex rdfs:domain :newPerson .
-:name rdfs:domain :newPerson .
 
-:newPerson2 rdf:type owl:Class .
-:sex rdfs:domain :newPerson2 .
-:name rdfs:domain :newPerson2 .
-
-:x rdf:type owl:Class .
-
-:tom :name "cc"^^xsd:string .
-
-:newPerson rdfs:subClassOf :newPerson2 .
+	

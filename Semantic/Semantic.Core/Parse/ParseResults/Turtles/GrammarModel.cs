@@ -114,6 +114,8 @@ namespace CodeHelper.Core.Parse.ParseResults.Turtles
                 this.BlankNodePropertyList.Parse(context);
             if (this.PredicateObjectList != null)
                 this.PredicateObjectList.Parse(context);
+
+            context.SubjectStack.Pop();
         }
 
         internal void Wise(TurtleContext context)
@@ -188,7 +190,7 @@ namespace CodeHelper.Core.Parse.ParseResults.Turtles
 
         internal void Parse(TurtleContext context)
         {
-            context.Imports.Add(":", this.IRIREF);
+            //context.Imports.Add(":", this.IRIREF);
         }
 
         internal void Wise(TurtleContext context)
@@ -222,16 +224,20 @@ namespace CodeHelper.Core.Parse.ParseResults.Turtles
 
             if (this.IRI != null)
             {
-                 this.IRI.Parse(context);
+                this.IRI.Parse(context);
+                context.SubjectStack.Push(new SubjectItem(context.CurrentSubjects.Last(),this));
             }
             else if (this.BlankNode != null)
             {
                 this.BlankNode.Parse(context);
+                context.SubjectStack.Push(new SubjectItem(context.CurrentSubjects.Last(), this));
             }
             else if (this.Collection != null)
             {
+                context.SubjectStack.Push(new SubjectItem(context.CurrentSubjects.Last(), this));
                 this.Collection.Parse(context);
-            }            
+            }
+
         }
 
         internal void Wise(TurtleContext context)
@@ -255,35 +261,39 @@ namespace CodeHelper.Core.Parse.ParseResults.Turtles
     {
         public PredicateObjectList()
         {
-            this.Verbs = new List<Verb>();
-            this.ObjectLists = new List<ObjectList>();
+            //this.Verbs = new List<Verb>();
+            //this.ObjectLists = new List<ObjectList>();
+            this.VerbObjectLists = new List<VerbObjectList>();
         }
 
-        public List<Verb> Verbs { get; set; }
-        public List<ObjectList> ObjectLists { get; set; }
+        //public List<Verb> Verbs { get; set; }
+        //public List<ObjectList> ObjectLists { get; set; }
+
+        public List<VerbObjectList> VerbObjectLists
+        { get; set; }
 
         internal void Parse(TurtleContext context)
         {
-            if (this.Verbs[0].EndToken.Text == "owl:propertyChainAxiom")
-            {
-            }
+            //if (this.Verbs[0].EndToken.Text == "owl:propertyChainAxiom")
+            //{
+            //}
 
             var newClz = false;
             TypeInfoBase clzCtx = null;
 
-            for (var i = 0; i < this.Verbs.Count; i++)
+            for (var i = 0; i < this.VerbObjectLists.Count; i++)
             {
                 context.Visit = TurtleContext.VisitType.Verb;
-                this.Verbs[i].Parse(context);
-                var verb = context.CurrentVerb;
+                this.VerbObjectLists[i].Parse(context);
+                var verb = this.VerbObjectLists[i].Verb.VerbStr;
 
-                if (verb == "rdf:type")
+                if (verb == "rdf:type" || verb== "a")
                 {
                     context.Visit = TurtleContext.VisitType.Object;
-                    this.ObjectLists[i].Parse(context);
-                    var type = context.CurrentVerbObjects.Last().Value.First();
-                    if (type == "owl:Class"
-                         || type == "rdfs:Datatype")
+                    //this.ObjectLists[i].Parse(context);
+                    var obj = context.CurrentVerbObjects.Last().Value.First();
+                    if (obj == "owl:Class"
+                         || obj == "rdfs:Datatype")
                     {
                         var clz = new TypeInfoBase();
                         //clz.Name = context.CurrentSubjects;
@@ -291,28 +301,30 @@ namespace CodeHelper.Core.Parse.ParseResults.Turtles
                         clz.Name = OWLName.ParseLocalName(context.CurrentSubjects.First());
                         clz.FullName = context.CurrentSubjects.First();
                         clz.NameSpace = ":";
-                        clz.TokenPair = this.ObjectLists[i];
+                        clz.TokenPair = this.VerbObjectLists[i];
                         context.Types.Add(clz.FullName, clz);
                         newClz = true;
                     }
-                    //else if (type == "owl:NamedIndividual" ||
-                    //    (type != "owl:Restriction") && (type != "owl:DatatypeProperty") && (type != "owl:ObjectProperty"))
-                    //{
-                    //    //foreach (var subject in this.CurrentSubjects)
-                    //    //{
-                    //    if (!context.Instances.ContainsKey(type))
-                    //    {
-                    //        OWLInstance p = new OWLInstance();
-                    //        p.Name = OWLName.ParseLocalName(type);
-                    //        p.FullName = type;
-                    //        p.NameSpace = context.NameSpace;
-                    //        p.Type = context.Parse(obj);
-                    //        p.TokenPair = pair;
-                    //        context.Instances.Add(p.FullName, p);
-                    //    }
-                    //    //}
-                    //}
-
+                    else if (obj == "owl:ObjectProperty")
+                    {
+                        OWLProperty p = new OWLProperty();
+                        p.Name = OWLName.ParseLocalName(context.CurrentSubjects.First());
+                        p.FullName = context.CurrentSubjects.First();
+                        p.NameSpace = ":";
+                        p.IsObject = true;
+                        p.TokenPair = context.SubjectStack.First().Data as TokenPair;
+                        context.Properties.Add(p.FullName, p);
+                    }
+                    else if (obj == "owl:DatatypeProperty")
+                    {
+                        OWLProperty p = new OWLProperty();
+                        p.Name = OWLName.ParseLocalName(context.CurrentSubjects.First());
+                        p.FullName = context.CurrentSubjects.First();
+                        p.NameSpace = ":";
+                        p.IsObject = false;
+                        p.TokenPair = context.SubjectStack.First().Data as TokenPair;
+                        context.Properties.Add(p.FullName, p);
+                    }
                     continue;
                 }
                 else if (verb == "owl:equivalentClass")
@@ -337,12 +349,12 @@ namespace CodeHelper.Core.Parse.ParseResults.Turtles
                     newClz = true;
                 }
 
-                context.Visit = TurtleContext.VisitType.Object;
-                this.ObjectLists[i].Parse(context);
+                //context.Visit = TurtleContext.VisitType.Object;
+                //this.ObjectLists[i].Parse(context);
 
                 foreach (var vo in context.CurrentVerbObjects)
                 {
-                    if (vo.Key == "rdf:type" && vo.Value.First() == "owl:Restriction")
+                    if ((vo.Key == "rdf:type" || vo.Key == "a") && vo.Value.First() == "owl:Restriction")
                     {
                         clzCtx = context.TypeStack.First() as TypeInfoBase;
                         break;
@@ -359,20 +371,62 @@ namespace CodeHelper.Core.Parse.ParseResults.Turtles
                 }
                 else if (verb == "rdfs:subClassOf")
                 {
-                    if (context.TypeStack.Count > 1 && clzCtx != null)
+                    if (context.TypeStack.Count > 1)
                     {
-                        var parentClz = context.TypeStack.ElementAt(1) as TypeInfoBase;
-                        parentClz.PropertyInfos.AddRange(clzCtx.PropertyInfos);
+                        if (context.CurrentSubjects.Count > 0)
+                        {
+                            var parentClz = context.TypeStack.ElementAt(1) as TypeInfoBase;
+                            var child = context.CurrentSubjects[0];
+                            var parent = context.CurrentVerbObjects.Values.ElementAt(0).ElementAt(0);
+                            foreach (var t in context.Types)
+                            {
+                                if (t.Key == parent)
+                                {
+                                    foreach (var t2 in context.Types)
+                                    {
+                                        if (t2.Key != child)
+                                            continue;
+
+                                        t2.Value.Super = t.Value;
+                                        t.Value.Children.Add(t2.Value);
+                                    }
+                                }
+                            }
+                        }
+                        //parentClz.PropertyInfos.AddRange(clzCtx.PropertyInfos);
                     }
                 }
-                else if (verb == "owl:intersectionOf")
+                else if (verb == "rdfs:subPropertyOf")
                 {
-                    if (context.TypeStack.Count > 1 && clzCtx != null)
+
+                    //var parentClz = context.TypeStack.ElementAt(1) as TypeInfoBase;
+                    var child = context.CurrentSubjects[0];
+                    var parent = context.CurrentVerbObjects.Values.ElementAt(0).ElementAt(0);
+                    foreach (var t in context.Properties)
                     {
-                        var parentClz = context.TypeStack.ElementAt(1) as TypeInfoBase;
-                        parentClz.PropertyInfos.AddRange(clzCtx.PropertyInfos);
+                        if (t.Key == parent)
+                        {
+                            foreach (var t2 in context.Properties)
+                            {
+                                if (t2.Key != child)
+                                    continue;
+
+                                t2.Value.Parent = t.Value;
+                                t.Value.Children.Add(t2.Value);
+                            }
+                        }
                     }
+                    //parentClz.PropertyInfos.AddRange(clzCtx.PropertyInfos);
+
                 }
+                //else if (verb == "owl:intersectionOf")
+                //{
+                //    if (context.TypeStack.Count > 1)
+                //    {
+                //        var parentClz = context.TypeStack.ElementAt(1) as TypeInfoBase;
+                //        parentClz.PropertyInfos.AddRange(clzCtx.PropertyInfos);
+                //    }
+                //}
             }
 
             if (clzCtx != null)
@@ -383,7 +437,7 @@ namespace CodeHelper.Core.Parse.ParseResults.Turtles
                     {
                         var p = new RestrictProperty();
                         p.Name = vo.Value.First();
-                        p.TokenPair = this.Verbs[0];
+                        p.TokenPair = this.VerbObjectLists[0];
                         //p.NameSpace = 
                         clzCtx.PropertyInfos.Add(p);
                     }
@@ -392,18 +446,118 @@ namespace CodeHelper.Core.Parse.ParseResults.Turtles
 
             if (newClz)
                 context.TypeStack.Pop();
+            //}
+
+            //for (var i = 0; i < this.VerbObjectLists.Count; i++)
+            //{
+            //    //context.Visit = TurtleContext.VisitType.Verb;
+            //    this.VerbObjectLists[i].Parse(context);
+            //}
+
         }
 
         internal void Wise(TurtleContext context)
         {
-            for (var i = 0; i < this.Verbs.Count; i++)
-            {
-                context.Visit = TurtleContext.VisitType.Verb;
-                this.Verbs[i].Wise(context);
 
-                context.Visit = TurtleContext.VisitType.Object;
-                this.ObjectLists[i].Wise(context);
-            }
+            foreach (var vo in VerbObjectLists)
+                vo.wise(context);
+            //for (var i = 0; i < this.Verbs.Count; i++)
+            //{
+            //    context.Visit = TurtleContext.VisitType.Verb;
+            //    this.Verbs[i].Wise(context);
+
+            //    context.Visit = TurtleContext.VisitType.Object;
+            //    this.ObjectLists[i].Wise(context);
+            //}
+        }
+    }
+
+    public class VerbObjectList : TokenPair
+    {
+        public VerbObjectList()
+        {
+        }
+        public Verb Verb
+        { get; set; }
+        public ObjectList ObjectList
+        { get; set; }
+
+        internal void Parse(TurtleContext context)
+        {
+            var newClz = false;
+            TypeInfoBase clzCtx = null;
+            context.Visit = TurtleContext.VisitType.Verb;
+            context.VerbStack.Push(new VerbItem());
+            context.ObjectStack.Push(new ObjectItem());
+
+            this.Verb.Parse(context);
+            var verb = context.CurrentVerb;
+
+            context.Visit = TurtleContext.VisitType.Object;
+            this.ObjectList.Parse(context);
+
+            //foreach (var vo in context.CurrentVerbObjects)
+            //{
+            //    if (vo.Key == "rdf:type" && vo.Value.First() == "owl:Restriction")
+            //    {
+            //        clzCtx = context.TypeStack.First() as TypeInfoBase;
+            //        break;
+            //    }
+            //}
+
+            //if (verb == "owl:equivalentClass")
+            //{
+            //    if (context.TypeStack.Count > 1 && clzCtx != null)
+            //    {
+            //        var parentClz = context.TypeStack.ElementAt(1) as TypeInfoBase;
+            //        parentClz.PropertyInfos.AddRange(clzCtx.PropertyInfos);
+            //    }
+            //}
+            //else if (verb == "rdfs:subClassOf")
+            //{
+            //    if (context.TypeStack.Count > 1 && clzCtx != null)
+            //    {
+            //        var parentClz = context.TypeStack.ElementAt(1) as TypeInfoBase;
+            //        parentClz.PropertyInfos.AddRange(clzCtx.PropertyInfos);
+            //    }
+            //}
+            //else if (verb == "owl:intersectionOf")
+            //{
+            //    if (context.TypeStack.Count > 1 && clzCtx != null)
+            //    {
+            //        var parentClz = context.TypeStack.ElementAt(1) as TypeInfoBase;
+            //        parentClz.PropertyInfos.AddRange(clzCtx.PropertyInfos);
+            //    }
+            //}
+
+            //if (clzCtx != null)
+            //{
+            //    foreach (var vo in context.CurrentVerbObjects)
+            //    {
+            //        if (vo.Key == "owl:onProperty")
+            //        {
+            //            var p = new RestrictProperty();
+            //            p.Name = vo.Value.First();
+            //            p.TokenPair = this.Verb;
+            //            //p.NameSpace = 
+            //            clzCtx.PropertyInfos.Add(p);
+            //        }
+            //    }
+            //}
+
+            //context.VerbStack.Pop();
+            ////context.ObjectStack.Pop();
+
+            //if (newClz)
+            //    context.TypeStack.Pop();
+        }
+
+        internal void wise(TurtleContext context)
+        {
+            if (this.Verb != null)
+                this.Verb.Wise(context);
+            if (this.ObjectList != null)
+                this.ObjectList.Wise(context);
         }
     }
 
@@ -412,7 +566,8 @@ namespace CodeHelper.Core.Parse.ParseResults.Turtles
         public PredicateObjectList PredicateObjectList { get; set; }
 
         internal void Parse(TurtleContext context)
-        {
+        {            
+
             if (this.PredicateObjectList != null)
             {
                 context.FlushTriple(this);
@@ -430,7 +585,7 @@ namespace CodeHelper.Core.Parse.ParseResults.Turtles
     }
 
     public class Verb : TokenPair
-    {        
+    {
         /// <summary>
         /// 二者互斥存在
         /// </summary>
@@ -441,6 +596,12 @@ namespace CodeHelper.Core.Parse.ParseResults.Turtles
         /// </summary>
         public bool IsA { get; set; }
 
+        public string VerbStr
+        {
+            get;
+            set;
+        }
+
         internal void Parse(TurtleContext context)
         {
             context.Visit = TurtleContext.VisitType.Verb;
@@ -449,18 +610,52 @@ namespace CodeHelper.Core.Parse.ParseResults.Turtles
                 this.Predicate.Parse(context);
 
             if (this.IsA)
-                context.AddTriple("a",this);
+                context.AddTriple("a", this);
 
-            if (context.CurrentVerb == "owl:intersectionOf")
-            {
-            }
+            //var verb = context.CurrentVerb;
+
+            //if (verb == "rdf:type")
+            //{               
+            //    //var type = context.CurrentVerbObjects.Last().Value.First();
+            //    //if (type == "owl:Class"
+            //    //     || type == "rdfs:Datatype")
+            //    //{
+            //    //    var clz = new TypeInfoBase();
+            //    //    context.TypeStack.Push(clz);
+            //    //    clz.Name = OWLName.ParseLocalName(context.CurrentSubjects.First());
+            //    //    clz.FullName = context.CurrentSubjects.First();
+            //    //    clz.NameSpace = ":";
+            //    //    clz.TokenPair = this.ObjectList;
+            //    //    context.Types.Add(clz.FullName, clz);
+            //    //}
+            //}
+            //else if (verb == "owl:equivalentClass")
+            //{
+            //    var clz = new TypeInfoBase();
+            //    clz.Name = verb;
+            //    context.TypeStack.Push(clz);
+            //}
+            //else if (verb == "rdfs:subClassOf")
+            //{
+            //    var clz = new TypeInfoBase();
+            //    clz.Name = verb;
+            //    context.TypeStack.Push(clz);
+            //}
+            //else if (verb == "owl:intersectionOf")
+            //{
+            //    var clz = new TypeInfoBase();
+            //    clz.Name = verb;
+            //    context.TypeStack.Push(clz);
+            //}
+
+            VerbStr = context.CurrentVerb;
         }
 
         internal void Wise(TurtleContext context)
         {
             if (this.Predicate != null)
                 this.Predicate.Wise(context);
-            
+
         }
     }
 
@@ -484,7 +679,7 @@ namespace CodeHelper.Core.Parse.ParseResults.Turtles
 
                 foreach (var vo in context.CurrentVerbObjects)
                 {
-                    if (vo.Key == "rdf:type" && vo.Value.First() == "owl:Restriction")
+                    if ((vo.Key == "rdf:type" || vo.Key=="a") && vo.Value.First() == "owl:Restriction")
                     {
                         clz = context.TypeStack.First() as TypeInfoBase;
                         break;
@@ -588,6 +783,8 @@ namespace CodeHelper.Core.Parse.ParseResults.Turtles
 
         internal void Parse(TurtleContext context)
         {
+            //context.ObjectStack.Push(new ObjectItem());
+
             if (this.IRI != null)
                  this.IRI.Parse(context);
             if (this.BlankNode != null)
@@ -595,7 +792,10 @@ namespace CodeHelper.Core.Parse.ParseResults.Turtles
             if (this.Collection != null)
                  this.Collection.Parse(context);
             if (this.BlankNodePropertyList != null)
-                 this.BlankNodePropertyList.Parse(context);
+            {
+                context.SubjectStack.Push(new SubjectItem("BlankNodePropertyList", this));
+                this.BlankNodePropertyList.Parse(context);                
+            }
             if (this.Literal != null)
                 this.Literal.Parse(context);
         }

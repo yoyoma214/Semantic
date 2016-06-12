@@ -14,6 +14,9 @@ namespace CodeHelper.Common
 
         public static string GetClassName(string name,bool special = false)
         {
+            if (name == name.ToUpper())
+                return name;
+
             var varName = GetVarName(name, special);
 
             return varName[0].ToString().ToUpper() + varName.Substring(1);

@@ -9,6 +9,105 @@ using CodeHelper.Core.Editor;
 
 namespace CodeHelper.Core.Parse.ParseResults.Turtles
 {
+    public enum ParseItemType
+    {
+         Unknown,Clazz,Property,Instance
+    }
+
+    public class SubjectItem : ParseItem
+    {
+        public SubjectItem()
+            : base()
+        {
+        }
+
+        public SubjectItem(string name)
+            : base(name)
+        {
+        }
+
+        public SubjectItem(string name, object data)
+            : base(name,data)
+        {
+        }
+
+        public SubjectItem(string name, object data, ParseItemType type)
+            : base(name, data, type)
+        {
+        }
+    }
+
+    public class VerbItem : ParseItem
+    { public VerbItem()
+            : base()
+        {
+        }
+
+        public VerbItem(string name)
+            : base(name)
+        {
+        }
+
+        public VerbItem(string name, object data)
+            : base(name,data)
+        {
+        }
+
+        public VerbItem(string name, object data, ParseItemType type)
+            : base(name, data, type)
+        {
+        }
+    }
+
+    public class ObjectItem : ParseItem
+    {
+        public ObjectItem()
+            : base()
+        {
+        }
+
+        public ObjectItem(string name)
+            : base(name)
+        {
+        }
+
+        public ObjectItem(string name, object data)
+            : base(name,data)
+        {
+        }
+
+        public ObjectItem(string name, object data, ParseItemType type)
+            : base(name, data, type)
+        {
+        }
+    }
+
+    public class ParseItem
+    {
+        public ParseItem()
+        {
+        }
+
+        public ParseItem(string name):this()
+        {
+            this.Name = name;
+        }
+
+        public ParseItem(string name,object data):this(name)
+        {            
+            this.Data = data;
+        }
+
+        public ParseItem(string name, object data,ParseItemType type):this(name,data)
+        {            
+            this.ParseItemType = type;
+        }
+        public TokenPair TokenPair { get; set; }
+        public string Name{get;set;}
+        public object Data{get;set;}
+        public ParseItemType ParseItemType{get;set;}
+    }
+
     public class TurtleContext
     {
         public enum VisitType
@@ -65,6 +164,20 @@ namespace CodeHelper.Core.Parse.ParseResults.Turtles
         public Dictionary<string, List<string>> PrevVerbObjects { get; set; }
 
         internal Stack<object> TypeStack { get; set; }
+        internal Stack<object> PropertyStack { get; set; }
+
+        /// <summary>
+        /// 主语堆栈
+        /// </summary>
+        internal Stack<SubjectItem> SubjectStack { get; set; }
+        /// <summary>
+        /// 谓语堆栈
+        /// </summary>
+        internal Stack<VerbItem> VerbStack { get; set; }
+        /// <summary>
+        /// 宾语堆栈
+        /// </summary>
+        internal Stack<ObjectItem> ObjectStack { get; set; }
 
         public TurtleDoc Root { get; set; }
 
@@ -96,6 +209,11 @@ namespace CodeHelper.Core.Parse.ParseResults.Turtles
             this.PrevVerbObjects = new Dictionary<string, List<string>>();
 
             this.TypeStack = new Stack<object>();
+
+            this.SubjectStack = new Stack<SubjectItem>();
+            this.VerbStack = new Stack<VerbItem>();
+            this.ObjectStack = new Stack<ObjectItem>();
+            this.PropertyStack = new Stack<object>();
         }
 
         /// <summary>
@@ -184,13 +302,13 @@ namespace CodeHelper.Core.Parse.ParseResults.Turtles
             foreach (var vo in this.CurrentVerbObjects)
             {
                 #region type
-                if (vo.Key == "rdf:type")
+                if (vo.Key == "rdf:type" || vo.Key == "a")
                 {
                     foreach (var obj in vo.Value)
                     {
                         if (obj == "owl:Ontology")
                         {
-                            this.NameSpace = this.CurrentSubjects[0];
+                            this.NameSpace = this.Imports[this.CurrentSubjects[0]];
                             break;
                         }
 
@@ -213,35 +331,35 @@ namespace CodeHelper.Core.Parse.ParseResults.Turtles
                         }
                         else if (obj == "owl:ObjectProperty")
                         {
-                            foreach (var subject in this.CurrentSubjects)
-                            {
-                                if (!this.Properties.ContainsKey(subject))
-                                {
-                                    OWLProperty p = new OWLProperty();
-                                    p.Name = OWLName.ParseLocalName(subject);
-                                    p.FullName = subject;
-                                    p.NameSpace = this.NameSpace;
-                                    p.IsObject = true;
-                                    p.TokenPair = pair;
-                                    this.Properties.Add(p.FullName, p);
-                                }
-                            }
+                            //foreach (var subject in this.CurrentSubjects)
+                            //{
+                            //    if (!this.Properties.ContainsKey(subject))
+                            //    {
+                            //        OWLProperty p = new OWLProperty();
+                            //        p.Name = OWLName.ParseLocalName(subject);
+                            //        p.FullName = subject;
+                            //        p.NameSpace = this.NameSpace;
+                            //        p.IsObject = true;
+                            //        p.TokenPair = pair;
+                            //        this.Properties.Add(p.FullName, p);
+                            //    }
+                            //}
                         }
                         else if (obj == "owl:DatatypeProperty")
                         {
-                            foreach (var subject in this.CurrentSubjects)
-                            {
-                                if (!this.Properties.ContainsKey(subject))
-                                {
-                                    OWLProperty p = new OWLProperty();
-                                    p.Name = OWLName.ParseLocalName(subject);
-                                    p.IsObject = false;
-                                    p.NameSpace = this.NameSpace;
-                                    p.FullName = subject;
-                                    p.TokenPair = pair;
-                                    this.Properties.Add(p.FullName, p);
-                                }
-                            }
+                            //foreach (var subject in this.CurrentSubjects)
+                            //{
+                            //    if (!this.Properties.ContainsKey(subject))
+                            //    {
+                            //        OWLProperty p = new OWLProperty();
+                            //        p.Name = OWLName.ParseLocalName(subject);
+                            //        p.IsObject = false;
+                            //        p.NameSpace = this.NameSpace;
+                            //        p.FullName = subject;
+                            //        p.TokenPair = pair;
+                            //        this.Properties.Add(p.FullName, p);
+                            //    }
+                            //}
                         }
                         else if (obj == "owl:Restriction")
                         {

@@ -702,28 +702,58 @@ import com.sixstar.kbase.knowledgeql.model;
                 var subRuleVar = GenHelper.GetVarName(rule.Rule);
                 var subRuleClazz = GenHelper.GetClassName(rule.Rule);
 
-                if (rule.IsList)
+                if (!rule.IsLexer)
                 {
-                    builder.AppendFormatLine("List<{0}Parser.{1}Context> {2}Ctxs = context.{2}();", clzGrammer, GenHelper.GetClassName(rule.Rule, true), GenHelper.GetVarName(rule.Rule, true));
-                    builder.AppendFormatLine("for(int index = 0 ; index < {0}Ctxs.size() ; index ++)", GenHelper.GetVarName(rule.Rule, true));
-                    builder.IncreaseIndentLine("{");
-                    builder.AppendFormatLine("{1} {0} = new {1}();", subRuleVar, subRuleClazz);
-                    builder.AppendFormatLine("{0}.get{1}s().add({2});", varRule, subRuleClazz, subRuleVar);
-                    builder.AppendFormatLine("this.stack.push({0});", subRuleVar);
-                    builder.AppendFormatLine("this.visit({0}Ctxs.get(index));", GenHelper.GetVarName(rule.Rule, true));
-                    builder.AppendFormatLine("this.stack.pop();");
-                    builder.Decrease("}");
+                    if (rule.IsList)
+                    {
+                        builder.AppendFormatLine("List<{0}Parser.{1}Context> {2}Ctxs = context.{2}();", clzGrammer, GenHelper.GetClassName(rule.Rule, true), GenHelper.GetVarName(rule.Rule, true));
+                        builder.AppendFormatLine("for(int index = 0 ; index < {0}Ctxs.size() ; index ++)", GenHelper.GetVarName(rule.Rule, true));
+                        builder.IncreaseIndentLine("{");
+                        builder.AppendFormatLine("{1} {0} = new {1}();", subRuleVar, subRuleClazz);
+                        builder.AppendFormatLine("{0}.get{1}s().add({2});", varRule, subRuleClazz, subRuleVar);
+                        builder.AppendFormatLine("this.stack.push({0});", subRuleVar);
+                        builder.AppendFormatLine("this.visit({0}Ctxs.get(index));", GenHelper.GetVarName(rule.Rule, true));
+                        builder.AppendFormatLine("this.stack.pop();");
+                        builder.Decrease("}");
+                    }
+                    else
+                    {
+                        builder.AppendFormatLine("{0}Parser.{1}Context {2}Ctx = context.{2}();", clzGrammer, GenHelper.GetClassName(rule.Rule, true), GenHelper.GetVarName(rule.Rule, true));
+                        builder.AppendFormatLine("if ({0}Ctx != null)", GenHelper.GetVarName(rule.Rule, true));
+                        builder.IncreaseIndentLine("{");
+                        builder.AppendFormatLine("{0}.set{1}( new {1}());", varRule, subRuleClazz);
+                        builder.AppendFormatLine("this.stack.push({0}.get{1}());", varRule, subRuleClazz);
+                        builder.AppendFormatLine("this.visit({0}Ctx);", GenHelper.GetVarName(rule.Rule, true));
+                        builder.AppendFormatLine("this.stack.pop();");
+                        builder.Decrease("}");
+                    }
                 }
                 else
                 {
-                    builder.AppendFormatLine("{0}Parser.{1}Context {2}Ctx = context.{2}();", clzGrammer, GenHelper.GetClassName(rule.Rule, true), GenHelper.GetVarName(rule.Rule, true));
-                    builder.AppendFormatLine("if ({0}Ctx != null)", GenHelper.GetVarName(rule.Rule, true));
-                    builder.IncreaseIndentLine("{");
-                    builder.AppendFormatLine("{0}.set{1}( new {1}());", varRule, subRuleClazz);
-                    builder.AppendFormatLine("this.stack.push({0}.get{1}());", varRule, subRuleClazz);
-                    builder.AppendFormatLine("this.visit({0}Ctx);", GenHelper.GetVarName(rule.Rule, true));
-                    builder.AppendFormatLine("this.stack.pop();");
-                    builder.Decrease("}");
+                    var ruleName = GenHelper.GetClassName(rule.Rule, true);
+                    if (rule.IsList)
+                    {
+                        builder.AppendFormatLine("List<TerminalNode> {2}Ctxs = context.{2}();", clzGrammer, ruleName, rule.Rule);
+                        builder.AppendFormatLine("for(int index = 0 ; index < {0}Ctxs.size() ; index ++)", ruleName);
+                        builder.IncreaseIndentLine("{");
+                        //builder.AppendFormatLine("{1} {0} = new {1}();", subRuleVar, subRuleClazz);
+                        builder.AppendFormatLine("{0}.get{1}s().add({2}Ctxs.get(index).getText());", varRule, ruleName, ruleName);
+                        //builder.AppendFormatLine("this.stack.push({0});", subRuleVar);
+                        //builder.AppendFormatLine("this.visit({0}Ctxs.get(index));", GenHelper.GetClassName(rule.Rule, true));
+                        //builder.AppendFormatLine("this.stack.pop();");
+                        builder.Decrease("}");
+                    }
+                    else
+                    {
+                        builder.AppendFormatLine("TerminalNode {2}Ctx = context.{2}();", clzGrammer, ruleName, ruleName);
+                        builder.AppendFormatLine("if ({0}Ctx != null)", ruleName);
+                        builder.IncreaseIndentLine("{");
+                        builder.AppendFormatLine("{0}.set{1}({1}Ctx.getText());", varRule, ruleName);
+                        //builder.AppendFormatLine("this.stack.push({0}.get{1}());", varRule, subRuleClazz);
+                        //builder.AppendFormatLine("this.visit({0}Ctx);", GenHelper.GetVarName(rule.Rule, true));
+                        //builder.AppendFormatLine("this.stack.pop();");
+                        builder.Decrease("}");
+                    }
                 }
                 builder.AppendLine();
                 builder.AppendLine();
@@ -747,12 +777,18 @@ import com.sixstar.kbase.knowledgeql.model;
             {
             }
 
-            builder.AppendFormatLine(@"{0}
-
-import java.util.ArrayList;
-import java.util.List;
-import com.sixstar.kbase.knowledgeql.common.TokenPair;", GrammarSpec.JavaModelNameSpace);
-
+            var imports = GrammarSpec.JavaModelNameSpace.Split(new char[] { ';' }, StringSplitOptions.RemoveEmptyEntries);
+            for(var index =0 ; index < imports.Length ; index++)
+            {
+                builder.AppendLine(imports[index] + ";");
+                if (index == 0)
+                {
+                    builder.AppendLine();
+                    builder.AppendFormatLine(@"import java.util.ArrayList;
+import java.util.List;");
+                }
+            }
+            builder.AppendLine();
             builder.AppendFormatLine("public class {0} extends TokenPair", clzName);
             builder.IncreaseIndentLine("{");
             builder.AppendLine();
@@ -762,34 +798,70 @@ import com.sixstar.kbase.knowledgeql.common.TokenPair;", GrammarSpec.JavaModelNa
             {
                 var varRule = GenHelper.GetVarName(rule.Rule);
                 var clzRule = GenHelper.GetClassName(rule.Rule);
-                builder.AppendLine();
-                if (rule.IsList)
+                builder.AppendLine();                
+                if (!rule.IsLexer)
                 {
-                    builder.AppendFormatLine("private List<{0}> {1}s = new ArrayList<{0}>();", clzRule, varRule);
-                    builder.AppendLine();
-                    builder.AppendFormatLine("public List<{0}> get{0}s()", clzRule);
-                    builder.IncreaseIndentLine("{");
-                    builder.AppendFormatLine("return {0}s;", varRule);
-                    builder.DecreaseIndentLine("}");
-                    builder.AppendLine();
-                    builder.AppendFormatLine("public void set{0}s(List<{0}> {1}s)", clzRule, varRule);
-                    builder.IncreaseIndentLine("{");
-                    builder.AppendFormatLine("this.{0}s = {0}s;", varRule);
-                    builder.DecreaseIndentLine("}");
+                    if (rule.IsList)
+                    {
+                        builder.AppendFormatLine("private List<{0}> {1}s = new ArrayList<{0}>();", clzRule, varRule);
+                        builder.AppendLine();
+                        builder.AppendFormatLine("public List<{0}> get{0}s()", clzRule);
+                        builder.IncreaseIndentLine("{");
+                        builder.AppendFormatLine("return {0}s;", varRule);
+                        builder.DecreaseIndentLine("}");
+                        builder.AppendLine();
+                        builder.AppendFormatLine("public void set{0}s(List<{0}> {1}s)", clzRule, varRule);
+                        builder.IncreaseIndentLine("{");
+                        builder.AppendFormatLine("this.{0}s = {0}s;", varRule);
+                        builder.DecreaseIndentLine("}");
+                    }
+                    else
+                    {
+                        builder.AppendFormatLine("private {0} {1};", clzRule, varRule);
+                        builder.AppendLine();
+                        builder.AppendFormatLine("public {0} get{0}()", clzRule);
+                        builder.IncreaseIndentLine("{");
+                        builder.AppendFormatLine("return {0};", varRule);
+                        builder.DecreaseIndentLine("}");
+                        builder.AppendLine();
+                        builder.AppendFormatLine("public void set{0}({0} {1})", clzRule, varRule);
+                        builder.IncreaseIndentLine("{");
+                        builder.AppendFormatLine("this.{0} = {0};", varRule);
+                        builder.DecreaseIndentLine("}");
+                    }
                 }
                 else
                 {
-                    builder.AppendFormatLine("private {0} {1};", clzRule, varRule);
-                    builder.AppendLine();
-                    builder.AppendFormatLine("public {0} get{0}()", clzRule);
-                    builder.IncreaseIndentLine("{");
-                    builder.AppendFormatLine("return {0};", varRule);
-                    builder.DecreaseIndentLine("}");
-                    builder.AppendLine();
-                    builder.AppendFormatLine("public void set{0}({0} {1})", clzRule, varRule);
-                    builder.IncreaseIndentLine("{");
-                    builder.AppendFormatLine("this.{0} = {0};", varRule);
-                    builder.DecreaseIndentLine("}");
+                    varRule = rule.Rule;
+
+                    if (rule.IsList)
+                    {
+                        builder.AppendFormatLine("private List<String> {0}s = new ArrayList<String>();", varRule);
+                        builder.AppendLine();
+                        builder.AppendFormatLine("public List<String> get{0}s()", clzRule);
+                        builder.IncreaseIndentLine("{");
+                        builder.AppendFormatLine("return {0}s;", varRule);
+                        builder.DecreaseIndentLine("}");
+                        builder.AppendLine();
+                        builder.AppendFormatLine("public void set{0}s(List<String> {1}s)", clzRule, varRule);
+                        builder.IncreaseIndentLine("{");
+                        builder.AppendFormatLine("this.{0}s = {0}s;", varRule);
+                        builder.DecreaseIndentLine("}");
+                    }
+                    else
+                    {
+                        builder.AppendFormatLine("private String {0};", varRule);
+                        builder.AppendLine();
+                        builder.AppendFormatLine("public String get{0}()", varRule);
+                        builder.IncreaseIndentLine("{");
+                        builder.AppendFormatLine("return {0};", varRule);
+                        builder.DecreaseIndentLine("}");
+                        builder.AppendLine();
+                        builder.AppendFormatLine("public void set{0}(String {1})", varRule, varRule);
+                        builder.IncreaseIndentLine("{");
+                        builder.AppendFormatLine("this.{0} = {0};", varRule);
+                        builder.DecreaseIndentLine("}");
+                    }
                 }
             }
             builder.AppendLine("// </editor-fold>");
@@ -797,31 +869,56 @@ import com.sixstar.kbase.knowledgeql.common.TokenPair;", GrammarSpec.JavaModelNa
             foreach (var func in GrammarSpec.FunctionList)
             {
                 builder.AppendLine();
+                builder.AppendFormatLine("// <editor-fold desc=\"{0}\">", func.FuncName);
+
                 builder.AppendLine("public void " + func.FuncName + "{");
                 foreach (var rule in this.RuleInfos)
                 {
                     var varRule = GenHelper.GetVarName(rule.Rule);
-                    var clzRule = GenHelper.GetClassName(rule.Rule);                    
-                    builder.IncreaseIndentLine();
-                    if (rule.IsList)
-                    {             
-                        builder.AppendFormatLine("for( int i = 0 ; i < this.{0}s.size() ; i ++ )", varRule);
-                        builder.IncreaseIndentLine("{");
-                        builder.AppendFormatLine("this.{0}s.get(i).{1};", varRule,func.FuncCall);
-                        builder.DecreaseIndentLine("}");                                          
+                    var clzRule = GenHelper.GetClassName(rule.Rule);
+                    builder.Increase();
+                    if (!rule.IsLexer)
+                    {
+                        if (rule.IsList)
+                        {
+                            builder.AppendFormatLine("for( int i = 0 ; i < this.{0}s.size() ; i ++ )", varRule);
+                            builder.IncreaseIndentLine("{");
+                            builder.AppendFormatLine("this.{0}s.get(i).{1};", varRule, func.FuncCall);
+                            builder.DecreaseIndentLine("}");
+                        }
+                        else
+                        {
+
+                            builder.AppendFormatLine("if(this.{0} != null )", varRule);
+                            builder.IncreaseIndentLine("{");
+                            builder.AppendFormatLine("this.{0}.{1};", varRule, func.FuncCall);
+                            builder.DecreaseIndentLine("}");
+                        }
                     }
                     else
                     {
+                        //varRule = rule.Rule;
+                        //if (rule.IsList)
+                        //{
+                        //    builder.AppendFormatLine("for( int i = 0 ; i < this.{0}s.size() ; i ++ )", varRule);
+                        //    builder.IncreaseIndentLine("{");
+                        //    builder.AppendFormatLine("this.{0}s.get(i).{1};", varRule, func.FuncCall);
+                        //    builder.DecreaseIndentLine("}");
+                        //}
+                        //else
+                        //{
 
-                        builder.AppendFormatLine("if(this.{0} != null )", varRule);
-                        builder.IncreaseIndentLine("{");
-                        builder.AppendFormatLine("this.{0}.{1};", varRule, func.FuncCall);
-                        builder.DecreaseIndentLine("}");                                        
+                        //    builder.AppendFormatLine("if(this.{0} != null )", varRule);
+                        //    builder.IncreaseIndentLine("{");
+                        //    builder.AppendFormatLine("this.{0}.{1};", varRule, func.FuncCall);
+                        //    builder.DecreaseIndentLine("}");
+                        //}
                     }
                     builder.Decrease();
                 }
-                builder.AppendLine();
+                //builder.AppendLine();
                 builder.AppendLine("}");
+                builder.AppendLine("// </editor-fold>");
             }
             //builder.AppendLine();
             //builder.AppendLine("public void wise(){");

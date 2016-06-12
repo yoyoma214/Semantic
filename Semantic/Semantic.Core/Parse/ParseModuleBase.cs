@@ -163,6 +163,8 @@ namespace CodeHelper.Core.Parse
             }
 
             var ss = mixedName.Split(new char[]{':'}, StringSplitOptions.RemoveEmptyEntries);
+            if (ss.Length == 1)
+                return new OWLName();
 
             OWLName owlName = new OWLName();
 
