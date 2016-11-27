@@ -1,4 +1,4 @@
-//namespace CodeHelper.Core.Parse.ParseResults.Swrls;
+//package com.kopbit.onteditor.domain.swrl.models;
 //CodeHelper.Core.Parse.ParseResults.Swrls;
 //Parse(SwrlContext context);Parse(context)
 //Wise(SwrlContext context);Wise(context)
@@ -9,13 +9,20 @@
 
 grammar HermitRule;
 
+document: prefix * ontology;
+prefix: PREFIX '(' prefix_item ')';
+ontology : ONTOLOGY '('IRIREF axioms ')';
+prefix_item : PNAME IRIREF; 
+//varname : VARNAME?  ':';
 axioms : ( axiom | ruleN | dGAxiom )*;
 ruleN : dLSafeRule | dGRule;
 dLSafeRule : DL_SAFE_RULE '(' annotation* BODY '(' atom* ')'
-    HEAD '(' head ')' ')';    
-head: atom*;    
+    HEAD '(' head ')' ')';
+
+head: atom*;
 axiom : declaration | classAxiom | objectPropertyAxiom | dataPropertyAxiom | datatypeDefinition | hasKey | assertion | annotationAxiom;
 declaration: DECLARATION '(' axiomAnnotations entity ')';
+
 entity: class_entity | data_type_entity | object_property_entity 
         | data_property_entity | annotation_property_entity | named_individual_entity;
 class_entity:CLASS '(' classN ')';
@@ -24,6 +31,7 @@ object_property_entity:OBJECT_PROPERTY '(' objectProperty ')';
 data_property_entity:DATA_PROPERTY '(' dataProperty ')';
 annotation_property_entity:ANNOTATION_PROPERTY '(' annotationProperty ')';
 named_individual_entity:NAMED_INDIVIDUAL '(' namedIndividual ')';
+
 classAxiom:subClassOf | equivalentClasses | disjointClasses | disjointUnion;
 subClassOf:SUB_CLASS_OF '(' axiomAnnotations subClassExpression superClassExpression ')';
 equivalentClasses:EQUIVALENT_CLASSES '(' axiomAnnotations classExpression classExpression classExpression* ')';
@@ -101,6 +109,7 @@ data_property_atom:DATA_PROPERTY_ATOM '(' dataProperty iArg dArg ')';
 built_in_atom:BUILT_IN_ATOM '(' iRI dArg dArg* ')';
 same_individual_atom:SAME_INDIVIDUAL_ATOM '(' iArg iArg ')';
 different_individuals_atom:DIFFERENT_INDIVIDUALS_ATOM '(' iArg iArg')';
+
 iArg : VARIABLE '(' iRI ')' | individual;
 dArg : VARIABLE '(' iRI ')' | literal;
 dGRule : DESCRIPTION_GRAPH_RULE '(' annotation* BODY '(' dGAtom* ')'
@@ -228,18 +237,19 @@ String   :   STRING_LITERAL1 | STRING_LITERAL2 | STRING_LITERAL_LONG1 | STRING_L
 classN:iRI;
 objectProperty:iRI;
 iRI:  IRIREF | prefixedName ;
-   prefixedName   :   PNAME_LN | PNAME_NS ;
+   prefixedName   :  PNAME ;// PNAME_LN | PNAME_NS ;
    blankNode   :   BLANK_NODE_LABEL | ANON ; 
    xsdIri: '^^' (IRIREF | prefixedName);//PNAME_LN | PNAME_NS;
    COMMENT:
             ('#'  .*? ('\r'| '\r\n')) {skip();}
        ;
    IRIREF   :   '<' (~[\u0000-\u0020<>"{}|^`\\])* '>' ;   
-   PNAME_NS   :   PN_PREFIX? ':' ;
-   PNAME_LN   :   PNAME_NS PN_LOCAL ;
+   PNAME :PN_PREFIX? ':' PN_LOCAL? ;
+   //PNAME_NS   :   PN_PREFIX? ':' ;
+   //PNAME_LN   :   PN_PREFIX? ':' PN_LOCAL ;
    BLANK_NODE_LABEL   :   '_:' ( PN_CHARS_U | [0-9] ) ((PN_CHARS|'.')* PN_CHARS)? ;
-   VAR1   :   '?' VARNAME ;
-   VAR2   :   '$' VARNAME ;
+   //VAR1   :   '?' VARNAME ;
+   //VAR2   :   '$' VARNAME ;
    LANGTAG   :   '@' [a-zA-Z]+ ('-' [a-zA-Z0-9]+)* ;
    INTEGER   :   [0-9]+ ;
    DECIMAL   :   [0-9]* '.' [0-9]+ ;
@@ -346,10 +356,12 @@ iRI:  IRIREF | prefixedName ;
     DATA_ONE_OF:'DataOneOf';
     OBJECT_INVERSE_OF:'ObjectInverseOf';
     DATATYPE_RESTRICTION:'DatatypeRestriction';
-
+    PREFIX:'Prefix';
+    ONTOLOGY:'Ontology';
+   // VAR:VARNAME? ':';
    fragment PN_CHARS_BASE   :   (A|B|C|D|E|F|G|H|I|J|K|L|M|N|O|P|Q|R|S|T|U|V|W|X|Y|Z) | [\u00C0-\u00D6] | [\u00D8-\u00F6] | [\u00F8-\u02FF] | [\u0370-\u037D] | [\u037F-\u1FFF] | [\u200C-\u200D] | [\u2070-\u218F] | [\u2C00-\u2FEF] | [\u3001-\uD7FF] | [\uF900-\uFDCF] | [\uFDF0-\uFFFD];// | [\u10000-\uEFFFF] ;
    fragment PN_CHARS_U   :   PN_CHARS_BASE | '_' ;
-   fragment VARNAME   :   ( PN_CHARS_U | [0-9] ) ( PN_CHARS_U | [0-9] | '\u00B7' | [\u0300-\u036F] | [\u203F-\u2040] )* ;
+   fragment VARNAME   :   ( PN_CHARS_U | [0-9] ) ( PN_CHARS_U | [0-9] | '\u00B7' | [\u0300-\u036F] | [\u203F-\u2040] )* ;   
    fragment PN_CHARS   :   PN_CHARS_U | '-' | [0-9] | '\u00B7' | [\u0300-\u036F] | [\u203F-\u2040] ;
    fragment PN_PREFIX   :   PN_CHARS_BASE ((PN_CHARS|'.')* PN_CHARS)? ;
    fragment PN_LOCAL   :   (PN_CHARS_U | ':' | [0-9] | PLX ) ((PN_CHARS | '.' | ':' | PLX)* (PN_CHARS | ':' | PLX) )? ;

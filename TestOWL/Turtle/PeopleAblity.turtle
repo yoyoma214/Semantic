@@ -44,6 +44,7 @@
 
 :sfz rdfs:domain :leader .
 
+
 :sfz rdfs:range :ceo, :ceo2 .
  
 ############w ####################################################
@@ -67,7 +68,7 @@
                             [ rdf:type owl:Restriction ;
                                 owl:onProperty :sex  ;
                                 #owl:cardinality "1"^^xsd:nonNegativeInteger ;
-                                owl:someValuesFrom   xsd:string  ;
+                                owl:someValuesFrom   xsd:string  
                                 #owl:onDataRange xsd:string ; 
                                 #owl:hasValue "xyz"^^xsd:string  
                                 #oww :cardinality "1"^^xsd:nonNegativeInteger 
@@ -80,7 +81,7 @@
 :leader rdf:type owl:Class ;         
         owl:equivalentClass [ rdf:type owl:Restriction ;
                                 owl:onProperty :address ;                                
-                                owl:cardinality 1 ;
+                                owl:cardinality 1 
                                 #owl:allValuesFrom  xsd:string 
                                 #owl:onDataRange xsd:string 
                                 #owl:hasValue "xyz"^^xsd:string  
@@ -130,6 +131,12 @@
      
 
 :l1 rdf:type owl:NamedIndividual , :employee  , :skill .
+
+:hasChild rdf:type owl:ObjectProperty ; 
+		owl:inverseOf :hasParent .
+		
+:hasParent rdf:type owl:ObjectProperty .
+ 
 
 
 	

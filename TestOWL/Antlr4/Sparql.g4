@@ -7,6 +7,7 @@
 //BuildMock(SparqlContext context ,IndentStringBuilder builder);BuildMock(context ,builder)
 //BuildOther(SparqlContext context ,IndentStringBuilder builder);BuildOther(context ,builder)
 
+
 grammar Sparql;
 
 queryUnit   :   query  ;
@@ -16,10 +17,11 @@ valuesClause ;
    updateUnit   :   update ;
    prologue   :   ( baseDecl | prefixDecl )* ;
    baseDecl   :   BASE IRIREF ;
-   prefixDecl   :   PREFIX PNAME_NS IRIREF ;
+   prefixDecl   :   PREFIX (PNAME1|PNAME2) IRIREF ;
    selectQuery   :   selectClause datasetClause* whereClause solutionModifier ;
    subSelect   :   selectClause whereClause solutionModifier valuesClause ;
-   selectClause   :   SELECT ( DISTINCT | REDUCED )? ( ( var | ( '(' expression AS var ')' ) )+ | ALL ) ;
+   selectClause   :   SELECT ( DISTINCT | REDUCED )? ( (selectVar)+ | ALL ) ;
+   selectVar: ( var | ( '(' expression AS var ')' ) );
    constructQuery   :   CONSTRUCT ( constructTemplate datasetClause* whereClause solutionModifier | datasetClause* WHERE '{' triplesTemplate? '}' solutionModifier ) ;
    describeQuery   :   DESCRIBE ( varOrIri+ | ALL ) datasetClause* whereClause? solutionModifier ;
    askQuery   :   ASK datasetClause* whereClause solutionModifier ;
@@ -35,8 +37,7 @@ valuesClause ;
    havingCondition   :   constraint ;
    //select11: SELECT | 'sdd';
    orderClause   :   ORDER BY orderCondition+ ;
-   orderCondition   :    ( ( ASC | DESC ) brackettedExpression )
-| ( constraint | var )  ;
+   orderCondition   :    ( ( ASC | DESC ) brackettedExpression ) | ( constraint | var )  ;
    limitOffsetClauses   :   limitClause offsetClause? | offsetClause limitClause?  ;
    limitClause   :   LIMIT INTEGER ;
    offsetClause   :  OFFSET INTEGER ;
@@ -62,11 +63,13 @@ valuesClause ;
    graphRefAll   :   graphRef | DEFAULT | NAMED | ALLFIELD ;
    quadPattern   :   '{' quads '}' ;
    quadData   :   '{' quads '}' ;
-   quads   :   triplesTemplate? ( quadsNotTriples '.'? triplesTemplate? )* ;
+   quads   :   triplesTemplate? ( quadsItem )* ;
+   quadsItem: quadsNotTriples '.'? triplesTemplate?;
    quadsNotTriples   :   GRAPH varOrIri '{' triplesTemplate? '}' ;
    triplesTemplate   :   triplesSameSubject ( '.' triplesTemplate? )? ;
    groupGraphPattern   :   '{' ( subSelect | groupGraphPatternSub ) '}' ;
-   groupGraphPatternSub   :   triplesBlock? ( graphPatternNotTriples '.'? triplesBlock? )* ;
+   groupGraphPatternSub   :   triplesBlock? ( groupGraphPatternSubItem )* ;
+   groupGraphPatternSubItem : graphPatternNotTriples '.'? triplesBlock?;
    triplesBlock   :   triplesSameSubjectPath ( '.' triplesBlock? )? ;
    graphPatternNotTriples   :   groupOrUnionGraphPattern | optionalGraphPattern | minusGraphPattern | graphGraphPattern | serviceGraphPattern | filter | bind | inlineData ;
    optionalGraphPattern   :   OPTIONAL groupGraphPattern ;
@@ -76,7 +79,10 @@ valuesClause ;
    inlineData   :   VALUES dataBlock ;
    dataBlock   :   inlineDataOneVar | inlineDataFull ;
    inlineDataOneVar   :   var '{' dataBlockValue* '}' ;
-   inlineDataFull   :   ( NIL | '(' var* ')' ) '{' ( '(' dataBlockValue* ')' | NIL )* '}' ;
+   inlineDataFull   :   inlineDataFullHeader inlineDataFullBody ;
+   inlineDataFullHeader   :   ( NIL | '(' var* ')' )  ;
+   inlineDataFullBody   :    '{' inlineDataFullBodyItem* '}' ;
+   inlineDataFullBodyItem: '(' dataBlockValue* ')' | NIL ;
    dataBlockValue   :   iri | rDFLiteral | numericLiteral | booleanLiteral | UNDEF ;
    minusGraphPattern   :   MINUS groupGraphPattern ;
    groupOrUnionGraphPattern   :   groupGraphPattern ( UNION groupGraphPattern )* ;
@@ -89,13 +95,16 @@ valuesClause ;
    constructTriples   :   triplesSameSubject ( '.' constructTriples? )? ;
    triplesSameSubject   :   varOrTerm propertyListNotEmpty | triplesNode propertyList ;
    propertyList   :   propertyListNotEmpty? ;
-   propertyListNotEmpty   :   verb objectList ( ';' ( verb objectList )? )* ;
+   propertyListNotEmpty   :   verbObjectList ( ';' ( verbObjectList )? )* ;
+   verbObjectList: verb objectList;
    verb   :   varOrIri | 'a' ;
    objectList   :   object ( ',' object )* ;
    object   :   graphNode ;
    triplesSameSubjectPath   :   varOrTerm propertyListPathNotEmpty | triplesNodePath propertyListPath ;
    propertyListPath   :   propertyListPathNotEmpty? ;
-   propertyListPathNotEmpty   :   ( verbPath | verbSimple ) objectListPath ( ';' ( ( verbPath | verbSimple ) objectList )? )*; 
+   propertyListPathNotEmpty   :   ( verbPath | verbSimple ) objectListPath ( propertyListPathNotEmptyItem )*;
+   propertyListPathNotEmptyItem : ';' ( verbPathObjectList )?;
+   verbPathObjectList: ( verbPath | verbSimple ) objectList;
    verbPath   :   path ;
    verbSimple   :   var ;
    objectListPath   :   objectPath ( ',' objectPath )* ;
@@ -135,6 +144,8 @@ valuesClause ;
    IN:I N;
    NOT:NOT_;
    
+   //dot:'.';
+   
    ALLFIELD:A L L;
    fragment NOT_:N O T;
    fragment IN_:I N;
@@ -148,7 +159,11 @@ valuesClause ;
    DIVISION:'/';
    NEGATE:'!';
    
-   additiveExpression   :   multiplicativeExpression ( ADD multiplicativeExpression | SUBTRACTION multiplicativeExpression | additiveExpressionMulti )* ;
+   additiveExpression   :   multiplicativeExpression ( addMultiplicativeExpression | subtractionMultiplicativeExpression | additiveExpressionMulti )* ;
+   
+   addMultiplicativeExpression : ADD multiplicativeExpression;
+   
+   subtractionMultiplicativeExpression: SUBTRACTION multiplicativeExpression ;
    
    multiplicativeExpression   :   unaryExpression ( multiplicativeExpressionItem )* ;
    
@@ -162,6 +177,7 @@ valuesClause ;
 | ADD primaryExpression 
 | SUBTRACTION primaryExpression 
 | primaryExpression ;
+   
    primaryExpression   :   brackettedExpression | builtInCall | iriOrFunction | rDFLiteral | numericLiteral | booleanLiteral | var ;
    brackettedExpression   :   '(' expression ')' ;
    builtInCall   :     aggregate 
@@ -251,13 +267,18 @@ valuesClause ;
    booleanLiteral   :   'true' | 'false' ;
    String   :   STRING_LITERAL1 | STRING_LITERAL2 | STRING_LITERAL_LONG1 | STRING_LITERAL_LONG2 ;
    iri   :   IRIREF | prefixedName ;
-   prefixedName   :   PNAME_LN | PNAME_NS ;
+   prefixedName   :   PNAME1 | PNAME2 | PNAME3 | PNAME4;//PNAME_LN | PNAME_NS ;
    blankNode   :   BLANK_NODE_LABEL | ANON ; 
-   xsdIri: '^^' IRIREF | PNAME_LN | PNAME_NS;
+   xsdIri: '^^' (IRIREF | prefixedName);// PNAME_LN | PNAME_NS);
    //IRIREF   :   '<' ([^<>"{}|^`\]-[#x00-#x20])* '>' ;
    IRIREF   :   '<' (~[\u0000-\u0020<>"{}|^`\\])* '>' ;   
-   PNAME_NS   :   PN_PREFIX? ':' ;
-   PNAME_LN   :   PNAME_NS PN_LOCAL ;
+   //PNAME :PN_PREFIX? ':' PN_LOCAL? ;
+   PNAME1: ':';
+   PNAME2: PN_PREFIX ':';
+   PNAME3: ':' PN_LOCAL ;
+   PNAME4: PN_PREFIX ':' PN_LOCAL ;
+   //PNAME_NS   :   PN_PREFIX? ':' ;
+   //PNAME_LN   :   PNAME_NS PN_LOCAL ;
    BLANK_NODE_LABEL   :   '_:' ( PN_CHARS_U | [0-9] ) ((PN_CHARS|'.')* PN_CHARS)? ;
    VAR1   :   '?' VARNAME ;
    VAR2   :   '$' VARNAME ;
@@ -278,7 +299,7 @@ valuesClause ;
    fragment STRING_LITERAL_LONG2   :   '"""' ( ( '"' | '""' )? ( ~["\\] | ECHAR ) )* '"""' ;
    fragment ECHAR   :   '\\' [tbnrf\\"'] ;
    NIL   :   '(' WS* ')' ;
-   WS   :   ('\u0020' | '\u0009' | '\u000D' | '\u000A') {Skip();} ;
+   WS   :   ('\u0020' | '\u0009' | '\u000D' | '\u000A') {skip();} ;
    ANON   :   '[' WS* ']' ;    
    fragment PN_CHARS_BASE   :   (A|B|C|D|E|F|G|H|I|J|K|L|M|N|O|P|Q|R|S|T|U|V|W|X|Y|Z) | [\u00C0-\u00D6] | [\u00D8-\u00F6] | [\u00F8-\u02FF] | [\u0370-\u037D] | [\u037F-\u1FFF] | [\u200C-\u200D] | [\u2070-\u218F] | [\u2C00-\u2FEF] | [\u3001-\uD7FF] | [\uF900-\uFDCF] | [\uFDF0-\uFFFD];// | [\u10000-\uEFFFF] ;
    fragment PN_CHARS_U   :   PN_CHARS_BASE | '_' ;
